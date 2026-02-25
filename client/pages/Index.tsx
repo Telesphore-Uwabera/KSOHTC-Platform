@@ -53,6 +53,7 @@ export default function Index() {
                 src="/navigation-logo.jpeg" 
                 alt="KSOTC Logo" 
                 className="w-48 h-48 object-contain transition-all duration-300 hover:scale-110 animate-float"
+                style={{ mixBlendMode: 'multiply', filter: 'contrast(1.5)' }}
               />
             </div>
           </div>
@@ -390,12 +391,14 @@ export default function Index() {
               {
                 icon: Phone,
                 title: "Phone / WhatsApp",
-                content: "0785 072 512",
+                content: "+250 785 072 512",
+                link: "tel:+250785072512",
               },
               {
                 icon: Mail,
                 title: "Email",
                 content: "kigalisafetyoshtrainingcenter@gmail.com",
+                link: "mailto:kigalisafetyoshtrainingcenter@gmail.com",
               },
             ].map((contact, idx) => {
               const Icon = contact.icon;
@@ -407,7 +410,23 @@ export default function Index() {
                 >
                   <Icon className="w-12 h-12 mx-auto mb-4 text-accent group-hover:scale-125 transition-transform" />
                   <h3 className="text-xl font-bold mb-2 group-hover:text-accent transition-colors">{contact.title}</h3>
-                  <p className="text-white/80 whitespace-pre-line">{contact.content}</p>
+                  <p className="text-primary/90 whitespace-pre-line">
+                    {contact.link ? (
+                      <a 
+                        href={contact.link} 
+                        className="hover:text-accent transition-colors underline decoration-dotted underline-offset-2"
+                        onClick={(e) => {
+                          if (contact.link.startsWith('tel:')) {
+                            e.stopPropagation();
+                          }
+                        }}
+                      >
+                        {contact.content}
+                      </a>
+                    ) : (
+                      contact.content
+                    )}
+                  </p>
                 </div>
               );
             })}
@@ -445,24 +464,98 @@ export default function Index() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-300 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-fade-in-up">
-          <div className="flex justify-center mb-6">
-            <img 
-              src="/footer-logo.jpeg" 
-              alt="KSOTC Footer Logo" 
-              className="w-32 h-32 object-contain transition-all duration-300 hover:scale-110 bg-transparent"
-            />
+      <footer className="bg-gray-900 text-gray-300 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in-up">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-12 items-start">
+            
+            {/* Column 1: Logo & Branding */}
+            <div className="flex flex-col items-start text-left lg:col-span-1 lg:col-start-1">
+              <img 
+                src="/footer-logo.jpeg" 
+                alt="KSOTC Footer Logo" 
+                className="w-32 h-32 object-contain transition-all duration-300 hover:scale-110 bg-white rounded-full p-2 mb-6"
+              />
+              <p className="text-accent font-semibold text-sm mb-2 whitespace-nowrap">Kigali Safety OSH Training Center</p>
+              <p className="text-accent font-medium text-sm whitespace-nowrap">Safety Today, Prosperity Tomorrow!</p>
+            </div>
+
+            {/* Column 2: Quick Links - Left aligned on all screens */}
+            <div className="lg:col-span-3 lg:col-start-2 lg:flex lg:justify-center">
+              <div className="text-left w-full max-w-xs">
+                <h4 className="text-lg font-bold text-white mb-6 uppercase tracking-wider">Quick Links</h4>
+                <ul className="space-y-3">
+                  <li><a href="#home" className="hover:text-accent transition-colors duration-300 flex items-center gap-2">
+                    <span className="w-1 h-1 bg-accent rounded-full"></span>
+                    Home
+                  </a></li>
+                  <li><a href="#who" className="hover:text-accent transition-colors duration-300 flex items-center gap-2">
+                    <span className="w-1 h-1 bg-accent rounded-full"></span>
+                    About Us
+                  </a></li>
+                  <li><a href="#provide" className="hover:text-accent transition-colors duration-300 flex items-center gap-2">
+                    <span className="w-1 h-1 bg-accent rounded-full"></span>
+                    Programs
+                  </a></li>
+                  <li><a href="#industries" className="hover:text-accent transition-colors duration-300 flex items-center gap-2">
+                    <span className="w-1 h-1 bg-accent rounded-full"></span>
+                    Industries
+                  </a></li>
+                  <li><a href="#mission" className="hover:text-accent transition-colors duration-300 flex items-center gap-2">
+                    <span className="w-1 h-1 bg-accent rounded-full"></span>
+                    Mission
+                  </a></li>
+                  <li><a href="#contact" className="hover:text-accent transition-colors duration-300 flex items-center gap-2">
+                    <span className="w-1 h-1 bg-accent rounded-full"></span>
+                    Contact
+                  </a></li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Column 3: Contact Info - Left aligned on all screens */}
+            <div className="text-left lg:col-span-1 lg:col-start-5">
+              <h4 className="text-lg font-bold text-white mb-6 uppercase tracking-wider">Contact</h4>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-center gap-3 whitespace-nowrap">
+                  <MapPin className="w-4 h-4 text-accent flex-shrink-0" />
+                  <span className="truncate">Kicukiro Center, Kigali, Rwanda</span>
+                </div>
+
+                <div className="flex items-center gap-3 whitespace-nowrap">
+                  <Phone className="w-4 h-4 text-accent flex-shrink-0" />
+                  <a
+                    href="tel:+250785072512"
+                    className="hover:text-accent transition-colors duration-300"
+                  >
+                    +250 785 072 512
+                  </a>
+                </div>
+
+                <div className="flex items-center gap-3 whitespace-nowrap">
+                  <Mail className="w-4 h-4 text-accent flex-shrink-0" />
+                  <a
+                    href="mailto:kigalisafetyoshtrainingcenter@gmail.com"
+                    className="hover:text-accent transition-colors duration-300 truncate"
+                    title="kigalisafetyoshtrainingcenter@gmail.com"
+                  >
+                    kigalisafetyoshtrainingcenter@gmail.com
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
-          <h3 className="text-3xl font-bold text-white mb-2">KSOTC</h3>
-          <p className="text-accent font-semibold mb-6">Kigali Safety OSH Training Center</p>
-          <p className="text-accent font-medium mb-6 text-lg">Safety Today, Prosperity Tomorrow!</p>
-          <div className="space-y-2 text-sm">
-            <p className="font-medium">Kicukiro Center, Kigali, Rwanda</p>
-            <p>Phone: 0785 072 512 | Email: kigalisafetyoshtrainingcenter@gmail.com</p>
-            <p className="border-t border-gray-700 pt-4 mt-4">
-              © 2024 Kigali Safety OSH Training Center. All rights reserved.
-            </p>
+
+          {/* Bottom Bar */}
+          <div className="border-t border-gray-700 pt-8 mt-12">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="text-sm text-gray-400">
+                © 2024 Kigali Safety OSH Training Center. All rights reserved.
+              </p>
+              <div className="flex items-center gap-6 text-sm text-gray-400">
+                <a href="#privacy" className="hover:text-accent transition-colors duration-300">Privacy Policy</a>
+                <a href="#terms" className="hover:text-accent transition-colors duration-300">Terms of Service</a>
+              </div>
+            </div>
           </div>
         </div>
       </footer>

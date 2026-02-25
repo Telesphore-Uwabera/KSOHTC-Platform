@@ -29,6 +29,7 @@ export default function Header() {
               src="/navigation-logo.jpeg" 
               alt="KSOTC Logo" 
               className="w-16 h-16 object-contain transition-all duration-300 group-hover:rotate-3"
+              style={{ mixBlendMode: 'multiply', filter: 'contrast(1.5)' }}
             />
           </div>
 
