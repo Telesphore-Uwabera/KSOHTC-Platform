@@ -22,10 +22,12 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          light: "#2d7c54",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+          light: "#2a5aa8",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -38,6 +40,7 @@ export default {
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
+          light: "#f5d547",
         },
         popover: {
           DEFAULT: "hsl(var(--popover))",
@@ -56,6 +59,16 @@ export default {
           "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
+        },
+        /* KSOTC Brand Colors */
+        ksotc: {
+          green: "#1B5E3F",
+          "green-light": "#2d7c54",
+          blue: "#1E3A5F",
+          "blue-light": "#2a5aa8",
+          teal: "#20A39E",
+          gold: "#D4AF37",
+          "gold-light": "#F4C430",
         },
       },
       borderRadius: {
