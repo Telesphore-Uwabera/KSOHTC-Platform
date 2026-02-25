@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Shield, HardHat } from "lucide-react";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,15 +25,11 @@ export default function Header() {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center gap-3 group cursor-pointer transition-all duration-300 hover:scale-105">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg group-hover:shadow-xl transition-shadow">
-              KS
-            </div>
-            <div>
-              <h1 className="font-bold text-primary text-lg group-hover:text-accent transition-colors">
-                KSOTC
-              </h1>
-              <p className="text-xs text-gray-600">Safety Training</p>
-            </div>
+            <img 
+              src="/navigation-logo.jpeg" 
+              alt="KSOTC Logo" 
+              className="w-16 h-16 object-contain transition-all duration-300 group-hover:rotate-3"
+            />
           </div>
 
           {/* Desktop Navigation */}
@@ -54,9 +50,9 @@ export default function Header() {
           <div className="hidden md:flex gap-4 items-center">
             <button
               onClick={() => handleNavClick("#contact")}
-              className="bg-gradient-to-r from-accent to-accent/80 text-black px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 transform"
+              className="bg-gradient-to-r from-accent to-accent/80 text-black px-6 py-2.5 rounded-lg font-bold hover:shadow-lg hover:scale-105 transition-all duration-300 transform"
             >
-              Enroll Now
+              ENROLL NOW!
             </button>
           </div>
 
@@ -88,9 +84,9 @@ export default function Header() {
               ))}
               <button
                 onClick={() => handleNavClick("#contact")}
-                className="w-full mt-4 bg-gradient-to-r from-accent to-accent/80 text-black px-4 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300"
+                className="w-full mt-4 bg-gradient-to-r from-accent to-accent/80 text-black px-4 py-3 rounded-lg font-bold hover:shadow-lg transition-all duration-300"
               >
-                Enroll Now
+                ENROLL NOW!
               </button>
             </div>
           </nav>

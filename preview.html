@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kigali Safety OSH Training Center - KSOTC | Occupational Safety & Health Training Rwanda</title>
+    <meta name="description" content="Kigali Safety OSH Training Center (KSOTC) - A Professional Occupational Safety and Health Training Institution in Rwanda. Providing structured OSH training programs for Construction, Industrial & Mining sectors. Safety Today, Prosperity Tomorrow!" />
+    <meta name="keywords" content="Kigali Safety OSH Training Center, KSOTC, Occupational Safety and Health Training Rwanda, OSH Training Kigali, Safety Professionals Rwanda, Workplace Safety Training, Construction Safety Training, Industrial Safety Training, Mining Safety Training, Rwanda Labour Regulations, Safety Culture, Accident Prevention, Risk Assessment, Safety Officers" />
+    <meta name="author" content="Kigali Safety OSH Training Center" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="Kigali Safety OSH Training Center - KSOTC | Safety Today, Prosperity Tomorrow!" />
+    <meta property="og:description" content="Professional OSH training institution in Rwanda developing competent safety professionals for construction, industrial & mining sectors." />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_RW" />
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide React Icons (as SVG) -->
+    <style>
+        .icon { width: 24px; height: 24px; fill: currentColor; }
+        .icon-lg { width: 96px; height: 96px; }
+        .icon-xl { width: 120px; height: 120px; }
+        
+        /* Custom animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out; }
+        .animate-fade-in-down { animation: fadeInDown 0.6s ease-out; }
+        .animate-fade-in-left { animation: fadeInLeft 0.6s ease-out; }
+        .animate-fade-in-right { animation: fadeInRight 0.6s ease-out; }
+        .animate-delay-100 { animation-delay: 0.1s; }
+        .animate-delay-200 { animation-delay: 0.2s; }
+        .animate-delay-300 { animation-delay: 0.3s; }
+        .animate-delay-400 { animation-delay: 0.4s; }
+        .animate-delay-500 { animation-delay: 0.5s; }
+        
+        /* KSOTC Theme Colors */
+        :root {
+            --primary: 143 38% 33%;
+            --secondary: 216 55% 23%;
+            --accent: 43 92% 52%;
+        }
+        .text-primary { color: hsl(var(--primary)); }
+        .text-secondary { color: hsl(var(--secondary)); }
+        .text-accent { color: hsl(var(--accent)); }
+        .bg-primary { background-color: hsl(var(--primary)); }
+        .bg-secondary { background-color: hsl(var(--secondary)); }
+        .bg-accent { background-color: hsl(var(--accent)); }
+        .border-primary { border-color: hsl(var(--primary)); }
+        .border-secondary { border-color: hsl(var(--secondary)); }
+        .border-accent { border-color: hsl(var(--accent)); }
+        
+        .section-header {
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-3 group cursor-pointer transition-all duration-300 hover:scale-105">
+                    <div class="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg group-hover:shadow-xl transition-shadow">
+                        KS
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-primary text-lg group-hover:text-accent transition-colors">
+                            KSOTC
+                        </h1>
+                        <p class="text-xs text-gray-600">Safety Training</p>
+                    </div>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex gap-1">
+                    <a href="#home" class="px-4 py-2 text-gray-700 hover:text-primary font-medium transition-all duration-300 relative group">Home</a>
+                    <a href="#who" class="px-4 py-2 text-gray-700 hover:text-primary font-medium transition-all duration-300 relative group">About</a>
+                    <a href="#provide" class="px-4 py-2 text-gray-700 hover:text-primary font-medium transition-all duration-300 relative group">Programs</a>
+                    <a href="#industries" class="px-4 py-2 text-gray-700 hover:text-primary font-medium transition-all duration-300 relative group">Industries</a>
+                    <a href="#mission" class="px-4 py-2 text-gray-700 hover:text-primary font-medium transition-all duration-300 relative group">Mission</a>
+                    <a href="#contact" class="px-4 py-2 text-gray-700 hover:text-primary font-medium transition-all duration-300 relative group">Contact</a>
+                </nav>
+                
+                <!-- CTA Button -->
+                <div class="hidden md:flex gap-4 items-center">
+                    <a href="#contact" class="bg-gradient-to-r from-accent to-accent/80 text-black px-6 py-2.5 rounded-lg font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300 transform">
+                        ENROLL NOW!
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative bg-gradient-to-br from-secondary via-secondary to-secondary/95 text-white py-16 md:py-28 overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl animate-float"></div>
+            <div class="absolute bottom-0 left-0 w-72 h-72 bg-primary rounded-full blur-3xl animate-float animate-delay-300"></div>
+        </div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="flex justify-center mb-6 animate-scale-in">
+                <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110">
+                    <!-- Globe Icon SVG -->
+                    <svg class="w-24 h-24 text-primary animate-float" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 animate-fade-in-up">
+                Kigali Safety <br class="hidden sm:block" /> OSH Training Center
+            </h1>
+
+            <p class="text-lg md:text-xl text-gray-200 max-w-3xl mx-auto mb-6 animate-fade-in-up animate-delay-100 leading-relaxed">
+                A Professional Occupational Safety and Health (OSH) Training Institution
+            </p>
+
+            <p class="text-2xl md:text-3xl text-accent font-bold mb-10 animate-fade-in-up animate-delay-200">
+                Safety Today, Prosperity Tomorrow!
+            </p>
+
+            <p class="text-lg md:text-xl text-gray-200 max-w-3xl mx-auto mb-10 animate-fade-in-up animate-delay-300 leading-relaxed">
+                Dedicated to Developing Competent Safety Professionals for Rwanda's Construction, Industrial & Mining Sectors
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up animate-delay-400">
+                <a href="#contact" class="group bg-accent text-black px-8 py-4 rounded-lg font-bold text-lg hover:bg-accent-light transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 transform inline-block">
+                    ENROLL NOW!
+                    <span class="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                </a>
+                <a href="#who" class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white/10 transition-all duration-300 hover:shadow-lg inline-block">
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Who We Are Section -->
+    <section id="who" class="py-16 md:py-28 bg-gray-50 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-16 animate-fade-in-up">
+                <div class="inline-block bg-primary text-white px-8 py-3 rounded-lg mb-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <h2 class="section-header">Who We Are</h2>
+                </div>
+                <p class="text-gray-600 text-lg mt-4 max-w-2xl">A Professional Occupational Safety and Health (OSH) Training Institution</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-12 items-start">
+                <div class="animate-fade-in-left">
+                    <p class="text-lg text-gray-700 mb-8 leading-relaxed">
+                        <span class="font-bold text-primary text-xl">Kigali Safety OSH Training Center (KSOTC)</span> is dedicated to <span class="font-semibold text-primary">Developing Competent Safety Professionals</span> for Rwanda's key sectors:
+                    </p>
+
+                    <div class="space-y-4 mb-10">
+                        <div class="flex gap-4 items-center group cursor-pointer">
+                            <span class="text-accent font-bold text-3xl group-hover:scale-125 transition-transform">•</span>
+                            <span class="text-lg text-gray-700 group-hover:text-primary transition-colors"><span class="font-semibold">Construction</span></span>
+                        </div>
+                        <div class="flex gap-4 items-center group cursor-pointer">
+                            <span class="text-accent font-bold text-3xl group-hover:scale-125 transition-transform">•</span>
+                            <span class="text-lg text-gray-700 group-hover:text-primary transition-colors"><span class="font-semibold">Industrial</span></span>
+                        </div>
+                        <div class="flex gap-4 items-center group cursor-pointer">
+                            <span class="text-accent font-bold text-3xl group-hover:scale-125 transition-transform">•</span>
+                            <span class="text-lg text-gray-700 group-hover:text-primary transition-colors"><span class="font-semibold">Mining</span></span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="flex gap-4 p-4 rounded-lg hover:bg-primary/5 transition-all duration-300 group">
+                            <!-- CheckCircle Icon SVG -->
+                            <svg class="w-7 h-7 text-accent flex-shrink-0 mt-1 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                            <div>
+                                <p class="font-bold text-gray-800 mb-2 group-hover:text-primary transition-colors">
+                                    Bridging the Gap in Qualified Safety Officers
+                                </p>
+                                <p class="text-gray-600">
+                                    Addressing the growing demand for qualified Safety Officers and Safety Supervisors in Rwanda's expanding economy.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 p-4 rounded-lg hover:bg-primary/5 transition-all duration-300 group">
+                            <!-- CheckCircle Icon SVG -->
+                            <svg class="w-7 h-7 text-accent flex-shrink-0 mt-1 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                            <div>
+                                <p class="font-bold text-gray-800 mb-2 group-hover:text-primary transition-colors">
+                                    Building a Strong Safety Culture
+                                </p>
+                                <p class="text-gray-600">
+                                    Promoting organizational commitment to workplace safety excellence across all industries.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 p-4 rounded-lg hover:bg-secondary/5 transition-all duration-300 group">
+                            <!-- Shield Icon SVG -->
+                            <svg class="w-7 h-7 text-primary flex-shrink-0 mt-1 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                            <div>
+                                <p class="font-bold text-gray-800 mb-2 group-hover:text-primary transition-colors">
+                                    National Workplace Safety Improvement
+                                </p>
+                                <p class="text-gray-600">
+                                    Contributing to Rwanda's national workplace safety improvement through structured, practical training programs.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden md:grid grid-cols-2 gap-6 animate-fade-in-right">
+                    <div class="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl h-56 flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group cursor-pointer border-2 border-primary/10 hover:border-primary/30">
+                        <div class="text-center">
+                            <!-- HardHat Icon SVG -->
+                            <svg class="w-24 h-24 text-primary mb-4 group-hover:scale-125 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M2 12s3-6 10-6 10 6 10 6-3 6-10 6-10-6-10-6Z"></path>
+                                <path d="M12 12c0 1.1.9 2 2 2s2-.9 2-2-.9-2-2-2-2 .9-2 2Z"></path>
+                                <path d="M12 12v9"></path>
+                            </svg>
+                            <p class="font-bold text-gray-800 text-lg">Construction</p>
+                            <p class="text-sm text-gray-600">Building safety</p>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-accent/20 to-primary/20 rounded-xl h-56 flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group cursor-pointer border-2 border-accent/10 hover:border-accent/30 animate-delay-100">
+                        <div class="text-center">
+                            <!-- Building Icon SVG -->
+                            <svg class="w-24 h-24 text-accent mb-4 group-hover:scale-125 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="9" y1="9" x2="15" y2="9"></line>
+                                <line x1="9" y1="15" x2="15" y2="15"></line>
+                            </svg>
+                            <p class="font-bold text-gray-800 text-lg">Industrial</p>
+                            <p class="text-sm text-gray-600">Workplace safety</p>
+                        </div>
+                    </div>
+                    <div class="col-span-2 bg-gradient-to-br from-secondary/20 to-accent/20 rounded-xl h-56 flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 group cursor-pointer border-2 border-secondary/10 hover:border-secondary/30 animate-delay-200">
+                        <div class="text-center">
+                            <!-- Pickaxe Icon SVG -->
+                            <svg class="w-24 h-24 text-secondary mb-4 group-hover:scale-125 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2l6 6-8 8-6-6 8-8z"></path>
+                                <path d="M2 22l5-5"></path>
+                            </svg>
+                            <p class="font-bold text-gray-800 text-lg">Mining</p>
+                            <p class="text-sm text-gray-600">Extraction safety</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="flex justify-center mb-6">
+                <div class="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center text-white font-bold hover:scale-110 transition-transform duration-300">
+                    KS
+                </div>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-2">KSOTC</h3>
+            <p class="text-accent font-semibold mb-6">Safety Today, Prosperity Tomorrow</p>
+            <div class="space-y-2 text-sm">
+                <p>Kicukiro Center, Kigali, Rwanda</p>
+                <p>Phone: 0785 072 512 | Email: kigalisafetyoshtrainingcenter@gmail.com</p>
+                <p class="border-t border-gray-700 pt-4 mt-4">
+                    © 2024 Kigali Safety OSH Training Center. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
