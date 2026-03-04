@@ -1,0 +1,76 @@
+# KSOHTC Platform
+
+A production-ready full-stack React application template with integrated Express server, featuring React Router 6 SPA mode, TypeScript, Vitest, Zod and modern tooling.
+
+While the starter comes with an Express server, only create endpoints when strictly necessary—for example to encapsulate logic that must live on the server, such as private keys handling or certain DB operations.
+
+## Tech Stack
+
+- **PNPM**: Prefer pnpm
+- **Frontend**: React 18 + React Router 6 (spa) + TypeScript + Vite + TailwindCSS 3
+- **Backend**: Express server integrated with Vite dev server
+- **Testing**: Vitest
+- **UI**: Radix UI + TailwindCSS 3 + Lucide React icons
+
+## Project Structure
+
+```
+client/                   # React SPA frontend
+├── pages/                # Route components (Index.tsx = home)
+├── components/ui/        # Pre-built UI component library
+├── App.tsx               # App entry point and SPA routing setup
+└── global.css            # TailwindCSS 3 theming and global styles
+
+server/                   # Express API backend
+├── index.ts              # Main server setup (express config + routes)
+└── routes/               # API handlers
+
+shared/                   # Types used by both client & server
+└── api.ts                # Example of how to share api interfaces
+```
+
+## Development Commands
+
+```bash
+pnpm dev        # Start dev server (client + server)
+pnpm build      # Production build
+pnpm start      # Start production server
+pnpm typecheck  # TypeScript validation
+pnpm test       # Run Vitest tests
+```
+
+## SPA Routing
+
+- Routes are defined in `client/App.tsx` using React Router 6.
+- Route components live in `client/pages/` (e.g. `Index.tsx` = home).
+
+## Styling
+
+- **Primary**: TailwindCSS 3 utility classes
+- **Theme**: `client/global.css` and `tailwind.config.ts`
+- **UI**: Pre-built components in `client/components/ui/`
+- **Utility**: `cn()` (clsx + tailwind-merge) for conditional classes
+
+## API
+
+- **Dev**: Single port (8080) for frontend and backend
+- **Prefix**: `/api/` for API routes
+- **Example**: `GET /api/ping`, `GET /api/demo`
+
+## Adding Features
+
+### New API Route
+
+1. Optionally add a shared type in `shared/api.ts`.
+2. Add handler in `server/routes/` and register in `server/index.ts` under `/api/...`.
+
+### New Page
+
+1. Create `client/pages/MyPage.tsx`.
+2. Add `<Route path="/my-page" element={<MyPage />} />` in `client/App.tsx` (above the catch-all `*` route).
+
+## Production
+
+- **Build**: `pnpm build`
+- **Run**: `pnpm start`
+- **Deploy**: Netlify or Vercel work well with this setup.
