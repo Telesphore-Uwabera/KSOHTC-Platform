@@ -74,3 +74,20 @@ pnpm test       # Run Vitest tests
 - **Build**: `pnpm build`
 - **Run**: `pnpm start`
 - **Deploy**: Netlify or Vercel work well with this setup.
+
+## Deploy on Netlify
+
+1. **Push your code** to a Git host (GitHub, GitLab, or Bitbucket).
+
+2. **Log in to [Netlify](https://app.netlify.com)** and click **Add new site** → **Import an existing project**.
+
+3. **Connect your repository** (e.g. GitHub) and select this repo.
+
+4. **Build settings** (usually auto-filled from `netlify.toml`):
+   - **Build command:** `pnpm run build:client`
+   - **Publish directory:** `dist/spa`
+   - **Functions directory:** `netlify/functions`
+
+5. **Deploy.** Netlify will install deps with pnpm, run the build, and deploy the SPA. The Express API runs as a serverless function; `/api/*` is forwarded to it automatically.
+
+6. **Optional:** Set **Node version** to `20` in **Site settings** → **Environment** if needed (also set in `netlify.toml`).

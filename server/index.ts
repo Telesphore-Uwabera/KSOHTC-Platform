@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
+import { getTestimonials, postTestimonial } from "./routes/testimonials";
 
 export function createServer() {
   const app = express();
@@ -18,6 +19,10 @@ export function createServer() {
   });
 
   app.get("/api/demo", handleDemo);
+
+  // Testimonials (admin-managed)
+  app.get("/api/testimonials", getTestimonials);
+  app.post("/api/testimonials", postTestimonial);
 
   return app;
 }

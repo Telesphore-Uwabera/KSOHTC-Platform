@@ -1,9 +1,21 @@
 import { Link } from "react-router-dom";
-import { CheckCircle2, MapPin, Phone, Mail, Shield, BookOpen, HardHat, Building, Pickaxe, GraduationCap, Lightbulb, Rocket, Crown, Star, Award, Target, Sparkles, Building2, UserCheck, AlertTriangle, Users, Globe } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { CheckCircle2, MapPin, Phone, Mail, Shield, BookOpen, HardHat, Building, Pickaxe, GraduationCap, Lightbulb, Rocket, Crown, Star, Award, Target, Sparkles, Building2, UserCheck, AlertTriangle, Users, Globe, Quote } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import type { Testimonial } from "@shared/api";
+
+async function fetchTestimonials(): Promise<Testimonial[]> {
+  const res = await fetch("/api/testimonials");
+  if (!res.ok) throw new Error("Failed to load testimonials");
+  return res.json();
+}
 
 export default function Index() {
+  const { data: testimonials = [], isLoading } = useQuery({
+    queryKey: ["testimonials"],
+    queryFn: fetchTestimonials,
+  });
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />
@@ -384,6 +396,47 @@ export default function Index() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section (admin-managed) */}
+      <section id="testimonials" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+          <div className="text-center mb-10 sm:mb-14 scroll-reveal reveal-up reveal-delay-0 w-full max-w-3xl">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3">What Our Participants Say</h2>
+            <p className="text-gray-600 text-base sm:text-lg">Stories from professionals who trained with us</p>
+          </div>
+          {isLoading ? (
+            <p className="text-gray-500 text-center py-8">Loading testimonials…</p>
+          ) : testimonials.length === 0 ? (
+            <p className="text-gray-500 text-center py-8">No testimonials yet. Check back soon.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto">
+              {testimonials.map((t, idx) => (
+                <div
+                  key={t.id}
+                  className="bg-white rounded-xl border-2 border-gray-200 p-6 shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal reveal-up"
+                  style={{ animationDelay: `${0.1 + idx * 0.08}s` }}
+                >
+                  <Quote className="w-8 h-8 text-primary/60 mb-3" />
+                  <p className="text-gray-700 text-sm sm:text-base leading-relaxed mb-4">&ldquo;{t.quote}&rdquo;</p>
+                  <div className="flex items-center gap-3">
+                    {t.avatarUrl ? (
+                      <img src={t.avatarUrl} alt="" className="w-10 h-10 rounded-full object-cover bg-gray-200" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                        <UserCheck className="w-5 h-5 text-primary" />
+                      </div>
+                    )}
+                    <div>
+                      <p className="font-semibold text-gray-800">{t.name}</p>
+                      <p className="text-gray-500 text-sm">{t.role}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
