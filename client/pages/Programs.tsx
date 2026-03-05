@@ -3,15 +3,15 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 const programs = [
-  { icon: BookOpen, title: "Structured & Standardized OSH Training Programs", desc: "Comprehensive training that meets international standards and best practices in Occupational Safety and Health.", color: "from-primary/10 to-accent/10", border: "border-primary" },
-  { icon: GraduationCap, title: "Practical, Industry-Focused Safety Education", desc: "Real-world training aligned with current industry practices and challenges in Rwanda's key sectors.", color: "from-secondary/10 to-accent/10", border: "border-secondary" },
-  { icon: Lightbulb, title: "Skills-Based Learning (Rwanda Labour Regulations)", desc: "Training aligned with Rwanda Labour Regulations and international best practices.", color: "from-accent/10 to-primary/10", border: "border-accent" },
-  { icon: Rocket, title: "Professional Development", desc: "Programs for individuals and corporate clients to advance safety culture and competence.", color: "from-secondary/10 to-primary/10", border: "border-secondary" },
+  { icon: BookOpen, title: "Format", desc: "3 mo Intensive or Weekend (2 mo). Theory + practice.", color: "from-primary/10 to-accent/10", border: "border-primary" },
+  { icon: GraduationCap, title: "Competency-Based", desc: "Risk assessment, case studies. Ready on completion.", color: "from-secondary/10 to-accent/10", border: "border-secondary" },
+  { icon: Lightbulb, title: "Careers", desc: "Officer, Supervisor, Inspector, HSE. Experience: Manager.", color: "from-accent/10 to-primary/10", border: "border-accent" },
+  { icon: Rocket, title: "Services", desc: "Refresher, CPD, Consultancy, PPE. Lower risk.", color: "from-secondary/10 to-primary/10", border: "border-secondary" },
 ];
 
 const faqs = [
-  { q: "What courses do you offer?", a: "We offer OSH foundation and advanced courses for Construction, Industrial, and Mining sectors, including Safety Officer and Safety Supervisor training aligned with national requirements." },
-  { q: "How long are the programs?", a: "Duration varies by program—from short workshops to multi-week certification courses. Contact us for the specific program you are interested in." },
+  { q: "What courses do you offer?", a: "Occupational Safety & Health in Construction Management (OSH in Construction), OSH in Industrial Sector, and OSH in Mining. Each program has defined key competency areas and prepares graduates for Safety Officer, Supervisor, and related roles." },
+  { q: "How long are the programs?", a: "3 Months Intensive Training, or Weekend Option: Friday Afternoon & Sunday (2 Months). Contact us for details on specific programs." },
   { q: "Do you offer in-company training?", a: "Yes. We can deliver tailored training at your organization's premises for groups. Request a quote via the Contact page." },
   { q: "Are programs aligned with national regulations?", a: "Yes. Our training is aligned with Rwanda Labour Regulations and international OSH best practices to support certification and compliance." },
 ];
@@ -24,12 +24,12 @@ export default function Programs() {
 
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="https://images.unsplash.com/photo-1523241597681-2c8e01840799?w=1920&q=80" alt="" className="w-full h-full object-cover hero-zoom" aria-hidden />
+          <img src="/file_00000000b68471f5934f87a3b8b3ce22.png" alt="" className="w-full h-full object-cover hero-zoom" aria-hidden />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 hero-reveal-slow" style={{ animationDelay: "0.4s", animationFillMode: "both" }}>Our Programs</h1>
-          <p className="text-lg sm:text-xl text-white/90 max-w-2xl hero-reveal-slow" style={{ animationDelay: "0.9s", animationFillMode: "both" }}>Comprehensive OSH training programs tailored to industry needs.</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 hero-reveal-slow" style={{ animationDelay: "0.4s", animationFillMode: "both" }}>Our Programs</h1>
+          <p className="text-sm sm:text-base text-white/90 max-w-xl hero-reveal-slow" style={{ animationDelay: "0.9s", animationFillMode: "both" }}>Structured OSH. 3 mo Intensive or Weekend (2 mo).</p>
         </div>
       </section>
 
@@ -37,12 +37,12 @@ export default function Programs() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-10 sm:mb-14 scroll-reveal reveal-right-slow delay-400">
             <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-3">What We Provide</h2>
-            <p className="text-gray-600 text-base sm:text-lg">Training that builds competent safety professionals.</p>
+            <p className="text-gray-600 text-xs">Practical OSH for competent professionals.</p>
           </div>
           <div className="rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-gray-200 mb-10 sm:mb-14 scroll-reveal reveal-zoom delay-800">
-            <img src="https://images.unsplash.com/photo-1523241597681-2c8e01840799?w=1200&q=80" alt="Training" className="w-full h-44 sm:h-56 object-cover" />
+            <img src="/file_00000000b68471f5934f87a3b8b3ce22.png" alt="KSOHTC training session" className="w-full h-44 sm:h-56 object-cover" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {programs.map((item, idx) => (
               <div
                 key={idx}

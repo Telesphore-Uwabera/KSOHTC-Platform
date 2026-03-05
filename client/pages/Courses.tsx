@@ -20,7 +20,7 @@ export default function Courses() {
 
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="https://images.unsplash.com/photo-1523241597681-2c8e01840799?w=1920&q=80" alt="" className="w-full h-full object-cover hero-zoom" aria-hidden />
+          <img src="/file_00000000b68471f5934f87a3b8b3ce22.png" alt="" className="w-full h-full object-cover hero-zoom" aria-hidden />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center">
@@ -52,7 +52,7 @@ export default function Courses() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {courses.map((course, idx) => (
               <div
                 key={course.id}

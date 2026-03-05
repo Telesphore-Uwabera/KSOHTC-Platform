@@ -1,5 +1,8 @@
 import { Link } from "react-router-dom";
-import { MapPin, Phone, Mail, Code2 } from "lucide-react";
+import { MapPin, Phone, Mail, Code2, ExternalLink } from "lucide-react";
+
+const FOOTER_MAP_EMBED = "https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d4729.875635675041!2d30.103122774967193!3d-1.9845040979975614!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMcKwNTknMDQuMiJTIDMwwrAwNicyMC41IkU!5e1!3m2!1sen!2srw!4v1772737124478!5m2!1sen!2srw";
+const MAP_DIRECTIONS_URL = "https://www.google.com/maps/dir//-1.984504,30.103123";
 
 export default function Footer() {
   return (
@@ -10,7 +13,7 @@ export default function Footer() {
             <Link to="/" className="block">
               <img
                 src="/logo.jpeg"
-                alt="KSOTC Footer Logo"
+                alt="KSOHTC Footer Logo"
                 className="w-44 h-44 object-contain transition-all duration-300 hover:scale-110 mb-6"
               />
             </Link>
@@ -49,7 +52,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-3 whitespace-nowrap">
                 <Phone className="w-4 h-4 text-accent flex-shrink-0" />
-                <a href="tel:+250785072512" className="hover:text-accent transition-colors duration-300">
+                <a href="https://wa.me/250785072512" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors duration-300">
                   +250 785 072 512
                 </a>
               </div>
@@ -64,6 +67,28 @@ export default function Footer() {
                 </a>
               </div>
             </div>
+            <div className="mt-4 w-full rounded-lg overflow-hidden border border-gray-600 h-16 sm:h-20">
+              <iframe
+                src={FOOTER_MAP_EMBED}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="KSOHTC location"
+                className="w-full h-full min-h-[64px]"
+              />
+            </div>
+            <a
+              href={MAP_DIRECTIONS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 mt-2 text-xs text-accent hover:underline"
+            >
+              <ExternalLink className="w-3 h-3" />
+              Get directions
+            </a>
           </div>
         </div>
 

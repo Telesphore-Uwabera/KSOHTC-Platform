@@ -22,26 +22,25 @@ export default function Index() {
       {/* Spacer so content is not hidden under fixed nav */}
       <div className="h-20 sm:h-24 md:h-28 lg:h-32" aria-hidden="true" />
 
-      {/* Hero Section — background image only, no hero image */}
-      <section id="home" className="relative text-white py-12 sm:py-16 md:py-20 lg:py-28 overflow-hidden min-h-[70vh] sm:min-h-[75vh] flex flex-col justify-center">
+      {/* Hero Section — taller; buttons separated below main content */}
+      <section id="home" className="relative text-white py-16 sm:py-20 md:py-24 lg:py-32 overflow-hidden min-h-[85vh] sm:min-h-[88vh] flex flex-col justify-between">
         {/* Background image (Unsplash - professionals/training) */}
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&q=80"
+            src="/file_00000000ee5871f8a1c184fd69d0e467.png"
             alt=""
             className="w-full h-full object-cover hero-zoom"
             aria-hidden
           />
           <div className="absolute inset-0 bg-gradient-to-br from-secondary/95 via-secondary/90 to-primary/90" />
         </div>
-        {/* Animated background elements */}
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl animate-float" />
           <div className="absolute bottom-0 left-0 w-72 h-72 bg-primary rounded-full blur-3xl animate-float animate-delay-300" />
         </div>
 
-        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
-          <div className="w-full max-w-7xl flex flex-col items-center space-y-6 sm:space-y-8">
+        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center flex-1 justify-center">
+          <div className="w-full max-w-7xl flex flex-col items-center space-y-4 sm:space-y-6">
             <div className="inline-flex items-center gap-2 bg-accent/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full hero-reveal-slow" style={{ animationDelay: "0.3s", animationFillMode: "both" }}>
               <Award className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
               <span className="text-accent font-semibold text-xs sm:text-sm">Professional OSH Training Institution</span>
@@ -50,21 +49,24 @@ export default function Index() {
               Kigali Safety OSH Training Center
             </h1>
             <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-accent font-bold hero-reveal-slow" style={{ animationDelay: "1.1s", animationFillMode: "both" }}>
-              Safety Today, Prosperity Tomorrow!
+              Safety today, Prosperity tomorrow.
             </p>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-200 w-full max-w-full leading-relaxed hero-reveal-slow" style={{ animationDelay: "1.5s", animationFillMode: "both" }}>
-              Dedicated to Developing Competent Safety Professionals for Rwanda's Construction, Industrial & Mining Sectors
+              Become safety Manager in <span className="font-bold text-accent drop-shadow-sm">3 months</span>
             </p>
-            <div className="flex flex-row flex-nowrap gap-3 sm:gap-4 pt-2 hero-reveal-slow" style={{ animationDelay: "1.9s", animationFillMode: "both" }}>
-              <Link to="/login" className="group bg-accent text-black px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-accent/90 transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] transform inline-flex items-center justify-center shrink-0">
-                ENROLL NOW!
-                <Target className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <a href="#who" className="bg-transparent border-2 border-white text-white px-6 py-3 sm:px-8 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:bg-white/10 transition-all duration-300 hover:shadow-lg inline-flex items-center justify-center shrink-0">
-                Learn More
-                <Shield className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-              </a>
-            </div>
+          </div>
+        </div>
+
+        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 sm:pb-10 md:pb-12 flex flex-col items-center">
+          <div className="flex flex-row flex-nowrap gap-2 sm:gap-3 hero-reveal-slow" style={{ animationDelay: "1.9s", animationFillMode: "both" }}>
+            <Link to="/login" className="group bg-accent text-black px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-bold text-sm sm:text-base hover:bg-accent/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transform inline-flex items-center justify-center shrink-0">
+              ENROLL NOW!
+              <Target className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5 group-hover:translate-x-1 transition-transform" />
+            </Link>
+            <a href="#who" className="bg-transparent border-2 border-white text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-bold text-sm sm:text-base hover:bg-white/10 transition-all duration-300 hover:shadow-md inline-flex items-center justify-center shrink-0">
+              Learn More
+              <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5" />
+            </a>
           </div>
         </div>
       </section>
@@ -81,23 +83,23 @@ export default function Index() {
 
           <div className="mb-8 sm:mb-12 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-right-slow delay-800">
             <img
-              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80"
-              alt="Team collaboration and professional training"
+              src="/file_000000005cec71f78e53bc8af569a796.png"
+              alt="KSOHTC team on site — who we are"
               className="w-full h-44 sm:h-52 md:h-64 object-cover"
             />
           </div>
 
           <div className="space-y-10 sm:space-y-12">
-            <p className="text-lg text-gray-700 leading-relaxed max-w-3xl scroll-reveal reveal-up-slow delay-1200">
-              <span className="font-bold text-primary text-xl">Kigali Safety OSH Training Center (KSOTC)</span> is dedicated to <span className="font-semibold text-primary">Developing Competent Safety Professionals</span> for Rwanda's key sectors.
+            <p className="text-sm text-gray-700 leading-relaxed max-w-3xl scroll-reveal reveal-up-slow delay-1200">
+              <span className="font-bold text-primary text-base sm:text-lg">KSOHTC</span> — competent safety professionals for construction, industrial & mining. Structured, regulation-aligned programs.
             </p>
 
             {/* Description cards — scale in with stagger */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
               {[
-                { icon: GraduationCap, title: "Bridging the Gap in Qualified Safety Officers", desc: "Addressing the growing demand for qualified Safety Officers and Safety Supervisors in Rwanda's expanding economy.", bg: "bg-accent/15" },
-                { icon: Users, title: "Building a Strong Safety Culture", desc: "Promoting organizational commitment to workplace safety excellence across all industries.", bg: "bg-primary/10" },
-                { icon: Shield, title: "National Workplace Safety Improvement", desc: "Contributing to Rwanda's national workplace safety improvement through structured, practical training programs.", bg: "bg-secondary/10" },
+                { icon: GraduationCap, title: "Safety Supervision", desc: "Labour-aligned education.", bg: "bg-accent/15" },
+                { icon: Users, title: "Structured Training", desc: "Practice-oriented culture.", bg: "bg-primary/10" },
+                { icon: Shield, title: "Risk & Incidents", desc: "Fewer accidents, compliance.", bg: "bg-secondary/10" },
               ].map((item, i) => (
                 <div key={i} className="flex flex-col sm:flex-row gap-4 p-5 rounded-xl border border-gray-200/80 hover:border-primary/30 hover:shadow-md bg-white transition-all duration-300 group scroll-reveal reveal-scale-slow" style={{ animationDelay: `${1.4 + i * 0.25}s` }}>
                   <span className={`flex-shrink-0 w-12 h-12 rounded-xl ${item.bg} flex items-center justify-center text-primary group-hover:scale-110 transition-transform`}>
@@ -112,26 +114,26 @@ export default function Index() {
             </div>
 
             {/* Icon cards (Construction, Industrial, Mining) — same row, blur-in */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
               <div className="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer border-2 border-primary/10 hover:border-primary/30 scroll-reveal reveal-blur delay-2200">
                 <div className="text-center p-4">
                   <HardHat className="w-16 h-16 sm:w-20 sm:h-20 text-primary mb-3 group-hover:scale-110 transition-transform duration-300 mx-auto" />
-                  <p className="font-bold text-gray-800 text-base sm:text-lg">Construction</p>
-                  <p className="text-sm text-gray-600">Building safety</p>
+                  <p className="font-bold text-gray-800 text-base sm:text-lg">OSH in Construction</p>
+                  <p className="text-sm text-gray-600">Construction & infrastructure</p>
                 </div>
               </div>
               <div className="bg-gradient-to-br from-accent/20 to-primary/20 rounded-xl min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer border-2 border-accent/10 hover:border-accent/30 scroll-reveal reveal-blur delay-2500">
                 <div className="text-center p-4">
                   <Building className="w-16 h-16 sm:w-20 sm:h-20 text-accent mb-3 group-hover:scale-110 transition-transform duration-300 mx-auto" />
-                  <p className="font-bold text-gray-800 text-base sm:text-lg">Industrial</p>
-                  <p className="text-sm text-gray-600">Workplace safety</p>
+                  <p className="font-bold text-gray-800 text-base sm:text-lg">OSH in Industrial</p>
+                  <p className="text-sm text-gray-600">Manufacturing & industrial</p>
                 </div>
               </div>
               <div className="bg-gradient-to-br from-secondary/20 to-accent/20 rounded-xl min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer border-2 border-secondary/10 hover:border-secondary/30 scroll-reveal reveal-blur delay-2800">
                 <div className="text-center p-4">
                   <Pickaxe className="w-16 h-16 sm:w-20 sm:h-20 text-secondary mb-3 group-hover:scale-110 transition-transform duration-300 mx-auto" />
-                  <p className="font-bold text-gray-800 text-base sm:text-lg">Mining</p>
-                  <p className="text-sm text-gray-600">Extraction safety</p>
+                  <p className="font-bold text-gray-800 text-base sm:text-lg">OSH in Mining</p>
+                  <p className="text-sm text-gray-600">Mining & extraction</p>
                 </div>
               </div>
             </div>
@@ -146,44 +148,44 @@ export default function Index() {
             <div className="inline-block bg-secondary text-white px-8 py-3 rounded-lg mb-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
               <h2 className="section-header">What We Provide</h2>
             </div>
-            <p className="text-gray-600 text-lg mt-4 max-w-2xl">Comprehensive OSH training programs tailored to industry needs</p>
+            <p className="text-gray-600 text-xs mt-2 max-w-2xl">Practical OSH for competent professionals.</p>
           </div>
 
           <div className="mb-8 sm:mb-12 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-zoom delay-800">
             <img
-              src="https://images.unsplash.com/photo-1523241597681-2c8e01840799?w=1200&q=80"
-              alt="Training and education"
+              src="/file_00000000b68471f5934f87a3b8b3ce22.png"
+              alt="KSOHTC training session — Stages of Risk Management"
               className="w-full h-44 sm:h-52 md:h-56 object-cover"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {[
               {
                 icon: BookOpen,
-                title: "Structured & Standardized OSH Training Programs",
-                desc: "Comprehensive training programs that meet international standards and best practices in Occupational Safety and Health",
+                title: "Structured Programs",
+                desc: "3 mo Intensive or Weekend (2 mo). Theory + practice.",
                 color: "from-primary/10 to-accent/10",
                 border: "border-primary",
               },
               {
                 icon: GraduationCap,
-                title: "Practical, Industry-Focused Safety Education",
-                desc: "Real-world training aligned with current industry practices and challenges in Rwanda's key sectors",
+                title: "Competency-Based",
+                desc: "Risk assessment, case studies.",
                 color: "from-secondary/10 to-accent/10",
                 border: "border-secondary",
               },
               {
                 icon: Lightbulb,
-                title: "Skills-Based Learning (Rwanda Labour Regulations)",
-                desc: "Training specifically aligned with Rwanda Labour Regulations and international best practices",
+                title: "Industry-Ready",
+                desc: "Apply safety principles on completion.",
                 color: "from-accent/10 to-primary/10",
                 border: "border-accent",
               },
               {
                 icon: Rocket,
-                title: "Professional Development",
-                desc: "Training programs for both individuals and corporate clients to advance safety culture and competence",
+                title: "Career Outcomes",
+                desc: "Officer, Supervisor, Inspector, HSE. Experience: Manager.",
                 color: "from-secondary/10 to-primary/10",
                 border: "border-secondary",
               },
@@ -216,17 +218,17 @@ export default function Index() {
 
           <div className="mb-8 sm:mb-12 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-left-slow delay-800">
             <img
-              src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=80"
-              alt="Industries we serve"
+              src="/file_000000005cec71f78e53bc8af569a796.png"
+              alt="KSOHTC team on construction site"
               className="w-full h-44 sm:h-52 md:h-64 object-cover"
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {[
-              { icon: HardHat, name: "Construction", desc: "Specialized training for construction site safety and hazard management", img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=400&q=80" },
-              { icon: Building, name: "Industrial", desc: "Comprehensive training for industrial operations and worker safety", img: "https://images.unsplash.com/photo-1581092160562-40e53e5e2d0e?w=400&q=80" },
-              { icon: Pickaxe, name: "Mining", desc: "Expert training for mining operations and underground safety", img: "https://images.unsplash.com/photo-1581092918056-0c4c3acd3785?w=400&q=80" },
+              { icon: HardHat, name: "OSH in Construction", desc: "Height, scaffolding, PPE. Officer, Supervisor, Inspector.", img: "/file_00000000ee5871f8a1c184fd69d0e467.png" },
+              { icon: Building, name: "OSH in Industrial", desc: "LOTO, chemical, fire. Officer, HSE Assistant.", img: "/file_00000000b68471f5934f87a3b8b3ce22.png" },
+              { icon: Pickaxe, name: "OSH in Mining", desc: "Blasting, ventilation. Mining Officer, Supervisor.", img: "/file_000000005cec71f78e53bc8af569a796.png" },
             ].map((industry, idx) => (
               <div
                 key={idx}
@@ -240,8 +242,8 @@ export default function Index() {
                 />
                 <div className="p-8">
                   <industry.icon className="w-24 h-24 text-primary mb-6 inline-block group-hover:scale-125 transition-transform duration-300" />
-                  <h3 className="text-2xl font-bold text-primary mb-3 group-hover:text-accent transition-colors">{industry.name}</h3>
-                  <p className="text-gray-600 group-hover:text-gray-800 transition-colors">{industry.desc}</p>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2 sm:mb-3 group-hover:text-accent transition-colors">{industry.name}</h3>
+                  <p className="text-gray-600 text-sm sm:text-base group-hover:text-gray-800 transition-colors leading-snug">{industry.desc}</p>
                 </div>
               </div>
             ))}
@@ -257,26 +259,26 @@ export default function Index() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-16 scroll-reveal reveal-up-slow delay-400">
-            <h2 className="section-header text-white mb-2">What Our Graduates Are Trained To Do</h2>
-            <p className="text-primary/90 text-lg">Master essential safety competencies for workplace excellence</p>
+            <h2 className="section-header text-white mb-2 text-xl sm:text-2xl md:text-3xl">What Our Graduates Are Trained To Do</h2>
+            <p className="text-primary/90 text-sm sm:text-base md:text-lg">Essential safety competencies for workplace excellence</p>
           </div>
 
           <div className="mb-8 sm:mb-12 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl ring-2 ring-white/20 scroll-reveal reveal-zoom delay-800">
             <img
-              src="https://images.unsplash.com/photo-1523050857298-b0492b1eb587?w=1200&q=80"
-              alt="Graduates and training"
+              src="/file_00000000b68471f5934f87a3b8b3ce22.png"
+              alt="KSOHTC graduates training — classroom"
               className="w-full h-44 sm:h-52 md:h-56 object-cover"
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {[
-              { title: "Identify Workplace Hazards", desc: "Recognize and assess potential dangers in various work environments" },
-              { title: "Conduct Risk Assessments", desc: "Evaluate hazards and determine appropriate control measures" },
-              { title: "Implement Safety Control Measures", desc: "Deploy effective measures to minimize risks and protect workers" },
-              { title: "Investigate Workplace Incidents", desc: "Conduct thorough analyses to prevent future workplace accidents" },
-              { title: "Promote Strong Safety Culture", desc: "Build organizational commitment to workplace safety excellence" },
-              { title: "Apply OSH Standards and Compliance", desc: "Implement and maintain standards in line with national and international requirements" },
+              { title: "Safety Officer", desc: "On completion." },
+              { title: "Safety Supervisor", desc: "Site/Factory." },
+              { title: "Safety Inspector", desc: "Inspections, audits." },
+              { title: "HSE Assistant", desc: "HSE support." },
+              { title: "Safety Manager", desc: "With experience." },
+              { title: "Compliance", desc: "Standards & regulations." },
             ].map((item, idx) => (
               <div
                 key={idx}
@@ -285,8 +287,8 @@ export default function Index() {
               >
                 <CheckCircle2 className="w-8 h-8 text-accent flex-shrink-0 hover:scale-110 transition-transform" />
                 <div>
-                  <h3 className="text-lg font-bold mb-2 text-white hover:text-accent transition-colors">{item.title}</h3>
-                  <p className="text-white/90">{item.desc}</p>
+                  <h3 className="text-base sm:text-lg font-bold mb-1.5 text-white hover:text-accent transition-colors">{item.title}</h3>
+                  <p className="text-white/90 text-xs sm:text-sm">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -298,7 +300,7 @@ export default function Index() {
       <section id="mission" className="py-16 md:py-28 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-16 scroll-reveal reveal-scale-slow delay-400">
-            <h2 className="text-3xl md:text-4xl font-bold text-primary">Our Vision & Mission</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-primary">Our Vision & Mission</h2>
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 items-stretch">
@@ -309,34 +311,52 @@ export default function Index() {
               </div>
               <div className="relative">
                 <img
-                  src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&q=80"
-                  alt="Our mission"
+                  src="/file_000000005cec71f78e53bc8af569a796.png"
+                  alt="KSOHTC team on site — our mission in action"
                   className="w-full h-36 sm:h-44 object-cover"
                 />
               </div>
-              <div className="p-6 sm:p-8">
-                <p className="text-base sm:text-lg text-gray-700 leading-relaxed font-medium mb-6">Our mission in detail:</p>
-                <ul className="space-y-4">
-                  {[
-                    { icon: Award, text: "High-Quality training", sub: "Rigorous, standards-based OSH education" },
-                    { icon: Sparkles, text: "Practical & Industry-Aligned", sub: "Real-world skills for Construction, Industrial & Mining" },
-                    { icon: Building2, text: "Occupational Safety and Health", sub: "Complete OSH curriculum" },
-                    { icon: UserCheck, text: "Competent Professionals", sub: "Develops certified Safety Officers and Supervisors" },
-                    { icon: AlertTriangle, text: "Prevent workplace accidents", sub: "Hazard identification and risk control" },
-                    { icon: Users, text: "Strong safety culture", sub: "Across organizations and the Region" },
-                    { icon: Globe, text: "Rwanda and the Region", sub: "Serving Rwanda and beyond" },
-                  ].map((item, i) => (
-                    <li key={i} className="flex gap-4 items-start group">
-                      <span className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                        <item.icon className="w-5 h-5" />
-                      </span>
-                      <div>
-                        <span className="font-bold text-gray-800 text-primary">{item.text}</span>
-                        <p className="text-gray-600 text-sm mt-0.5">{item.sub}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+              <div className="p-6 sm:p-8 pt-5 sm:pt-6">
+                <p className="text-sm text-gray-700 leading-relaxed font-medium mb-5">
+                  To deliver <span className="font-bold text-primary">high-quality, practical OSH training</span> that develops competent professionals, prevents workplace accidents, strengthens compliance, and promotes a proactive safety culture.
+                </p>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-4 group">
+                    <Award className="w-8 h-8 text-primary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                    <div>
+                      <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">High-Quality Training</h4>
+                      <p className="text-gray-600 text-sm mt-0.5">Practical, industry-aligned OSH education</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4 group">
+                    <UserCheck className="w-8 h-8 text-secondary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                    <div>
+                      <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">Competent Professionals</h4>
+                      <p className="text-gray-600 text-sm mt-0.5">Develop safety officers, supervisors, inspectors</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4 group">
+                    <AlertTriangle className="w-8 h-8 text-accent flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                    <div>
+                      <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">Prevent Accidents</h4>
+                      <p className="text-gray-600 text-sm mt-0.5">Reduce workplace accidents and hazards</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4 group">
+                    <Shield className="w-8 h-8 text-primary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                    <div>
+                      <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">Strengthen Compliance</h4>
+                      <p className="text-gray-600 text-sm mt-0.5">Regulatory and international best practices</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4 group">
+                    <Users className="w-8 h-8 text-secondary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                    <div>
+                      <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">Proactive Safety Culture</h4>
+                      <p className="text-gray-600 text-sm mt-0.5">Across construction, industrial and mining sectors</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -347,14 +367,14 @@ export default function Index() {
               </div>
               <div className="relative">
                 <img
-                  src="https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600&q=80"
-                  alt="Our vision"
+                  src="/file_00000000b68471f5934f87a3b8b3ce22.png"
+                  alt="KSOHTC training — our vision"
                   className="w-full h-36 sm:h-44 object-cover"
                 />
               </div>
               <div className="p-6 sm:p-8 pt-5 sm:pt-6">
-                <p className="text-lg text-gray-700 leading-relaxed font-medium mb-5">
-                  To become the <span className="font-bold text-primary">Leading Occupational Safety and Health Training Institution in Rwanda</span>, recognized for <span className="font-bold text-secondary">Excellence, Accreditation & Measurable Industry Impact</span>.
+                <p className="text-sm text-gray-700 leading-relaxed font-medium mb-5">
+                  <span className="font-bold text-primary">Long-term contributor</span> to national safety. Capacity building.
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4 group">
@@ -411,7 +431,7 @@ export default function Index() {
           ) : testimonials.length === 0 ? (
             <p className="text-gray-500 text-center py-8">No testimonials yet. Check back soon.</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto">
               {testimonials.map((t, idx) => (
                 <div
                   key={t.id}
@@ -444,17 +464,17 @@ export default function Index() {
       <section id="faq" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
           <div className="text-center mb-10 sm:mb-14 scroll-reveal reveal-up reveal-delay-0 w-full max-w-3xl">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3">Frequently Asked Questions</h2>
-            <p className="text-gray-600 text-base sm:text-lg">Common questions about our OSH training and enrollment</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-primary mb-2">Frequently Asked Questions</h2>
+            <p className="text-gray-600 text-xs sm:text-sm">OSH training and enrollment</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 w-full max-w-5xl mx-auto">
             {[
               { q: "What is OSH training?", a: "Occupational Safety and Health (OSH) training prepares professionals to identify hazards, assess risks, and implement safety measures in workplaces. Our programs align with Rwanda Labour Regulations and international best practices." },
-              { q: "Who can enroll?", a: "Individuals and corporate clients can enroll. No specific prior qualification is required for foundation courses; some advanced programs may have prerequisites. Contact us for details." },
-              { q: "Where are trainings held?", a: "We are based at Kicukiro Center, Kigali, Rwanda. Trainings can be held on-site or at your organization's premises for group enrollments." },
+              { q: "Who can enroll?", a: "A2 is the minimum. Individuals and corporate clients can enroll. Contact us for details." },
+              { q: "Where are trainings held?", a: "We are based at Kicukiro, Kigali, Rwanda. Trainings can be held on-site or at your organization's premises for group enrollments." },
               { q: "Are certificates issued?", a: "Yes. Successful participants receive certificates of completion. Our programs are designed to support recognition and accreditation in line with national and industry standards." },
-              { q: "How do I enroll or get a quote?", a: "Use the contact form below, call/WhatsApp +250 785 072 512, or email kigalisafetyoshtrainingcenter@gmail.com. We will respond with enrollment steps or a tailored quote for your organization." },
-              { q: "What sectors do you train for?", a: "We provide OSH training for Construction, Industrial, and Mining sectors, with programs tailored to each industry's safety requirements and national regulations." },
+              { q: "How do I enroll or get a quote?", a: "Use the contact form below, WhatsApp +250 785 072 512, or email kigalisafetyoshtrainingcenter@gmail.com. We will respond with enrollment steps or a tailored quote for your organization." },
+              { q: "What sectors do you train for?", a: "Occupational Safety and Health in Construction Management (OSH in Construction), Occupational Safety and Health in Industrial Management (OSH in Industrial), and Occupational Safety and Health in Mining (OSH in Mining)." },
             ].map((faq, idx) => (
               <details
                 key={idx}
@@ -465,7 +485,7 @@ export default function Index() {
                   <span className="text-left text-sm sm:text-base line-clamp-2 flex-1 pr-2">{faq.q}</span>
                   <span className="text-primary text-xl sm:text-2xl shrink-0 transition-transform duration-300 group-open:rotate-45 flex items-center">+</span>
                 </summary>
-                <p className="px-5 pb-5 sm:px-6 sm:pb-6 pt-0 text-gray-600 text-sm sm:text-base leading-relaxed border-t border-gray-100 bg-gray-50/50">{faq.a}</p>
+                <p className="px-5 pb-5 sm:px-6 sm:pb-6 pt-0 text-gray-600 text-xs sm:text-sm leading-relaxed border-t border-gray-100 bg-gray-50/50">{faq.a}</p>
               </details>
             ))}
           </div>
@@ -480,30 +500,31 @@ export default function Index() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 scroll-reveal reveal-up-slow delay-400">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">Get In Touch</h2>
-            <p className="text-accent text-lg">We're here to answer your questions</p>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3">Get In Touch</h2>
+            <p className="text-accent text-sm">Questions? We’re here to help.</p>
           </div>
 
           <div className="mb-8 sm:mb-12 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl ring-2 ring-white/20 scroll-reveal reveal-zoom delay-800">
             <img
-              src="https://images.unsplash.com/photo-1497366216548-ee70bd0e0067?w=1200&q=80"
-              alt="Get in touch"
+              src="/IMG-20260111-WA0040.jpg.jpeg"
+              alt="KSOHTC team — Works Planning and Staging"
               className="w-full h-40 sm:h-48 object-cover"
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12">
             {[
               {
                 icon: MapPin,
                 title: "Address",
-                content: "Kicukiro Center\nKigali, Rwanda",
+                content: "Kicukiro, Kigali, Rwanda",
+                link: "/contact#map",
               },
               {
                 icon: Phone,
                 title: "Phone / WhatsApp",
                 content: "+250 785 072 512",
-                link: "tel:+250785072512",
+                link: "https://wa.me/250785072512",
               },
               {
                 icon: Mail,
@@ -520,20 +541,22 @@ export default function Index() {
                   style={{ animationDelay: `${1.2 + idx * 0.35}s` }}
                 >
                   <Icon className="w-12 h-12 mx-auto mb-4 text-accent group-hover:scale-125 transition-transform" />
-                  <h3 className="text-xl font-bold mb-2 text-white group-hover:text-accent transition-colors">{contact.title}</h3>
-                  <p className="text-gray-200 whitespace-pre-line">
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold mb-1.5 text-white group-hover:text-accent transition-colors">{contact.title}</h3>
+                  <p className="text-gray-200 whitespace-pre-line text-sm sm:text-base">
                     {contact.link ? (
-                      <a 
-                        href={contact.link} 
-                        className="text-gray-200 hover:text-accent transition-colors underline decoration-dotted underline-offset-2"
-                        onClick={(e) => {
-                          if (contact.link.startsWith('tel:')) {
-                            e.stopPropagation();
-                          }
-                        }}
-                      >
-                        {contact.content}
-                      </a>
+                      contact.link.startsWith("http") || contact.link.startsWith("mailto:") ? (
+                        <a
+                          href={contact.link}
+                          className="text-gray-200 hover:text-accent transition-colors underline decoration-dotted underline-offset-2"
+                          {...(contact.link.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                        >
+                          {contact.content}
+                        </a>
+                      ) : (
+                        <Link to={contact.link} className="text-gray-200 hover:text-accent transition-colors underline decoration-dotted underline-offset-2">
+                          {contact.content} — View map & directions
+                        </Link>
+                      )
                     ) : (
                       contact.content
                     )}

@@ -1,5 +1,5 @@
 /** @import must precede all other statements */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -8,10 +8,13 @@
 @layer base {
   /**
    * KSOTC Brand Color Theme
+   * Font: Work Sans — professional, workplace-oriented; fits OSH, construction, industrial and training.
    * tailwind.config.ts expects the following color variables to be expressed as HSL values.
-   * A different format will require also updating the theme in tailwind.config.ts.
-  */
+   */
   :root {
+    /* Typography: Work Sans for OSH, safety and training */
+    --font-sans: "Work Sans", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+
     /* Light mode */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -94,6 +97,10 @@
     --sidebar-accent-foreground: 0 0% 0%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 143 38% 33%;
+  }
+
+  body {
+    font-family: var(--font-sans);
   }
 }
 

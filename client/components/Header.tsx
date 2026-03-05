@@ -17,22 +17,24 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm animate-fade-in-down">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          <Link to="/" className="flex-shrink-0 flex items-center gap-3 group cursor-pointer transition-all duration-300 hover:scale-105">
-            <img
-              src="/logo.jpeg"
-              alt="KSOTC Logo"
-              className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 object-contain transition-all duration-300 group-hover:rotate-3"
-            />
-          </Link>
-
-          <nav className="hidden md:flex gap-1">
-            {navLinks.map((link) => (
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
+        <div className="flex items-center h-20 gap-2">
+          <div className="hidden md:flex md:flex-1 md:items-center md:min-w-0" />
+          <div className="hidden md:flex md:items-center md:justify-center md:flex-shrink-0">
+            <div className="flex items-center gap-4 bg-white/90 border-2 border-gray-200 rounded-[30%] pl-4 pr-4 py-2.5 shadow-sm">
+              <Link to="/" className="flex-shrink-0 flex items-center group cursor-pointer transition-all duration-300 hover:scale-105">
+                <img
+                  src="/logo.jpeg"
+                  alt="KSOHTC Logo"
+                  className="w-11 h-11 lg:w-12 lg:h-12 object-contain transition-all duration-300 group-hover:rotate-3"
+                />
+              </Link>
+              <nav className="flex gap-3">
+                {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`px-4 py-2 font-medium transition-all duration-300 relative group ${
+                className={`px-3 py-2 text-base font-medium transition-all duration-300 relative group ${
                   location.pathname === link.path ? "text-primary" : "text-gray-700 hover:text-primary"
                 }`}
               >
@@ -41,17 +43,25 @@ export default function Header() {
                   location.pathname === link.path ? "w-full" : "w-0 group-hover:w-full"
                 }`} />
               </Link>
-            ))}
-          </nav>
-
-          <div className="hidden md:flex gap-4 items-center">
-            <Link
-              to="/login"
-              className="bg-gradient-to-r from-accent to-accent/80 text-black px-6 py-2.5 rounded-lg font-bold hover:shadow-lg hover:scale-105 transition-all duration-300 transform"
-            >
-              ENROLL NOW!
-            </Link>
+                ))}
+              </nav>
+              <Link
+                to="/login"
+                className="flex-shrink-0 bg-gradient-to-r from-accent to-accent/80 text-black px-4 py-2 rounded-lg text-sm font-bold hover:shadow-lg hover:scale-105 transition-all duration-300 transform whitespace-nowrap"
+              >
+                ENROLL NOW!
+              </Link>
+            </div>
           </div>
+          <div className="hidden md:block md:flex-1 md:min-w-0" />
+
+          <Link to="/" className="md:hidden flex-shrink-0 flex items-center group cursor-pointer transition-all duration-300 hover:scale-105">
+            <img
+              src="/logo.jpeg"
+              alt="KSOHTC Logo"
+              className="w-14 h-14 sm:w-16 sm:h-16 object-contain transition-all duration-300 group-hover:rotate-3"
+            />
+          </Link>
 
           <button
             onClick={() => setIsOpen(!isOpen)}
