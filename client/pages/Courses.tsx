@@ -20,7 +20,7 @@ export default function Courses() {
 
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/training-classroom.png" alt="" className="w-full h-full object-cover hero-zoom" aria-hidden />
+          <img src="/training-classroom.png" alt="" className="w-full h-full object-cover hero-zoom" decoding="async" aria-hidden />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center">
@@ -32,7 +32,7 @@ export default function Courses() {
       </section>
 
       <section className="py-12 sm:py-16 md:py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-sway">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 scroll-reveal reveal-right-slow delay-400">
             <h2 className="text-2xl sm:text-3xl font-bold text-primary">Available courses</h2>
             <div className="flex flex-wrap gap-3">

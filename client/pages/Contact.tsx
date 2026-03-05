@@ -6,7 +6,7 @@ const MAP_EMBED_URL = "https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d472
 const MAP_DIRECTIONS_URL = "https://www.google.com/maps/dir//-1.984504,30.103123";
 
 const contacts = [
-  { icon: MapPin, title: "Address", content: "Kicukiro, Kigali, Rwanda" },
+  { icon: MapPin, title: "Address", content: "Kicukiro, Kigali, Rwanda", link: "#map" },
   { icon: Phone, title: "WhatsApp", content: "+250 785 072 512", link: "https://wa.me/250785072512" },
   { icon: Mail, title: "Email", content: "kigalisafetyoshtrainingcenter@gmail.com", link: "mailto:kigalisafetyoshtrainingcenter@gmail.com" },
 ];
@@ -25,10 +25,7 @@ export default function Contact() {
       <div className="h-24" aria-hidden="true" />
 
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
-        <div className="absolute inset-0">
-          <img src="/hero-team.jpg" alt="" className="w-full h-full object-cover hero-zoom" aria-hidden />
-          <div className="absolute inset-0 bg-gradient-to-br from-secondary/95 via-secondary/90 to-primary/90" />
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-br from-secondary/95 via-secondary/90 to-primary/90" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 hero-reveal-slow" style={{ animationDelay: "0.4s", animationFillMode: "both" }}>Get In Touch</h1>
           <p className="text-sm sm:text-base text-accent/90 max-w-xl hero-reveal-slow" style={{ animationDelay: "0.9s", animationFillMode: "both" }}>Questions or enrollment—we’re here to help.</p>
@@ -36,33 +33,48 @@ export default function Contact() {
       </section>
 
       <section className="py-12 sm:py-16 md:py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-windy">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-10 sm:mb-12">
             {contacts.map((item, idx) => {
               const Icon = item.icon;
-              return (
-                <div
-                  key={idx}
-                  className="bg-white rounded-[30px] p-6 sm:p-8 shadow-lg border-2 border-gray-200 text-center hover:shadow-xl hover:border-primary/40 transition-all duration-300 hover:scale-[1.02] active:scale-[0.99] scroll-reveal reveal-scale-slow"
-                  style={{ animationDelay: `${0.9 + idx * 0.3}s` }}
-                >
+              const isAddress = item.content === "Kicukiro, Kigali, Rwanda" && item.link === "#map";
+              const cardClass = "bg-white rounded-[30px] p-6 sm:p-8 shadow-lg border-2 border-gray-200 text-center hover:shadow-xl hover:border-primary/40 transition-all duration-300 hover:scale-[1.02] active:scale-[0.99] scroll-reveal reveal-scale-slow";
+              const cardContent = (
+                <>
                   <span className="inline-flex w-14 h-14 rounded-[30px] bg-accent/15 items-center justify-center text-accent mb-4">
                     <Icon className="w-7 h-7" />
                   </span>
                   <h3 className="text-base sm:text-lg font-bold text-primary mb-1.5">{item.title}</h3>
                   <p className="text-gray-600 whitespace-pre-line text-xs sm:text-sm">
                     {item.link ? (
-                      <a
-                        href={item.link}
-                        className="text-primary hover:text-accent underline decoration-dotted"
-                        {...(item.link.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                      >
-                        {item.content}
-                      </a>
+                      item.link.startsWith("http") || item.link.startsWith("mailto:") ? (
+                        <a
+                          href={item.link}
+                          className="text-primary hover:text-accent underline decoration-dotted"
+                          {...(item.link.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                        >
+                          {item.content}
+                        </a>
+                      ) : (
+                        <span className="text-primary">{item.content} — View map</span>
+                      )
                     ) : (
                       item.content
                     )}
                   </p>
+                </>
+              );
+              return (
+                <div key={idx}>
+                  {isAddress ? (
+                    <a href="#map" className={`block ${cardClass}`} style={{ animationDelay: `${0.9 + idx * 0.3}s` }}>
+                      {cardContent}
+                    </a>
+                  ) : (
+                    <div className={cardClass} style={{ animationDelay: `${0.9 + idx * 0.3}s` }}>
+                      {cardContent}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -111,9 +123,11 @@ export default function Contact() {
           </div>
           </div>
 
-          <div id="map" className="mt-10 sm:mt-12 scroll-reveal reveal-up delay-400 w-full">
+          <div id="map" className="mt-10 sm:mt-12 scroll-reveal reveal-raise delay-400 w-full">
             <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2 sm:mb-3">Find us</h2>
-            <p className="text-gray-600 text-sm sm:text-base mb-4">Kicukiro, Kigali, Rwanda</p>
+            <p className="text-gray-600 text-sm sm:text-base mb-4">
+              <a href="#map" className="text-primary hover:text-accent underline decoration-dotted">Kicukiro, Kigali, Rwanda</a>
+            </p>
             <div className="w-full rounded-[30px] overflow-hidden shadow-lg border-2 border-gray-200 bg-gray-100 aspect-video">
               <iframe
                 src={MAP_EMBED_URL}

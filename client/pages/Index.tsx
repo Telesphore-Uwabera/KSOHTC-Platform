@@ -30,6 +30,7 @@ export default function Index() {
             src="/hero-team.jpg"
             alt=""
             className="w-full h-full object-cover hero-zoom"
+            decoding="async"
             aria-hidden
           />
           <div className="absolute inset-0 bg-gradient-to-br from-secondary/95 via-secondary/90 to-primary/90" />
@@ -43,7 +44,7 @@ export default function Index() {
           <div className="w-full max-w-7xl flex flex-col items-center space-y-4 sm:space-y-6">
             <div className="inline-flex items-center gap-2 bg-accent/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full hero-reveal-slow" style={{ animationDelay: "0.3s", animationFillMode: "both" }}>
               <Award className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
-              <span className="text-accent font-semibold text-xs sm:text-sm">Professional OSH Training Institution</span>
+              <span className="text-accent font-semibold text-xs sm:text-sm text-animate-fade-in-out">Professional OSH Training Institution</span>
             </div>
             <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight hero-reveal-slow sm:whitespace-nowrap" style={{ animationDelay: "0.7s", animationFillMode: "both" }}>
               Kigali Safety OSH Training Center
@@ -71,14 +72,14 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Who We Are Section — enter from left/right, delayed */}
+      {/* Who We Are Section — enter from left/right, delayed; subtle windy motion */}
       <section id="who" className="py-12 sm:py-16 md:py-20 lg:py-28 bg-gray-50 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-[30px] border border-gray-200/60 bg-white/50 shadow-inner py-12 sm:py-16">
-          <div className="mb-10 sm:mb-16 scroll-reveal reveal-left-slow delay-400">
-            <div className="inline-block bg-primary text-white px-6 py-2.5 sm:px-8 sm:py-3 rounded-lg mb-3 sm:mb-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-[30px] border border-gray-200/60 bg-white/50 shadow-inner py-12 sm:py-16 animate-windy">
+          <div className="mb-10 sm:mb-16">
+            <div className="inline-block bg-primary text-white px-6 py-2.5 sm:px-8 sm:py-3 rounded-lg mb-3 sm:mb-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] scroll-reveal text-reveal-slide-left">
               <h2 className="section-header">Who We Are</h2>
             </div>
-            <p className="text-gray-600 text-base sm:text-lg mt-3 sm:mt-4 max-w-2xl">A Professional Occupational Safety and Health (OSH) Training Institution</p>
+            <p className="text-gray-600 text-base sm:text-lg mt-3 sm:mt-4 max-w-2xl scroll-reveal text-reveal-fade" style={{ animationDelay: "0.15s" }}>A Professional Occupational Safety and Health (OSH) Training Institution</p>
           </div>
 
           <div className="mb-8 sm:mb-12 rounded-[30px] overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-right-slow delay-800">
@@ -86,6 +87,8 @@ export default function Index() {
               src="/team-on-site.png"
               alt="KSOHTC team on site — who we are"
               className="w-full h-44 sm:h-52 md:h-64 object-cover rounded-[30px]"
+              loading="lazy"
+              decoding="async"
             />
           </div>
 
@@ -141,87 +144,83 @@ export default function Index() {
         </div>
       </section>
 
-      {/* What We Provide Section — enter from right, zoom image, up-slow cards */}
-      <section id="provide" className="py-16 md:py-28 bg-white relative border-l-4 border-primary/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 scroll-reveal reveal-right-slow delay-400">
-            <div className="inline-block bg-secondary text-white px-8 py-3 rounded-lg mb-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+      {/* What We Provide Section — enter from right, zoom image, up-slow cards; subtle rainfall overlay */}
+      <section id="provide" className="py-16 md:py-28 bg-white relative border-l-4 border-primary/30 overflow-hidden">
+        <div className="rainfall-overlay" aria-hidden="true" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="mb-16">
+            <div className="inline-block bg-secondary text-white px-8 py-3 rounded-lg mb-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 scroll-reveal text-reveal-up">
               <h2 className="section-header">What We Provide</h2>
             </div>
-            <p className="text-gray-600 text-xs mt-2 max-w-2xl">Practical OSH for competent professionals.</p>
+            <p className="text-gray-600 text-xs mt-2 max-w-2xl scroll-reveal text-reveal-blur" style={{ animationDelay: "0.2s" }}>Practical OSH for competent professionals.</p>
           </div>
 
-          <div className="mb-8 sm:mb-12 rounded-[30px] overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-zoom delay-800">
-            <img
-              src="/training-classroom.png"
-              alt="KSOHTC training session — Stages of Risk Management"
-              className="w-full h-44 sm:h-52 md:h-56 object-cover rounded-[30px]"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            {[
-              {
-                icon: BookOpen,
-                title: "Structured Programs",
-                desc: "3 mo Intensive or Weekend (2 mo). Theory + practice.",
-                color: "from-primary/10 to-accent/10",
-                border: "border-primary",
-              },
-              {
-                icon: GraduationCap,
-                title: "Competency-Based",
-                desc: "Risk assessment, case studies.",
-                color: "from-secondary/10 to-accent/10",
-                border: "border-secondary",
-              },
-              {
-                icon: Lightbulb,
-                title: "Industry-Ready",
-                desc: "Apply safety principles on completion.",
-                color: "from-accent/10 to-primary/10",
-                border: "border-accent",
-              },
-              {
-                icon: Rocket,
-                title: "Career Outcomes",
-                desc: "Officer, Supervisor, Inspector, HSE. Experience: Manager.",
-                color: "from-secondary/10 to-primary/10",
-                border: "border-secondary",
-              },
-            ].map((item, idx) => (
-              <div
-                key={idx}
-                className={`bg-gradient-to-br ${item.color} rounded-[30px] p-8 border-l-4 ${item.border} hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 scroll-reveal reveal-up-slow`}
-                style={{ animationDelay: `${1.2 + idx * 0.3}s` }}
-              >
-                <div className="flex items-start gap-4">
-                  <item.icon className="w-10 h-10 text-primary hover:scale-125 transition-transform duration-300" />
-                  <div>
-                    <h3 className="text-xl font-bold text-primary mb-2">{item.title}</h3>
-                    <p className="text-gray-700">{item.desc}</p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-stretch">
+            <div className="rounded-[30px] overflow-hidden shadow-lg border border-gray-200 min-h-[16rem] sm:min-h-[20rem] scroll-reveal reveal-raise">
+              <img
+                src="/training-classroom.png"
+                alt="KSOHTC training session — Stages of Risk Management"
+                className="w-full h-full min-h-[16rem] sm:min-h-[20rem] object-cover rounded-[30px]"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4 sm:gap-6">
+              {[
+                {
+                  icon: BookOpen,
+                  title: "Structured Programs",
+                  desc: "3 months Intensive or Weekend (2 months). Theory + practice.",
+                  color: "from-primary/10 to-accent/10",
+                  border: "border-primary",
+                },
+                {
+                  icon: GraduationCap,
+                  title: "Competency-Based",
+                  desc: "Risk assessment, case studies.",
+                  color: "from-secondary/10 to-accent/10",
+                  border: "border-secondary",
+                },
+                {
+                  icon: Lightbulb,
+                  title: "Industry-Ready",
+                  desc: "Apply safety principles on completion.",
+                  color: "from-accent/10 to-primary/10",
+                  border: "border-accent",
+                },
+                {
+                  icon: Rocket,
+                  title: "Career Outcomes",
+                  desc: "Officer, Supervisor, Inspector, HSE. Experience: Manager.",
+                  color: "from-secondary/10 to-primary/10",
+                  border: "border-secondary",
+                },
+              ].map((item, idx) => (
+                <div
+                  key={idx}
+                  className={`bg-gradient-to-br ${item.color} rounded-[30px] p-5 sm:p-6 border-l-4 ${item.border} hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 scroll-reveal reveal-up-slow`}
+                  style={{ animationDelay: `${1.2 + idx * 0.3}s` }}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-start gap-3">
+                    <item.icon className="w-8 h-8 sm:w-10 sm:h-10 text-primary flex-shrink-0 hover:scale-125 transition-transform duration-300" />
+                    <div className="min-w-0">
+                      <h3 className="text-base sm:text-lg font-bold text-primary mb-1 sm:mb-2">{item.title}</h3>
+                      <p className="text-gray-700 text-sm sm:text-base">{item.desc}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Industries Section — up-slow header, left-slow image, scale-slow cards */}
+      {/* Industries Section — up-slow header, left-slow image, scale-slow cards; gentle drift */}
       <section id="industries" className="py-12 sm:py-16 md:py-20 lg:py-28 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-[30px] border-2 border-accent/20 bg-white/70 shadow-lg py-12 sm:py-16">
-          <div className="text-center mb-10 sm:mb-16 scroll-reveal reveal-up-slow delay-400">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-3 sm:mb-4">Industries We Serve</h2>
-            <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto px-2">Specialized training for Rwanda's key sectors</p>
-          </div>
-
-          <div className="mb-8 sm:mb-12 rounded-[30px] overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-left-slow delay-800">
-            <img
-              src="/team-on-site.png"
-              alt="KSOHTC team on construction site"
-              className="w-full h-44 sm:h-52 md:h-64 object-cover rounded-[30px]"
-            />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-[30px] border-2 border-accent/20 bg-white/70 shadow-lg py-12 sm:py-16 animate-drift">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-3 sm:mb-4 scroll-reveal text-reveal-scale">Industries We Serve</h2>
+            <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto px-2 scroll-reveal text-reveal-fade" style={{ animationDelay: "0.15s" }}>Specialized training for Rwanda's key sectors</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
@@ -232,13 +231,15 @@ export default function Index() {
             ].map((industry, idx) => (
               <div
                 key={idx}
-                className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-[30px] overflow-hidden text-center border-2 border-primary/20 hover:border-primary hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.99] group scroll-reveal reveal-scale-slow cursor-pointer"
+                className={`bg-gradient-to-br from-primary/5 to-accent/5 rounded-[30px] overflow-hidden text-center border-2 border-primary/20 hover:border-primary hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.99] group cursor-pointer scroll-reveal ${idx === 1 ? "reveal-rain" : "reveal-raise"}`}
                 style={{ animationDelay: `${1.3 + idx * 0.35}s` }}
               >
                 <img
                   src={industry.img}
                   alt={industry.name}
                   className="w-full h-40 sm:h-44 object-cover rounded-[30px]"
+                  loading="lazy"
+                  decoding="async"
                 />
                 <div className="p-8">
                   <industry.icon className="w-24 h-24 text-primary mb-6 inline-block group-hover:scale-125 transition-transform duration-300" />
@@ -251,23 +252,26 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Graduates Training Section — up-slow + zoom, staggered cards */}
+      {/* Graduates Training Section — up-slow + zoom, staggered cards; rainfall overlay */}
       <section className="py-16 md:py-28 bg-gradient-to-br from-primary to-primary/90 text-white relative overflow-hidden ring-2 ring-white/10">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22><rect width=%2220%22 height=%2220%22 fill=%22white%22/></svg>')] bg-repeat"></div>
         </div>
+        <div className="rainfall-overlay" aria-hidden="true" />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 scroll-reveal reveal-up-slow delay-400">
-            <h2 className="section-header text-white mb-2 text-xl sm:text-2xl md:text-3xl">What Our Graduates Are Trained To Do</h2>
-            <p className="text-primary/90 text-sm sm:text-base md:text-lg">Essential safety competencies for workplace excellence</p>
+          <div className="mb-16">
+            <h2 className="section-header text-white mb-2 text-xl sm:text-2xl md:text-3xl scroll-reveal text-reveal-up">What Our Graduates Are Trained To Do</h2>
+            <p className="text-primary/90 text-sm sm:text-base md:text-lg scroll-reveal text-reveal-fade" style={{ animationDelay: "0.2s" }}>Essential safety competencies for workplace excellence</p>
           </div>
 
-          <div className="mb-8 sm:mb-12 rounded-[30px] overflow-hidden shadow-xl ring-2 ring-white/20 scroll-reveal reveal-zoom delay-800">
+          <div className="mb-8 sm:mb-12 rounded-[30px] overflow-hidden shadow-xl ring-2 ring-white/20 scroll-reveal reveal-rain delay-800">
             <img
               src="/training-classroom.png"
               alt="KSOHTC graduates training — classroom"
               className="w-full h-44 sm:h-52 md:h-56 object-cover rounded-[30px]"
+              loading="lazy"
+              decoding="async"
             />
           </div>
 
@@ -296,16 +300,16 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Mission & Vision Section — left/right slow with long delay */}
+      {/* Mission & Vision Section — left/right slow with long delay; sway on Mission card */}
       <section id="mission" className="py-16 md:py-28 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 scroll-reveal reveal-scale-slow delay-400">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-primary">Our Vision & Mission</h2>
+          <div className="mb-16">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-primary scroll-reveal text-reveal-slide-right">Our Vision & Mission</h2>
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 items-stretch">
             {/* Mission */}
-            <div className="bg-white rounded-[30px] shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 scroll-reveal reveal-left-slow delay-600">
+            <div className="bg-white rounded-[30px] shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 scroll-reveal reveal-left-slow delay-600 animate-sway">
               <div className="bg-gradient-to-r from-secondary to-secondary/80 text-white py-8 px-8">
                 <h3 className="section-header text-white">Our Mission</h3>
               </div>
@@ -314,6 +318,8 @@ export default function Index() {
                   src="/team-on-site.png"
                   alt="KSOHTC team on site — our mission in action"
                   className="w-full h-36 sm:h-44 object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <div className="p-6 sm:p-8 pt-5 sm:pt-6">
@@ -370,6 +376,8 @@ export default function Index() {
                   src="/training-classroom.png"
                   alt="KSOHTC training — our vision"
                   className="w-full h-36 sm:h-44 object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <div className="p-6 sm:p-8 pt-5 sm:pt-6">
@@ -422,9 +430,9 @@ export default function Index() {
       {/* Testimonials Section (admin-managed) */}
       <section id="testimonials" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
-          <div className="text-center mb-10 sm:mb-14 scroll-reveal reveal-up reveal-delay-0 w-full max-w-3xl">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3">What Our Participants Say</h2>
-            <p className="text-gray-600 text-base sm:text-lg">Stories from professionals who trained with us</p>
+          <div className="text-center mb-10 sm:mb-14 w-full max-w-3xl">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3 scroll-reveal reveal-raise">What Our Participants Say</h2>
+            <p className="text-gray-600 text-base sm:text-lg scroll-reveal text-reveal-fade" style={{ animationDelay: "0.15s" }}>Stories from professionals who trained with us</p>
           </div>
           {isLoading ? (
             <p className="text-gray-500 text-center py-8">Loading testimonials…</p>
@@ -435,14 +443,14 @@ export default function Index() {
               {testimonials.map((t, idx) => (
                 <div
                   key={t.id}
-                  className="bg-white rounded-[30px] border-2 border-gray-200 p-6 shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal reveal-up"
+                  className={`bg-white rounded-[30px] border-2 border-gray-200 p-6 shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal ${idx === 0 ? "reveal-raise" : idx === 1 ? "reveal-rain" : "reveal-up"}`}
                   style={{ animationDelay: `${0.1 + idx * 0.08}s` }}
                 >
                   <Quote className="w-8 h-8 text-primary/60 mb-3" />
                   <p className="text-gray-700 text-sm sm:text-base leading-relaxed mb-4">&ldquo;{t.quote}&rdquo;</p>
                   <div className="flex items-center gap-3">
                     {t.avatarUrl ? (
-                      <img src={t.avatarUrl} alt="" className="w-10 h-10 rounded-full object-cover bg-gray-200" />
+                      <img src={t.avatarUrl} alt="" className="w-10 h-10 rounded-full object-cover bg-gray-200" loading="lazy" decoding="async" />
                     ) : (
                       <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                         <UserCheck className="w-5 h-5 text-primary" />
@@ -463,9 +471,9 @@ export default function Index() {
       {/* FAQ Section */}
       <section id="faq" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
-          <div className="text-center mb-10 sm:mb-14 scroll-reveal reveal-up reveal-delay-0 w-full max-w-3xl">
-            <h2 className="text-xl sm:text-2xl font-bold text-primary mb-2">Frequently Asked Questions</h2>
-            <p className="text-gray-600 text-xs sm:text-sm">OSH training and enrollment</p>
+          <div className="text-center mb-10 sm:mb-14 w-full max-w-3xl">
+            <h2 className="text-xl sm:text-2xl font-bold text-primary mb-2 scroll-reveal text-reveal-up">Frequently Asked Questions</h2>
+            <p className="text-gray-600 text-xs sm:text-sm scroll-reveal text-reveal-fade" style={{ animationDelay: "0.15s" }}>OSH training and enrollment</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 w-full max-w-5xl mx-auto">
             {[
@@ -499,17 +507,9 @@ export default function Index() {
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16 scroll-reveal reveal-up-slow delay-400">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-3">Get In Touch</h2>
-            <p className="text-accent text-sm">Questions? We’re here to help.</p>
-          </div>
-
-          <div className="mb-8 sm:mb-12 rounded-[30px] overflow-hidden shadow-xl ring-2 ring-white/20 scroll-reveal reveal-zoom delay-800">
-            <img
-              src="/hero-team.jpg"
-              alt="KSOHTC team — Works Planning and Staging"
-              className="w-full h-40 sm:h-48 object-cover rounded-[30px]"
-            />
+          <div className="text-center mb-16 ">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3 scroll-reveal reveal-rain">Get In Touch</h2>
+            <p className="text-accent text-sm scroll-reveal text-reveal-fade" style={{ animationDelay: "0.15s" }}>Questions? We’re here to help.</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-12">
@@ -534,12 +534,9 @@ export default function Index() {
               },
             ].map((contact, idx) => {
               const Icon = contact.icon;
-              return (
-                <div
-                  key={idx}
-                  className="bg-gray-600/50 backdrop-blur rounded-[30px] p-8 text-center hover:bg-gray-500/50 transition-all duration-300 hover:scale-110 hover:-translate-y-2 group scroll-reveal reveal-scale-slow"
-                  style={{ animationDelay: `${1.2 + idx * 0.35}s` }}
-                >
+              const isAddress = contact.content === "Kicukiro, Kigali, Rwanda" && contact.link === "/contact#map";
+              const cardContent = (
+                <>
                   <Icon className="w-12 h-12 mx-auto mb-4 text-accent group-hover:scale-125 transition-transform" />
                   <h3 className="text-base sm:text-lg md:text-xl font-bold mb-1.5 text-white group-hover:text-accent transition-colors">{contact.title}</h3>
                   <p className="text-gray-200 whitespace-pre-line text-sm sm:text-base">
@@ -549,18 +546,32 @@ export default function Index() {
                           href={contact.link}
                           className="text-gray-200 hover:text-accent transition-colors underline decoration-dotted underline-offset-2"
                           {...(contact.link.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                          onClick={(e) => e.stopPropagation()}
                         >
                           {contact.content}
                         </a>
                       ) : (
-                        <Link to={contact.link} className="text-gray-200 hover:text-accent transition-colors underline decoration-dotted underline-offset-2">
-                          {contact.content} — View map & directions
-                        </Link>
+                        <span className="text-gray-200">{contact.content} — View map</span>
                       )
                     ) : (
                       contact.content
                     )}
                   </p>
+                </>
+              );
+              const cardClass = "bg-gray-600/50 backdrop-blur rounded-[30px] p-8 text-center hover:bg-gray-500/50 transition-all duration-300 hover:scale-110 hover:-translate-y-2 group scroll-reveal reveal-scale-slow";
+              const delayStyle = { animationDelay: `${1.2 + idx * 0.35}s` };
+              return (
+                <div key={idx}>
+                  {isAddress ? (
+                    <Link to="/contact#map" className={`block ${cardClass}`} style={delayStyle}>
+                      {cardContent}
+                    </Link>
+                  ) : (
+                    <div className={cardClass} style={delayStyle}>
+                      {cardContent}
+                    </div>
+                  )}
                 </div>
               );
             })}

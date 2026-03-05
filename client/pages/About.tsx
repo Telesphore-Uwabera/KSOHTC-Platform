@@ -11,7 +11,7 @@ export default function About() {
       {/* Page hero with background image */}
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/team-on-site.png" alt="" className="w-full h-full object-cover hero-zoom" aria-hidden />
+          <img src="/team-on-site.png" alt="" className="w-full h-full object-cover hero-zoom" decoding="async" aria-hidden />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -20,18 +20,20 @@ export default function About() {
         </div>
       </section>
 
-      {/* Who We Are — left/right slow, delayed */}
+      {/* Who We Are — left/right slow, delayed; subtle windy motion */}
       <section className="py-12 sm:py-16 md:py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-[30px] border border-gray-200/60 bg-white/50 shadow-inner py-12">
-          <div className="mb-8 sm:mb-12 scroll-reveal reveal-left-slow delay-400">
-            <h2 className="section-header text-primary mb-4">Who We Are</h2>
-            <p className="text-gray-600 text-sm max-w-2xl">OSH capacity-building for construction, industrial & mining.</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-[30px] border border-gray-200/60 bg-white/50 shadow-inner py-12 animate-windy">
+          <div className="mb-8 sm:mb-12">
+            <h2 className="section-header text-primary mb-4 scroll-reveal text-reveal-slide-left">Who We Are</h2>
+            <p className="text-gray-600 text-sm max-w-2xl scroll-reveal text-reveal-fade" style={{ animationDelay: "0.15s" }}>OSH capacity-building for construction, industrial & mining.</p>
           </div>
           <div className="mb-12 rounded-[30px] overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-right-slow delay-800">
             <img
               src="/team-on-site.png"
               alt="KSOHTC team on site"
               className="w-full h-48 md:h-64 object-cover rounded-[30px]"
+              loading="lazy"
+              decoding="async"
             />
           </div>
           {/* Intro text — full page width */}
@@ -46,7 +48,7 @@ export default function About() {
               { title: "Structured Training", desc: "Practice-oriented culture.", icon: CheckCircle2 },
               { title: "Risk & Incidents", desc: "Fewer accidents, compliance.", icon: Shield },
             ].map((item, idx) => (
-              <div key={idx} className="flex flex-col sm:flex-row gap-4 p-4 rounded-lg hover:bg-primary/5 transition-all duration-300 group border border-gray-200/80 bg-white scroll-reveal reveal-up-slow" style={{ animationDelay: `${1.5 + idx * 0.2}s` }}>
+              <div key={idx} className={`flex flex-col sm:flex-row gap-4 p-4 rounded-lg hover:bg-primary/5 transition-all duration-300 group border border-gray-200/80 bg-white scroll-reveal ${idx === 1 ? "reveal-rain" : "reveal-up-slow"}`} style={{ animationDelay: `${1.5 + idx * 0.2}s` }}>
                 <item.icon className="w-7 h-7 text-accent flex-shrink-0 mt-1 group-hover:scale-110 transition-transform" />
                 <div className="min-w-0">
                   <p className="font-bold text-gray-800 mb-1 group-hover:text-primary transition-colors text-sm sm:text-base">{item.title}</p>
@@ -63,7 +65,7 @@ export default function About() {
               { icon: Building, label: "OSH in Industrial", sub: "Manufacturing & industrial" },
               { icon: Pickaxe, label: "OSH in Mining", sub: "Mining & extraction" },
             ].map((item, idx) => (
-              <div key={idx} className="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-[30px] h-48 flex flex-col items-center justify-center shadow-lg border-2 border-primary/10 hover:border-primary/30 transition-all scroll-reveal reveal-blur" style={{ animationDelay: `${2 + idx * 0.25}s` }}>
+              <div key={idx} className={`bg-gradient-to-br from-primary/20 to-secondary/20 rounded-[30px] h-48 flex flex-col items-center justify-center shadow-lg border-2 border-primary/10 hover:border-primary/30 transition-all scroll-reveal ${idx === 0 ? "reveal-raise" : "reveal-blur"}`} style={{ animationDelay: `${2 + idx * 0.25}s` }}>
                 <item.icon className="w-16 h-16 text-primary mb-3" />
                 <p className="font-bold text-gray-800">{item.label}</p>
                 <p className="text-sm text-gray-600">{item.sub}</p>
@@ -73,17 +75,18 @@ export default function About() {
         </div>
       </section>
 
-      {/* Mission & Vision — left/right slow, long delay */}
-      <section className="py-16 md:py-24 bg-white border-t-2 border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-12 scroll-reveal reveal-scale-slow delay-400">Our Vision & Mission</h2>
+      {/* Mission & Vision — left/right slow, long delay; rainfall overlay + sway */}
+      <section className="py-16 md:py-24 bg-white border-t-2 border-gray-100 relative overflow-hidden">
+        <div className="rainfall-overlay" aria-hidden="true" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-12 scroll-reveal reveal-raise">Our Vision & Mission</h2>
           <div className="grid md:grid-cols-2 gap-12">
-            <div className="bg-white rounded-[30px] shadow-lg overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-300 scroll-reveal reveal-left-slow delay-600">
+            <div className="bg-white rounded-[30px] shadow-lg overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-300 scroll-reveal reveal-left-slow delay-600 animate-sway">
               <div className="bg-gradient-to-r from-secondary to-secondary/80 text-white py-8 px-8">
                 <h3 className="section-header text-white">Our Mission</h3>
               </div>
               <div className="relative">
-                <img src="/team-on-site.png" alt="KSOHTC mission — team on site" className="w-full h-40 object-cover" />
+                <img src="/team-on-site.png" alt="KSOHTC mission — team on site" className="w-full h-40 object-cover" loading="lazy" decoding="async" />
               </div>
               <div className="p-6 sm:p-8 pt-5 sm:pt-6">
                 <p className="text-sm text-gray-700 leading-relaxed font-medium mb-6">
@@ -113,7 +116,7 @@ export default function About() {
                 <h3 className="section-header text-white">Our Vision</h3>
               </div>
               <div className="relative">
-                <img src="/training-classroom.png" alt="KSOHTC vision — training" className="w-full h-40 object-cover" />
+                <img src="/training-classroom.png" alt="KSOHTC vision — training" className="w-full h-40 object-cover" loading="lazy" decoding="async" />
               </div>
               <div className="p-8">
                 <p className="text-sm text-gray-700 leading-relaxed mb-6">
@@ -145,13 +148,15 @@ export default function About() {
       {/* What Our Graduates Are Trained To Do */}
       <section className="py-16 md:py-24 bg-gradient-to-br from-primary to-primary/90 text-white relative overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="section-header text-white mb-2 scroll-reveal reveal-up-slow delay-400 text-xl sm:text-2xl md:text-3xl">What Our Graduates Are Trained To Do</h2>
-          <p className="text-white/90 text-xs sm:text-sm mb-8 scroll-reveal reveal-up-slow delay-800">Essential safety competencies.</p>
+          <h2 className="section-header text-white mb-2 text-xl sm:text-2xl md:text-3xl scroll-reveal text-reveal-up">What Our Graduates Are Trained To Do</h2>
+          <p className="text-white/90 text-xs sm:text-sm mb-8 scroll-reveal text-reveal-fade" style={{ animationDelay: "0.2s" }}>Essential safety competencies.</p>
           <div className="mb-12 rounded-[30px] overflow-hidden shadow-xl ring-2 ring-white/20 scroll-reveal reveal-zoom delay-1200">
             <img
               src="/training-classroom.png"
               alt="KSOHTC graduates training"
               className="w-full h-48 md:h-56 object-cover rounded-[30px]"
+              loading="lazy"
+              decoding="async"
             />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">

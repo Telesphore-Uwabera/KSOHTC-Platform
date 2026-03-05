@@ -1,11 +1,12 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 
-const VIEW_MARGIN = "0px 0px -60px 0px"; // trigger when 60px from viewport bottom
+/* Trigger when element is within ~100px of viewport (animations run as you scroll up or down) */
+const VIEW_MARGIN = "0px 0px 100px 0px";
 const THRESHOLD = 0.05;
 
 function observeReveals() {
-  const els = document.querySelectorAll(".scroll-reveal");
+  const els = document.querySelectorAll(".scroll-reveal, .section-reveal");
   if (els.length === 0) return null;
 
   const observer = new IntersectionObserver(
@@ -38,14 +39,17 @@ export function ScrollRevealObserver() {
       observerRef.current = observeReveals();
     };
 
-    // Run soon for fast-rendered content
-    timeouts.push(setTimeout(run, 50));
-    // Run again after lazy route/content has had time to mount so all .scroll-reveal are observed
-    timeouts.push(setTimeout(run, 350));
-    timeouts.push(setTimeout(run, 700));
+    run();
+    timeouts.push(setTimeout(run, 100));
+    timeouts.push(setTimeout(run, 400));
+    timeouts.push(setTimeout(run, 900));
+
+    const onResize = () => run();
+    window.addEventListener("resize", onResize);
 
     return () => {
       timeouts.forEach((id) => clearTimeout(id));
+      window.removeEventListener("resize", onResize);
       observerRef.current?.disconnect();
       observerRef.current = null;
     };

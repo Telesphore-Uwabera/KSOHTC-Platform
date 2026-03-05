@@ -21,7 +21,7 @@ export default function Industries() {
 
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/construction-worker.png" alt="" className="w-full h-full object-cover hero-zoom" aria-hidden />
+          <img src="/construction-worker.png" alt="" className="w-full h-full object-cover hero-zoom" decoding="async" aria-hidden />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -32,9 +32,6 @@ export default function Industries() {
 
       <section className="py-12 sm:py-16 md:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-[30px] border-2 border-accent/20 bg-white/70 shadow-lg py-12">
-          <div className="mb-10 sm:mb-14 rounded-[30px] overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-left-slow delay-400">
-            <img src="/team-on-site.png" alt="KSOHTC industries — construction site" className="w-full h-44 sm:h-56 object-cover rounded-[30px]" />
-          </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {industries.map((item, idx) => (
               <div
@@ -42,7 +39,7 @@ export default function Industries() {
                 className="bg-white rounded-[30px] overflow-hidden shadow-lg border border-gray-200 hover:shadow-2xl hover:border-primary/30 transition-all duration-300 hover:scale-[1.02] active:scale-[0.99] scroll-reveal reveal-scale-slow"
                 style={{ animationDelay: `${1 + idx * 0.3}s` }}
               >
-                <img src={item.img} alt={item.name} className="w-full h-48 sm:h-52 object-cover rounded-[30px]" />
+                <img src={item.img} alt={item.name} className="w-full h-48 sm:h-52 object-cover rounded-[30px]" loading="lazy" decoding="async" />
                 <div className="p-6 sm:p-8">
                   <span className="inline-flex w-14 h-14 sm:w-16 sm:h-16 rounded-[30px] bg-primary/10 items-center justify-center text-primary mb-4">
                     <item.icon className="w-7 h-7 sm:w-8 sm:h-8" />

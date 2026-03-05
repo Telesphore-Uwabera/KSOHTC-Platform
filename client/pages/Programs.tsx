@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 const programs = [
-  { icon: BookOpen, title: "Format", desc: "3 mo Intensive or Weekend (2 mo). Theory + practice.", color: "from-primary/10 to-accent/10", border: "border-primary" },
+  { icon: BookOpen, title: "Format", desc: "3 months Intensive or Weekend (2 months). Theory + practice.", color: "from-primary/10 to-accent/10", border: "border-primary" },
   { icon: GraduationCap, title: "Competency-Based", desc: "Risk assessment, case studies. Ready on completion.", color: "from-secondary/10 to-accent/10", border: "border-secondary" },
   { icon: Lightbulb, title: "Careers", desc: "Officer, Supervisor, Inspector, HSE. Experience: Manager.", color: "from-accent/10 to-primary/10", border: "border-accent" },
   { icon: Rocket, title: "Services", desc: "Refresher, CPD, Consultancy, PPE. Lower risk.", color: "from-secondary/10 to-primary/10", border: "border-secondary" },
@@ -29,24 +29,24 @@ export default function Programs() {
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 hero-reveal-slow" style={{ animationDelay: "0.4s", animationFillMode: "both" }}>Our Programs</h1>
-          <p className="text-sm sm:text-base text-white/90 max-w-xl hero-reveal-slow" style={{ animationDelay: "0.9s", animationFillMode: "both" }}>Structured OSH. 3 mo Intensive or Weekend (2 mo).</p>
+          <p className="text-sm sm:text-base text-white/90 max-w-xl hero-reveal-slow" style={{ animationDelay: "0.9s", animationFillMode: "both" }}>Structured OSH. 3 months Intensive or Weekend (2 months).</p>
         </div>
       </section>
 
       <section className="py-12 sm:py-16 md:py-24 bg-gray-50 border-l-4 border-primary/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-drift">
           <div className="mb-10 sm:mb-14 scroll-reveal reveal-right-slow delay-400">
             <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-3">What We Provide</h2>
             <p className="text-gray-600 text-xs">Practical OSH for competent professionals.</p>
           </div>
-          <div className="rounded-[30px] overflow-hidden shadow-lg border border-gray-200 mb-10 sm:mb-14 scroll-reveal reveal-zoom delay-800">
-            <img src="/training-classroom.png" alt="KSOHTC training session" className="w-full h-44 sm:h-56 object-cover rounded-[30px]" />
+          <div className="rounded-[30px] overflow-hidden shadow-lg border border-gray-200 mb-10 sm:mb-14 scroll-reveal reveal-rain delay-800">
+            <img src="/training-classroom.png" alt="KSOHTC training session" className="w-full h-44 sm:h-56 object-cover rounded-[30px]" loading="lazy" decoding="async" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {programs.map((item, idx) => (
               <div
                 key={idx}
-                className={`bg-gradient-to-br ${item.color} rounded-[30px] p-6 sm:p-8 border-l-4 ${item.border} hover:shadow-2xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] scroll-reveal reveal-up-slow`}
+                className={`bg-gradient-to-br ${item.color} rounded-[30px] p-6 sm:p-8 border-l-4 ${item.border} hover:shadow-2xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] scroll-reveal ${idx % 3 === 0 ? "reveal-raise" : idx % 3 === 1 ? "reveal-rain" : "reveal-up-slow"}`}
                 style={{ animationDelay: `${1.2 + idx * 0.25}s` }}
               >
                 <div className="flex items-start gap-4">

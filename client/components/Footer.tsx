@@ -15,6 +15,8 @@ export default function Footer() {
                 src="/logo.jpeg"
                 alt="KSOHTC Footer Logo"
                 className="w-44 h-44 object-contain transition-all duration-300 hover:scale-110 mb-6"
+                loading="lazy"
+                decoding="async"
               />
             </Link>
             <p className="text-accent font-semibold text-sm mb-2 whitespace-nowrap">Kigali Safety OSH Training Center</p>
@@ -46,10 +48,10 @@ export default function Footer() {
           <div className="text-left lg:col-span-1 lg:col-start-5">
             <h4 className="text-lg font-bold text-white mb-6 uppercase tracking-wider">Contact</h4>
             <div className="space-y-3 text-sm">
-              <div className="flex items-center gap-3 whitespace-nowrap">
+              <Link to="/contact#map" className="flex items-center gap-3 whitespace-nowrap hover:text-accent transition-colors duration-300">
                 <MapPin className="w-4 h-4 text-accent flex-shrink-0" />
                 <span className="truncate">Kicukiro Center, Kigali, Rwanda</span>
-              </div>
+              </Link>
               <div className="flex items-center gap-3 whitespace-nowrap">
                 <Phone className="w-4 h-4 text-accent flex-shrink-0" />
                 <a href="https://wa.me/250785072512" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors duration-300">
