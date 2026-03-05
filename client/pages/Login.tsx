@@ -11,7 +11,7 @@ export default function Login() {
 
       <section className="w-full min-h-[calc(100vh-6rem)] py-12 sm:py-16 md:py-24 bg-gradient-to-b from-gray-50 to-gray-100">
         <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden scroll-reveal reveal-scale">
+          <div className="bg-white rounded-[30px] shadow-xl border border-gray-200 overflow-hidden scroll-reveal reveal-scale">
             {/* Header strip */}
             <div className="w-full bg-primary text-white px-6 sm:px-8 py-6">
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold flex items-center gap-2">

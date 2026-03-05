@@ -27,7 +27,7 @@ export default function Index() {
         {/* Background image (Unsplash - professionals/training) */}
         <div className="absolute inset-0">
           <img
-            src="/file_00000000ee5871f8a1c184fd69d0e467.png"
+            src="/hero-team.jpg"
             alt=""
             className="w-full h-full object-cover hero-zoom"
             aria-hidden
@@ -73,7 +73,7 @@ export default function Index() {
 
       {/* Who We Are Section — enter from left/right, delayed */}
       <section id="who" className="py-12 sm:py-16 md:py-20 lg:py-28 bg-gray-50 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-3xl sm:rounded-[2rem] border border-gray-200/60 bg-white/50 shadow-inner py-12 sm:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-[30px] border border-gray-200/60 bg-white/50 shadow-inner py-12 sm:py-16">
           <div className="mb-10 sm:mb-16 scroll-reveal reveal-left-slow delay-400">
             <div className="inline-block bg-primary text-white px-6 py-2.5 sm:px-8 sm:py-3 rounded-lg mb-3 sm:mb-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]">
               <h2 className="section-header">Who We Are</h2>
@@ -81,11 +81,11 @@ export default function Index() {
             <p className="text-gray-600 text-base sm:text-lg mt-3 sm:mt-4 max-w-2xl">A Professional Occupational Safety and Health (OSH) Training Institution</p>
           </div>
 
-          <div className="mb-8 sm:mb-12 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-right-slow delay-800">
+          <div className="mb-8 sm:mb-12 rounded-[30px] overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-right-slow delay-800">
             <img
-              src="/file_000000005cec71f78e53bc8af569a796.png"
+              src="/team-on-site.png"
               alt="KSOHTC team on site — who we are"
-              className="w-full h-44 sm:h-52 md:h-64 object-cover"
+              className="w-full h-44 sm:h-52 md:h-64 object-cover rounded-[30px]"
             />
           </div>
 
@@ -101,7 +101,7 @@ export default function Index() {
                 { icon: Users, title: "Structured Training", desc: "Practice-oriented culture.", bg: "bg-primary/10" },
                 { icon: Shield, title: "Risk & Incidents", desc: "Fewer accidents, compliance.", bg: "bg-secondary/10" },
               ].map((item, i) => (
-                <div key={i} className="flex flex-col sm:flex-row gap-4 p-5 rounded-xl border border-gray-200/80 hover:border-primary/30 hover:shadow-md bg-white transition-all duration-300 group scroll-reveal reveal-scale-slow" style={{ animationDelay: `${1.4 + i * 0.25}s` }}>
+                <div key={i} className="flex flex-col sm:flex-row gap-4 p-5 rounded-[30px] border border-gray-200/80 hover:border-primary/30 hover:shadow-md bg-white transition-all duration-300 group scroll-reveal reveal-scale-slow" style={{ animationDelay: `${1.4 + i * 0.25}s` }}>
                   <span className={`flex-shrink-0 w-12 h-12 rounded-xl ${item.bg} flex items-center justify-center text-primary group-hover:scale-110 transition-transform`}>
                     <item.icon className="w-6 h-6" />
                   </span>
@@ -115,21 +115,21 @@ export default function Index() {
 
             {/* Icon cards (Construction, Industrial, Mining) — same row, blur-in */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
-              <div className="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer border-2 border-primary/10 hover:border-primary/30 scroll-reveal reveal-blur delay-2200">
+              <div className="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-[30px] min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer border-2 border-primary/10 hover:border-primary/30 scroll-reveal reveal-blur delay-2200">
                 <div className="text-center p-4">
                   <HardHat className="w-16 h-16 sm:w-20 sm:h-20 text-primary mb-3 group-hover:scale-110 transition-transform duration-300 mx-auto" />
                   <p className="font-bold text-gray-800 text-base sm:text-lg">OSH in Construction</p>
                   <p className="text-sm text-gray-600">Construction & infrastructure</p>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-accent/20 to-primary/20 rounded-xl min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer border-2 border-accent/10 hover:border-accent/30 scroll-reveal reveal-blur delay-2500">
+              <div className="bg-gradient-to-br from-accent/20 to-primary/20 rounded-[30px] min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer border-2 border-accent/10 hover:border-accent/30 scroll-reveal reveal-blur delay-2500">
                 <div className="text-center p-4">
                   <Building className="w-16 h-16 sm:w-20 sm:h-20 text-accent mb-3 group-hover:scale-110 transition-transform duration-300 mx-auto" />
                   <p className="font-bold text-gray-800 text-base sm:text-lg">OSH in Industrial</p>
                   <p className="text-sm text-gray-600">Manufacturing & industrial</p>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-secondary/20 to-accent/20 rounded-xl min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer border-2 border-secondary/10 hover:border-secondary/30 scroll-reveal reveal-blur delay-2800">
+              <div className="bg-gradient-to-br from-secondary/20 to-accent/20 rounded-[30px] min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer border-2 border-secondary/10 hover:border-secondary/30 scroll-reveal reveal-blur delay-2800">
                 <div className="text-center p-4">
                   <Pickaxe className="w-16 h-16 sm:w-20 sm:h-20 text-secondary mb-3 group-hover:scale-110 transition-transform duration-300 mx-auto" />
                   <p className="font-bold text-gray-800 text-base sm:text-lg">OSH in Mining</p>
@@ -151,11 +151,11 @@ export default function Index() {
             <p className="text-gray-600 text-xs mt-2 max-w-2xl">Practical OSH for competent professionals.</p>
           </div>
 
-          <div className="mb-8 sm:mb-12 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-zoom delay-800">
+          <div className="mb-8 sm:mb-12 rounded-[30px] overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-zoom delay-800">
             <img
-              src="/file_00000000b68471f5934f87a3b8b3ce22.png"
+              src="/training-classroom.png"
               alt="KSOHTC training session — Stages of Risk Management"
-              className="w-full h-44 sm:h-52 md:h-56 object-cover"
+              className="w-full h-44 sm:h-52 md:h-56 object-cover rounded-[30px]"
             />
           </div>
 
@@ -192,7 +192,7 @@ export default function Index() {
             ].map((item, idx) => (
               <div
                 key={idx}
-                className={`bg-gradient-to-br ${item.color} rounded-xl p-8 border-l-4 ${item.border} hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 scroll-reveal reveal-up-slow`}
+                className={`bg-gradient-to-br ${item.color} rounded-[30px] p-8 border-l-4 ${item.border} hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 scroll-reveal reveal-up-slow`}
                 style={{ animationDelay: `${1.2 + idx * 0.3}s` }}
               >
                 <div className="flex items-start gap-4">
@@ -210,35 +210,35 @@ export default function Index() {
 
       {/* Industries Section — up-slow header, left-slow image, scale-slow cards */}
       <section id="industries" className="py-12 sm:py-16 md:py-20 lg:py-28 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-3xl border-2 border-accent/20 bg-white/70 shadow-lg py-12 sm:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-[30px] border-2 border-accent/20 bg-white/70 shadow-lg py-12 sm:py-16">
           <div className="text-center mb-10 sm:mb-16 scroll-reveal reveal-up-slow delay-400">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-3 sm:mb-4">Industries We Serve</h2>
             <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto px-2">Specialized training for Rwanda's key sectors</p>
           </div>
 
-          <div className="mb-8 sm:mb-12 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-left-slow delay-800">
+          <div className="mb-8 sm:mb-12 rounded-[30px] overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-left-slow delay-800">
             <img
-              src="/file_000000005cec71f78e53bc8af569a796.png"
+              src="/team-on-site.png"
               alt="KSOHTC team on construction site"
-              className="w-full h-44 sm:h-52 md:h-64 object-cover"
+              className="w-full h-44 sm:h-52 md:h-64 object-cover rounded-[30px]"
             />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {[
-              { icon: HardHat, name: "OSH in Construction", desc: "Height, scaffolding, PPE. Officer, Supervisor, Inspector.", img: "/file_00000000ee5871f8a1c184fd69d0e467.png" },
-              { icon: Building, name: "OSH in Industrial", desc: "LOTO, chemical, fire. Officer, HSE Assistant.", img: "/file_00000000b68471f5934f87a3b8b3ce22.png" },
-              { icon: Pickaxe, name: "OSH in Mining", desc: "Blasting, ventilation. Mining Officer, Supervisor.", img: "/file_000000005cec71f78e53bc8af569a796.png" },
+              { icon: HardHat, name: "OSH in Construction", desc: "Height, scaffolding, PPE. Officer, Supervisor, Inspector.", img: "/construction-worker.png" },
+              { icon: Building, name: "OSH in Industrial", desc: "LOTO, chemical, fire. Officer, HSE Assistant.", img: "/training-classroom.png" },
+              { icon: Pickaxe, name: "OSH in Mining", desc: "Blasting, ventilation. Mining Officer, Supervisor.", img: "/team-on-site.png" },
             ].map((industry, idx) => (
               <div
                 key={idx}
-                className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl sm:rounded-2xl overflow-hidden text-center border-2 border-primary/20 hover:border-primary hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.99] group scroll-reveal reveal-scale-slow cursor-pointer"
+                className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-[30px] overflow-hidden text-center border-2 border-primary/20 hover:border-primary hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.99] group scroll-reveal reveal-scale-slow cursor-pointer"
                 style={{ animationDelay: `${1.3 + idx * 0.35}s` }}
               >
                 <img
                   src={industry.img}
                   alt={industry.name}
-                  className="w-full h-40 sm:h-44 object-cover"
+                  className="w-full h-40 sm:h-44 object-cover rounded-[30px]"
                 />
                 <div className="p-8">
                   <industry.icon className="w-24 h-24 text-primary mb-6 inline-block group-hover:scale-125 transition-transform duration-300" />
@@ -252,7 +252,7 @@ export default function Index() {
       </section>
 
       {/* Graduates Training Section — up-slow + zoom, staggered cards */}
-      <section className="py-16 md:py-28 bg-gradient-to-br from-primary to-primary/90 text-white relative overflow-hidden rounded-3xl mx-4 sm:mx-6 lg:mx-8 ring-2 ring-white/10">
+      <section className="py-16 md:py-28 bg-gradient-to-br from-primary to-primary/90 text-white relative overflow-hidden ring-2 ring-white/10">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22><rect width=%2220%22 height=%2220%22 fill=%22white%22/></svg>')] bg-repeat"></div>
         </div>
@@ -263,11 +263,11 @@ export default function Index() {
             <p className="text-primary/90 text-sm sm:text-base md:text-lg">Essential safety competencies for workplace excellence</p>
           </div>
 
-          <div className="mb-8 sm:mb-12 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl ring-2 ring-white/20 scroll-reveal reveal-zoom delay-800">
+          <div className="mb-8 sm:mb-12 rounded-[30px] overflow-hidden shadow-xl ring-2 ring-white/20 scroll-reveal reveal-zoom delay-800">
             <img
-              src="/file_00000000b68471f5934f87a3b8b3ce22.png"
+              src="/training-classroom.png"
               alt="KSOHTC graduates training — classroom"
-              className="w-full h-44 sm:h-52 md:h-56 object-cover"
+              className="w-full h-44 sm:h-52 md:h-56 object-cover rounded-[30px]"
             />
           </div>
 
@@ -282,7 +282,7 @@ export default function Index() {
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="flex gap-4 p-6 bg-white/10 backdrop-blur rounded-lg hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1 scroll-reveal reveal-up-slow"
+                className="flex gap-4 p-6 bg-white/10 backdrop-blur rounded-[30px] hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1 scroll-reveal reveal-up-slow"
                 style={{ animationDelay: `${1.2 + idx * 0.15}s` }}
               >
                 <CheckCircle2 className="w-8 h-8 text-accent flex-shrink-0 hover:scale-110 transition-transform" />
@@ -305,13 +305,13 @@ export default function Index() {
 
           <div className="grid md:grid-cols-2 gap-12 items-stretch">
             {/* Mission */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 scroll-reveal reveal-left-slow delay-600">
+            <div className="bg-white rounded-[30px] shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 scroll-reveal reveal-left-slow delay-600">
               <div className="bg-gradient-to-r from-secondary to-secondary/80 text-white py-8 px-8">
                 <h3 className="section-header text-white">Our Mission</h3>
               </div>
               <div className="relative">
                 <img
-                  src="/file_000000005cec71f78e53bc8af569a796.png"
+                  src="/team-on-site.png"
                   alt="KSOHTC team on site — our mission in action"
                   className="w-full h-36 sm:h-44 object-cover"
                 />
@@ -361,13 +361,13 @@ export default function Index() {
             </div>
 
             {/* Vision */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 scroll-reveal reveal-right-slow delay-1000">
+            <div className="bg-white rounded-[30px] shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 scroll-reveal reveal-right-slow delay-1000">
               <div className="bg-gradient-to-r from-primary to-primary/80 text-white py-8 px-8">
                 <h3 className="section-header text-white">Our Vision</h3>
               </div>
               <div className="relative">
                 <img
-                  src="/file_00000000b68471f5934f87a3b8b3ce22.png"
+                  src="/training-classroom.png"
                   alt="KSOHTC training — our vision"
                   className="w-full h-36 sm:h-44 object-cover"
                 />
@@ -435,7 +435,7 @@ export default function Index() {
               {testimonials.map((t, idx) => (
                 <div
                   key={t.id}
-                  className="bg-white rounded-xl border-2 border-gray-200 p-6 shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal reveal-up"
+                  className="bg-white rounded-[30px] border-2 border-gray-200 p-6 shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal reveal-up"
                   style={{ animationDelay: `${0.1 + idx * 0.08}s` }}
                 >
                   <Quote className="w-8 h-8 text-primary/60 mb-3" />
@@ -478,7 +478,7 @@ export default function Index() {
             ].map((faq, idx) => (
               <details
                 key={idx}
-                className="group bg-white rounded-xl border-2 border-gray-200 overflow-hidden shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal reveal-up"
+                className="group bg-white rounded-[30px] border-2 border-gray-200 overflow-hidden shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal reveal-up"
                 style={{ animationDelay: `${0.2 + idx * 0.06}s` }}
               >
                 <summary className="flex items-start sm:items-center justify-between gap-4 px-5 py-4 sm:px-6 sm:py-5 cursor-pointer list-none font-semibold text-gray-800 hover:text-primary transition-colors min-h-[3.5rem]">
@@ -493,7 +493,7 @@ export default function Index() {
       </section>
 
       {/* Contact Section — up-slow + zoom, scale-slow cards */}
-      <section id="contact" className="py-16 md:py-28 bg-gradient-to-br from-secondary via-secondary/95 to-secondary/90 text-white relative overflow-hidden rounded-3xl mx-4 sm:mx-6 lg:mx-8 ring-2 ring-white/20">
+      <section id="contact" className="py-16 md:py-28 bg-gradient-to-br from-secondary via-secondary/95 to-secondary/90 text-white relative overflow-hidden ring-2 ring-white/20">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl animate-float"></div>
         </div>
@@ -504,11 +504,11 @@ export default function Index() {
             <p className="text-accent text-sm">Questions? We’re here to help.</p>
           </div>
 
-          <div className="mb-8 sm:mb-12 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl ring-2 ring-white/20 scroll-reveal reveal-zoom delay-800">
+          <div className="mb-8 sm:mb-12 rounded-[30px] overflow-hidden shadow-xl ring-2 ring-white/20 scroll-reveal reveal-zoom delay-800">
             <img
-              src="/IMG-20260111-WA0040.jpg.jpeg"
+              src="/hero-team.jpg"
               alt="KSOHTC team — Works Planning and Staging"
-              className="w-full h-40 sm:h-48 object-cover"
+              className="w-full h-40 sm:h-48 object-cover rounded-[30px]"
             />
           </div>
 
@@ -537,7 +537,7 @@ export default function Index() {
               return (
                 <div
                   key={idx}
-                  className="bg-gray-600/50 backdrop-blur rounded-2xl p-8 text-center hover:bg-gray-500/50 transition-all duration-300 hover:scale-110 hover:-translate-y-2 group scroll-reveal reveal-scale-slow"
+                  className="bg-gray-600/50 backdrop-blur rounded-[30px] p-8 text-center hover:bg-gray-500/50 transition-all duration-300 hover:scale-110 hover:-translate-y-2 group scroll-reveal reveal-scale-slow"
                   style={{ animationDelay: `${1.2 + idx * 0.35}s` }}
                 >
                   <Icon className="w-12 h-12 mx-auto mb-4 text-accent group-hover:scale-125 transition-transform" />
@@ -566,24 +566,24 @@ export default function Index() {
             })}
           </div>
 
-          <div className="bg-white/10 backdrop-blur rounded-2xl p-6 sm:p-8 mb-8 border border-white/20 shadow-xl">
+          <div className="bg-white/10 backdrop-blur rounded-[30px] p-6 sm:p-8 mb-8 border border-white/20 shadow-xl">
             <form className="max-w-2xl mx-auto space-y-4">
               <input
                 type="text"
                 placeholder="Your Name"
-                className="w-full px-5 py-3.5 sm:px-6 sm:py-4 rounded-xl bg-white/20 border-2 border-white/30 text-white placeholder-white/70 focus:outline-none focus:border-accent focus:bg-white/30 transition-all duration-300"
+                className="w-full px-5 py-3.5 sm:px-6 sm:py-4 rounded-[30px] bg-white/20 border-2 border-white/30 text-white placeholder-white/70 focus:outline-none focus:border-accent focus:bg-white/30 transition-all duration-300"
               />
               <input
                 type="email"
                 placeholder="Your Email"
-                className="w-full px-5 py-3.5 sm:px-6 sm:py-4 rounded-xl bg-white/20 border-2 border-white/30 text-white placeholder-white/70 focus:outline-none focus:border-accent focus:bg-white/30 transition-all duration-300"
+                className="w-full px-5 py-3.5 sm:px-6 sm:py-4 rounded-[30px] bg-white/20 border-2 border-white/30 text-white placeholder-white/70 focus:outline-none focus:border-accent focus:bg-white/30 transition-all duration-300"
               />
               <textarea
                 placeholder="Your Message"
                 rows={4}
-                className="w-full px-5 py-3.5 sm:px-6 sm:py-4 rounded-xl bg-white/20 border-2 border-white/30 text-white placeholder-white/70 focus:outline-none focus:border-accent focus:bg-white/30 transition-all duration-300 resize-none"
+                className="w-full px-5 py-3.5 sm:px-6 sm:py-4 rounded-[30px] bg-white/20 border-2 border-white/30 text-white placeholder-white/70 focus:outline-none focus:border-accent focus:bg-white/30 transition-all duration-300 resize-none"
               />
-              <button type="button" className="w-full bg-gradient-to-r from-accent to-accent/80 text-black font-bold py-3.5 sm:py-4 rounded-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]">
+              <button type="button" className="w-full bg-gradient-to-r from-accent to-accent/80 text-black font-bold py-3.5 sm:py-4 rounded-[30px] hover:shadow-2xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99]">
                 Send Message
               </button>
             </form>

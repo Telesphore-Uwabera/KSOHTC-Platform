@@ -26,7 +26,7 @@ export default function Contact() {
 
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/IMG-20260111-WA0040.jpg.jpeg" alt="" className="w-full h-full object-cover hero-zoom" aria-hidden />
+          <img src="/hero-team.jpg" alt="" className="w-full h-full object-cover hero-zoom" aria-hidden />
           <div className="absolute inset-0 bg-gradient-to-br from-secondary/95 via-secondary/90 to-primary/90" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -43,10 +43,10 @@ export default function Contact() {
               return (
                 <div
                   key={idx}
-                  className="bg-white rounded-xl sm:rounded-2xl p-6 sm:p-8 shadow-lg border-2 border-gray-200 text-center hover:shadow-xl hover:border-primary/40 transition-all duration-300 hover:scale-[1.02] active:scale-[0.99] scroll-reveal reveal-scale-slow"
+                  className="bg-white rounded-[30px] p-6 sm:p-8 shadow-lg border-2 border-gray-200 text-center hover:shadow-xl hover:border-primary/40 transition-all duration-300 hover:scale-[1.02] active:scale-[0.99] scroll-reveal reveal-scale-slow"
                   style={{ animationDelay: `${0.9 + idx * 0.3}s` }}
                 >
-                  <span className="inline-flex w-14 h-14 rounded-2xl bg-accent/15 items-center justify-center text-accent mb-4">
+                  <span className="inline-flex w-14 h-14 rounded-[30px] bg-accent/15 items-center justify-center text-accent mb-4">
                     <Icon className="w-7 h-7" />
                   </span>
                   <h3 className="text-base sm:text-lg font-bold text-primary mb-1.5">{item.title}</h3>
@@ -68,7 +68,7 @@ export default function Contact() {
             })}
           </div>
 
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 p-6 sm:p-8 md:p-10 mb-12 sm:mb-16 scroll-reveal reveal-left-slow delay-1800">
+          <div className="bg-white rounded-[30px] shadow-lg border border-gray-200 p-6 sm:p-8 md:p-10 mb-12 sm:mb-16 scroll-reveal reveal-left-slow delay-1800">
             <h2 className="text-lg sm:text-xl font-bold text-primary mb-4 sm:mb-6">Send a message</h2>
             <form className="w-full space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
@@ -100,7 +100,7 @@ export default function Contact() {
           <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-4 sm:mb-6 text-center scroll-reveal reveal-scale-slow delay-400">Contact FAQs</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 w-full max-w-5xl mx-auto">
             {faqs.map((faq, idx) => (
-              <details key={idx} className="group bg-white rounded-xl border-2 border-gray-200 overflow-hidden shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal reveal-blur" style={{ animationDelay: `${0.8 + idx * 0.18}s` }}>
+              <details key={idx} className="group bg-white rounded-[30px] border-2 border-gray-200 overflow-hidden shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal reveal-blur" style={{ animationDelay: `${0.8 + idx * 0.18}s` }}>
                 <summary className="flex items-start sm:items-center justify-between gap-4 px-5 py-4 sm:px-6 sm:py-5 cursor-pointer list-none font-semibold text-gray-800 hover:text-primary transition-colors min-h-[3.5rem]">
                   <span className="text-left text-xs sm:text-sm md:text-base line-clamp-2 flex-1 pr-2">{faq.q}</span>
                   <span className="text-primary text-xl shrink-0 transition-transform duration-300 group-open:rotate-45 flex items-center">+</span>
@@ -114,7 +114,7 @@ export default function Contact() {
           <div id="map" className="mt-10 sm:mt-12 scroll-reveal reveal-up delay-400 w-full">
             <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2 sm:mb-3">Find us</h2>
             <p className="text-gray-600 text-sm sm:text-base mb-4">Kicukiro, Kigali, Rwanda</p>
-            <div className="w-full rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border-2 border-gray-200 bg-gray-100 aspect-video">
+            <div className="w-full rounded-[30px] overflow-hidden shadow-lg border-2 border-gray-200 bg-gray-100 aspect-video">
               <iframe
                 src={MAP_EMBED_URL}
                 width="100%"

@@ -24,7 +24,7 @@ export default function Programs() {
 
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/file_00000000b68471f5934f87a3b8b3ce22.png" alt="" className="w-full h-full object-cover hero-zoom" aria-hidden />
+          <img src="/training-classroom.png" alt="" className="w-full h-full object-cover hero-zoom" aria-hidden />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -39,18 +39,18 @@ export default function Programs() {
             <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-3">What We Provide</h2>
             <p className="text-gray-600 text-xs">Practical OSH for competent professionals.</p>
           </div>
-          <div className="rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-gray-200 mb-10 sm:mb-14 scroll-reveal reveal-zoom delay-800">
-            <img src="/file_00000000b68471f5934f87a3b8b3ce22.png" alt="KSOHTC training session" className="w-full h-44 sm:h-56 object-cover" />
+          <div className="rounded-[30px] overflow-hidden shadow-lg border border-gray-200 mb-10 sm:mb-14 scroll-reveal reveal-zoom delay-800">
+            <img src="/training-classroom.png" alt="KSOHTC training session" className="w-full h-44 sm:h-56 object-cover rounded-[30px]" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {programs.map((item, idx) => (
               <div
                 key={idx}
-                className={`bg-gradient-to-br ${item.color} rounded-xl p-6 sm:p-8 border-l-4 ${item.border} hover:shadow-2xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] scroll-reveal reveal-up-slow`}
+                className={`bg-gradient-to-br ${item.color} rounded-[30px] p-6 sm:p-8 border-l-4 ${item.border} hover:shadow-2xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] scroll-reveal reveal-up-slow`}
                 style={{ animationDelay: `${1.2 + idx * 0.25}s` }}
               >
                 <div className="flex items-start gap-4">
-                  <span className="flex-shrink-0 w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                  <span className="flex-shrink-0 w-12 h-12 rounded-[30px] bg-primary/10 flex items-center justify-center text-primary">
                     <item.icon className="w-6 h-6" />
                   </span>
                   <div>
@@ -70,7 +70,7 @@ export default function Programs() {
           <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-8 sm:mb-10 text-center reveal-scale-slow delay-400">Program FAQs</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 w-full max-w-5xl mx-auto">
             {faqs.map((faq, idx) => (
-              <details key={idx} className="group bg-white rounded-xl border-2 border-gray-200 overflow-hidden shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal reveal-blur" style={{ animationDelay: `${0.7 + idx * 0.2}s` }}>
+              <details key={idx} className="group bg-white rounded-[30px] border-2 border-gray-200 overflow-hidden shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal reveal-blur" style={{ animationDelay: `${0.7 + idx * 0.2}s` }}>
                 <summary className="flex items-start sm:items-center justify-between gap-4 px-5 py-4 sm:px-6 sm:py-5 cursor-pointer list-none font-semibold text-gray-800 hover:text-primary transition-colors min-h-[3.5rem]">
                   <span className="text-left text-sm sm:text-base line-clamp-2 flex-1 pr-2">{faq.q}</span>
                   <span className="text-primary text-xl shrink-0 transition-transform duration-300 group-open:rotate-45 flex items-center">+</span>

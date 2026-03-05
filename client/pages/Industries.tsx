@@ -3,9 +3,9 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 const industries = [
-  { icon: HardHat, name: "OSH in Construction", desc: "Height, scaffolding, PPE. Officer, Supervisor, Inspector.", img: "/file_00000000ee5871f8a1c184fd69d0e467.png" },
-  { icon: Building, name: "OSH in Industrial", desc: "LOTO, chemical, fire. Officer, HSE Assistant.", img: "/file_00000000b68471f5934f87a3b8b3ce22.png" },
-  { icon: Pickaxe, name: "OSH in Mining", desc: "Blasting, ventilation. Mining Officer, Supervisor.", img: "/file_000000005cec71f78e53bc8af569a796.png" },
+  { icon: HardHat, name: "OSH in Construction", desc: "Height, scaffolding, PPE. Officer, Supervisor, Inspector.", img: "/construction-worker.png" },
+  { icon: Building, name: "OSH in Industrial", desc: "LOTO, chemical, fire. Officer, HSE Assistant.", img: "/training-classroom.png" },
+  { icon: Pickaxe, name: "OSH in Mining", desc: "Blasting, ventilation. Mining Officer, Supervisor.", img: "/team-on-site.png" },
 ];
 
 const faqs = [
@@ -21,7 +21,7 @@ export default function Industries() {
 
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/file_00000000ee5871f8a1c184fd69d0e467.png" alt="" className="w-full h-full object-cover hero-zoom" aria-hidden />
+          <img src="/construction-worker.png" alt="" className="w-full h-full object-cover hero-zoom" aria-hidden />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -31,20 +31,20 @@ export default function Industries() {
       </section>
 
       <section className="py-12 sm:py-16 md:py-24 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-3xl border-2 border-accent/20 bg-white/70 shadow-lg py-12">
-          <div className="mb-10 sm:mb-14 rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-left-slow delay-400">
-            <img src="/file_000000005cec71f78e53bc8af569a796.png" alt="KSOHTC industries — construction site" className="w-full h-44 sm:h-56 object-cover" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-[30px] border-2 border-accent/20 bg-white/70 shadow-lg py-12">
+          <div className="mb-10 sm:mb-14 rounded-[30px] overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-left-slow delay-400">
+            <img src="/team-on-site.png" alt="KSOHTC industries — construction site" className="w-full h-44 sm:h-56 object-cover rounded-[30px]" />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {industries.map((item, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-2xl hover:border-primary/30 transition-all duration-300 hover:scale-[1.02] active:scale-[0.99] scroll-reveal reveal-scale-slow"
+                className="bg-white rounded-[30px] overflow-hidden shadow-lg border border-gray-200 hover:shadow-2xl hover:border-primary/30 transition-all duration-300 hover:scale-[1.02] active:scale-[0.99] scroll-reveal reveal-scale-slow"
                 style={{ animationDelay: `${1 + idx * 0.3}s` }}
               >
-                <img src={item.img} alt={item.name} className="w-full h-48 sm:h-52 object-cover" />
+                <img src={item.img} alt={item.name} className="w-full h-48 sm:h-52 object-cover rounded-[30px]" />
                 <div className="p-6 sm:p-8">
-                  <span className="inline-flex w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-primary/10 items-center justify-center text-primary mb-4">
+                  <span className="inline-flex w-14 h-14 sm:w-16 sm:h-16 rounded-[30px] bg-primary/10 items-center justify-center text-primary mb-4">
                     <item.icon className="w-7 h-7 sm:w-8 sm:h-8" />
                   </span>
                   <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2">{item.name}</h2>
@@ -62,7 +62,7 @@ export default function Industries() {
           <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-8 sm:mb-10 text-center scroll-reveal reveal-scale-slow delay-400">Industry FAQs</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 w-full max-w-5xl mx-auto">
             {faqs.map((faq, idx) => (
-              <details key={idx} className="group bg-white rounded-xl border-2 border-gray-200 overflow-hidden shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal reveal-blur" style={{ animationDelay: `${0.8 + idx * 0.2}s` }}>
+              <details key={idx} className="group bg-white rounded-[30px] border-2 border-gray-200 overflow-hidden shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal reveal-blur" style={{ animationDelay: `${0.8 + idx * 0.2}s` }}>
                 <summary className="flex items-start sm:items-center justify-between gap-4 px-5 py-4 sm:px-6 sm:py-5 cursor-pointer list-none font-semibold text-gray-800 hover:text-primary transition-colors min-h-[3.5rem]">
                   <span className="text-left text-sm sm:text-base line-clamp-2 flex-1 pr-2">{faq.q}</span>
                   <span className="text-primary text-xl shrink-0 transition-transform duration-300 group-open:rotate-45 flex items-center">+</span>

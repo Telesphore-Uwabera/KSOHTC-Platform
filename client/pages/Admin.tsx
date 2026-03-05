@@ -56,7 +56,7 @@ export default function Admin() {
             <ArrowLeft className="w-4 h-4" /> Back to home
           </Link>
 
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-gray-200 p-6 sm:p-8">
+          <div className="bg-white rounded-[30px] shadow-lg border border-gray-200 p-6 sm:p-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">Add Testimonial</h1>
             <p className="text-gray-600 text-sm sm:text-base mb-6">
               New testimonials will appear in the &ldquo;What Our Participants Say&rdquo; section on the home page.
