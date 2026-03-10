@@ -1,0 +1,105 @@
+import { Request, Response } from "express";
+import crypto from "node:crypto";
+import type { CourseId, CoursePublic, Quiz } from "@shared/api";
+import { quizzesCollection } from "../lib/firestore";
+
+const COURSES: CoursePublic[] = [
+  { id: "construction", title: "OSH in Construction", sector: "Construction", duration: "2 weeks" },
+  { id: "industrial-safety", title: "OSH in Industrial Safety", sector: "Industrial", duration: "2 weeks" },
+  { id: "mining", title: "OSH in Mining", sector: "Mining", duration: "3 weeks" },
+];
+
+function isValidCourseId(id: string): id is CourseId {
+  return COURSES.some((c) => c.id === id);
+}
+
+/** GET /api/courses – list courses (for admin) */
+export function getCourses(_req: Request, res: Response): void {
+  res.json({ courses: COURSES });
+}
+
+/** GET /api/courses/:courseId/quiz – get quiz for a course */
+export async function getCourseQuiz(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId } = req.params;
+    if (!isValidCourseId(courseId)) {
+      res.status(404).json({ error: "Course not found." });
+      return;
+    }
+    const doc = await quizzesCollection().doc(courseId).get();
+    if (!doc.exists) {
+      res.status(404).json({ error: "No quiz set for this course." });
+      return;
+    }
+    res.json(doc.data());
+  } catch (e) {
+    console.error("Get quiz error:", e);
+    res.status(500).json({ error: "Failed to load quiz." });
+  }
+}
+
+/** PUT /api/courses/:courseId/quiz – create or update quiz (admin) */
+export async function putCourseQuiz(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId } = req.params;
+    if (!isValidCourseId(courseId)) {
+      res.status(404).json({ error: "Course not found." });
+      return;
+    }
+    const body = req.body as {
+      title?: string;
+      description?: string;
+      questions?: Array<{ id?: string; text: string; options: string[]; correctIndex: number }>;
+      passThreshold?: number;
+    };
+    const now = new Date().toISOString();
+    const docRef = quizzesCollection().doc(courseId);
+    const existing = await docRef.get();
+
+    const questions = (body.questions ?? []).map((q) => ({
+      id: q.id ?? crypto.randomUUID(),
+      text: String(q.text ?? "").trim(),
+      options: Array.isArray(q.options) ? q.options.map((o) => String(o).trim()) : [],
+      correctIndex: Math.max(0, Math.min(Number(q.correctIndex) || 0, (q.options?.length ?? 1) - 1)),
+    }));
+
+    const quizPayload: Quiz = {
+      id: existing.exists ? (existing.data() as Quiz).id : crypto.randomUUID(),
+      courseId: courseId as CourseId,
+      title: String(body.title ?? "Course assessment").trim() || "Course assessment",
+      description: typeof body.description === "string" ? body.description.trim() || undefined : undefined,
+      questions,
+      passThreshold: Math.max(0, Math.min(100, Number(body.passThreshold) ?? 70)),
+      createdAt: existing.exists ? (existing.data() as Quiz).createdAt : now,
+      updatedAt: now,
+    };
+
+    await docRef.set(quizPayload);
+    res.json(quizPayload);
+  } catch (e) {
+    console.error("Put quiz error:", e);
+    res.status(500).json({ error: "Failed to save quiz." });
+  }
+}
+
+/** DELETE /api/courses/:courseId/quiz – remove quiz (admin) */
+export async function deleteCourseQuiz(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId } = req.params;
+    if (!isValidCourseId(courseId)) {
+      res.status(404).json({ error: "Course not found." });
+      return;
+    }
+    const docRef = quizzesCollection().doc(courseId);
+    const doc = await docRef.get();
+    if (!doc.exists) {
+      res.status(404).json({ error: "No quiz set for this course." });
+      return;
+    }
+    await docRef.delete();
+    res.status(204).send();
+  } catch (e) {
+    console.error("Delete quiz error:", e);
+    res.status(500).json({ error: "Failed to delete quiz." });
+  }
+}

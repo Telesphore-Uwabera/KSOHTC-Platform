@@ -3,9 +3,9 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 const industries = [
-  { icon: HardHat, name: "OSH in Construction", desc: "Height, scaffolding, PPE. Officer, Supervisor, Inspector.", img: "/construction-worker.png" },
-  { icon: Building, name: "OSH in Industrial", desc: "LOTO, chemical, fire. Officer, HSE Assistant.", img: "/training-classroom.png" },
-  { icon: Pickaxe, name: "OSH in Mining", desc: "Blasting, ventilation. Mining Officer, Supervisor.", img: "/team-on-site.png" },
+  { icon: HardHat, name: "OSH in Construction", desc: "Height, scaffolding, PPE. Officer, Supervisor, Inspector.", img: "/ksohtc-4.jpeg" },
+  { icon: Building, name: "OSH in Industrial", desc: "LOTO, chemical, fire. Officer, HSE Assistant.", img: "/ksohtc-5.jpeg" },
+  { icon: Pickaxe, name: "OSH in Mining", desc: "Blasting, ventilation. Mining Officer, Supervisor.", img: "/ksohtc-6.jpeg" },
 ];
 
 const faqs = [
@@ -17,11 +17,12 @@ export default function Industries() {
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />
-      <div className="h-24" aria-hidden="true" />
+      <div className="h-28 sm:h-32" aria-hidden="true" />
 
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/construction-worker.png" alt="" className="w-full h-full object-cover hero-zoom" decoding="async" aria-hidden />
+          <img src="/ksohtc-4.jpeg" alt="" className="w-full h-full object-cover hero-zoom" decoding="async" aria-hidden />
+          <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -39,10 +40,13 @@ export default function Industries() {
                 className="bg-white rounded-[30px] overflow-hidden shadow-lg border border-gray-200 hover:shadow-2xl hover:border-primary/30 transition-all duration-300 hover:scale-[1.02] active:scale-[0.99] scroll-reveal reveal-scale-slow"
                 style={{ animationDelay: `${1 + idx * 0.3}s` }}
               >
-                <img src={item.img} alt={item.name} className="w-full h-48 sm:h-52 object-cover rounded-[30px]" loading="lazy" decoding="async" />
+                <div className="relative">
+                  <img src={item.img} alt={item.name} className="w-full h-48 sm:h-52 object-cover rounded-[30px]" loading="lazy" decoding="async" />
+                  <div className="img-overlay rounded-[30px]" aria-hidden="true" />
+                </div>
                 <div className="p-6 sm:p-8">
-                  <span className="inline-flex w-14 h-14 sm:w-16 sm:h-16 rounded-[30px] bg-primary/10 items-center justify-center text-primary mb-4">
-                    <item.icon className="w-7 h-7 sm:w-8 sm:h-8" />
+                  <span className="inline-flex w-12 h-12 sm:w-14 sm:h-14 rounded-[30px] bg-primary/10 items-center justify-center text-primary mb-4">
+                    <item.icon className="w-6 h-6 sm:w-7 sm:h-7" />
                   </span>
                   <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2">{item.name}</h2>
                   <p className="text-gray-600 text-xs sm:text-sm leading-snug">{item.desc}</p>

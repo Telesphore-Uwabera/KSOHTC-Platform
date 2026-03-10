@@ -15,19 +15,23 @@ While the starter comes with an Express server, only create endpoints when stric
 ## Project Structure
 
 ```
-client/                   # React SPA frontend
+clients/                  # Frontend (React SPA)
 ├── pages/                # Route components (Index.tsx = home)
+│   └── admin/            # Admin area: dashboard, courses & quizzes
 ├── components/ui/        # Pre-built UI component library
 ├── App.tsx               # App entry point and SPA routing setup
 └── global.css            # TailwindCSS 3 theming and global styles
 
-server/                   # Express API backend
-├── index.ts              # Main server setup (express config + routes)
+backend/                  # Express API (backend)
+├── index.ts              # Server setup and routes
+├── lib/                  # Shared backend logic (e.g. Firestore)
 └── routes/               # API handlers
 
-shared/                   # Types used by both client & server
-└── api.ts                # Example of how to share api interfaces
+shared/                   # Types used by clients & backend
+└── api.ts                # Shared API types
 ```
+
+**Storage**: Firebase Firestore is used for **users**, **testimonials**, and **quizzes**. Set `GOOGLE_APPLICATION_CREDENTIALS` (path to service account JSON) or `FIREBASE_SERVICE_ACCOUNT` (JSON string). See `.env.example`.
 
 ## Development Commands
 
@@ -41,14 +45,14 @@ pnpm test       # Run Vitest tests
 
 ## SPA Routing
 
-- Routes are defined in `client/App.tsx` using React Router 6.
-- Route components live in `client/pages/` (e.g. `Index.tsx` = home).
+- Routes are defined in `clients/App.tsx` using React Router 6.
+- Route components live in `clients/pages/` (e.g. `Index.tsx` = home). Admin pages live in `clients/pages/admin/`.
 
 ## Styling
 
 - **Primary**: TailwindCSS 3 utility classes
-- **Theme**: `client/global.css` and `tailwind.config.ts`
-- **UI**: Pre-built components in `client/components/ui/`
+- **Theme**: `clients/global.css` and `tailwind.config.ts`
+- **UI**: Pre-built components in `clients/components/ui/`
 - **Utility**: `cn()` (clsx + tailwind-merge) for conditional classes
 
 ## API

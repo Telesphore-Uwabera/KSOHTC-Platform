@@ -1,0 +1,23 @@
+[
+  {
+    "id": "t1",
+    "name": "Jean Paul Niyonzima",
+    "role": "Safety Officer, Construction",
+    "quote": "The OSH in Construction program gave me the confidence and skills to lead safety on site. I now manage PPE compliance and risk assessments daily.",
+    "createdAt": "2025-01-15T10:00:00.000Z"
+  },
+  {
+    "id": "t2",
+    "name": "Marie Uwera",
+    "role": "HSE Assistant, Industrial",
+    "quote": "KSOHTC's practical approach — theory plus real scenarios — prepared me well. I joined our HSE team right after completing the program.",
+    "createdAt": "2025-02-01T10:00:00.000Z"
+  },
+  {
+    "id": "t3",
+    "name": "Eric Habimana",
+    "role": "Safety Supervisor, Mining",
+    "quote": "Structured, regulation-aligned, and delivered by people who care. I recommend KSOHTC to anyone serious about safety in mining or construction.",
+    "createdAt": "2025-02-20T10:00:00.000Z"
+  }
+]

@@ -5,12 +5,12 @@ import path from "path";
 export default defineConfig({
   build: {
     lib: {
-      entry: path.resolve(__dirname, "server/node-build.ts"),
-      name: "server",
+      entry: path.resolve(__dirname, "backend/node-build.ts"),
+      name: "backend",
       fileName: "production",
       formats: ["es"],
     },
-    outDir: "dist/server",
+    outDir: "dist/backend",
     target: "node22",
     ssr: true,
     rollupOptions: {
@@ -32,6 +32,8 @@ export default defineConfig({
         // External dependencies that should not be bundled
         "express",
         "cors",
+        "firebase-admin",
+        "dotenv",
       ],
       output: {
         format: "es",
@@ -43,7 +45,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./client"),
+      "@": path.resolve(__dirname, "./clients"),
       "@shared": path.resolve(__dirname, "./shared"),
     },
   },

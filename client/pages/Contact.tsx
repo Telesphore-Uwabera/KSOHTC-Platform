@@ -22,7 +22,7 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />
-      <div className="h-24" aria-hidden="true" />
+      <div className="h-28 sm:h-32" aria-hidden="true" />
 
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-secondary/95 via-secondary/90 to-primary/90" />
@@ -41,8 +41,8 @@ export default function Contact() {
               const cardClass = "bg-white rounded-[30px] p-6 sm:p-8 shadow-lg border-2 border-gray-200 text-center hover:shadow-xl hover:border-primary/40 transition-all duration-300 hover:scale-[1.02] active:scale-[0.99] scroll-reveal reveal-scale-slow";
               const cardContent = (
                 <>
-                  <span className="inline-flex w-14 h-14 rounded-[30px] bg-accent/15 items-center justify-center text-accent mb-4">
-                    <Icon className="w-7 h-7" />
+                  <span className="inline-flex w-12 h-12 rounded-[30px] bg-accent/15 items-center justify-center text-accent mb-4">
+                    <Icon className="w-6 h-6" />
                   </span>
                   <h3 className="text-base sm:text-lg font-bold text-primary mb-1.5">{item.title}</h3>
                   <p className="text-gray-600 whitespace-pre-line text-xs sm:text-sm">

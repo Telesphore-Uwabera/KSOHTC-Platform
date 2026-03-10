@@ -6,12 +6,13 @@ export default function About() {
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />
-      <div className="h-24" aria-hidden="true" />
+      <div className="h-28 sm:h-32" aria-hidden="true" />
 
       {/* Page hero with background image */}
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/team-on-site.png" alt="" className="w-full h-full object-cover hero-zoom" decoding="async" aria-hidden />
+          <img src="/ksohtc-2.jpeg" alt="" className="w-full h-full object-cover hero-zoom" decoding="async" aria-hidden />
+          <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -24,20 +25,21 @@ export default function About() {
       <section className="py-12 sm:py-16 md:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-[30px] border border-gray-200/60 bg-white/50 shadow-inner py-12 animate-windy">
           <div className="mb-8 sm:mb-12">
-            <h2 className="section-header text-primary mb-4 scroll-reveal text-reveal-slide-left">Who We Are</h2>
+            <h2 className="section-header text-primary mb-4 scroll-reveal reveal-flip">Who We Are</h2>
             <p className="text-gray-600 text-sm max-w-2xl scroll-reveal text-reveal-fade" style={{ animationDelay: "0.15s" }}>OSH capacity-building for construction, industrial & mining.</p>
           </div>
-          <div className="mb-12 rounded-[30px] overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-right-slow delay-800">
+          <div className="mb-12 rounded-[30px] overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-flip delay-800 relative">
             <img
-              src="/team-on-site.png"
+              src="/ksohtc-2.jpeg"
               alt="KSOHTC team on site"
               className="w-full h-48 md:h-64 object-cover rounded-[30px]"
               loading="lazy"
               decoding="async"
             />
+            <div className="img-overlay rounded-[30px]" aria-hidden="true" />
           </div>
           {/* Intro text — full page width */}
-          <p className="text-sm text-gray-700 mb-5 leading-relaxed w-full max-w-full scroll-reveal reveal-scale-slow delay-1200">
+          <p className="text-sm text-gray-700 mb-5 leading-relaxed w-full max-w-full scroll-reveal reveal-spring delay-1200">
             <span className="font-bold text-primary text-base sm:text-lg">KSOHTC</span> — competent safety professionals. Construction, industrial & mining. <span className="font-semibold text-primary">Safety today, Prosperity tomorrow.</span>
           </p>
 
@@ -48,8 +50,8 @@ export default function About() {
               { title: "Structured Training", desc: "Practice-oriented culture.", icon: CheckCircle2 },
               { title: "Risk & Incidents", desc: "Fewer accidents, compliance.", icon: Shield },
             ].map((item, idx) => (
-              <div key={idx} className={`flex flex-col sm:flex-row gap-4 p-4 rounded-lg hover:bg-primary/5 transition-all duration-300 group border border-gray-200/80 bg-white scroll-reveal ${idx === 1 ? "reveal-rain" : "reveal-up-slow"}`} style={{ animationDelay: `${1.5 + idx * 0.2}s` }}>
-                <item.icon className="w-7 h-7 text-accent flex-shrink-0 mt-1 group-hover:scale-110 transition-transform" />
+              <div key={idx} className={`flex flex-col sm:flex-row gap-4 p-4 rounded-lg hover:bg-primary/5 transition-all duration-300 group border border-gray-200/80 bg-white scroll-reveal ${idx === 1 ? "reveal-bounce" : "reveal-spring"}`} style={{ animationDelay: `${1.5 + idx * 0.2}s` }}>
+                <item.icon className="w-6 h-6 text-accent flex-shrink-0 mt-1 group-hover:scale-110 transition-transform" />
                 <div className="min-w-0">
                   <p className="font-bold text-gray-800 mb-1 group-hover:text-primary transition-colors text-sm sm:text-base">{item.title}</p>
                   <p className="text-gray-600 text-xs sm:text-sm">{item.desc}</p>
@@ -65,8 +67,8 @@ export default function About() {
               { icon: Building, label: "OSH in Industrial", sub: "Manufacturing & industrial" },
               { icon: Pickaxe, label: "OSH in Mining", sub: "Mining & extraction" },
             ].map((item, idx) => (
-              <div key={idx} className={`bg-gradient-to-br from-primary/20 to-secondary/20 rounded-[30px] h-48 flex flex-col items-center justify-center shadow-lg border-2 border-primary/10 hover:border-primary/30 transition-all scroll-reveal ${idx === 0 ? "reveal-raise" : "reveal-blur"}`} style={{ animationDelay: `${2 + idx * 0.25}s` }}>
-                <item.icon className="w-16 h-16 text-primary mb-3" />
+              <div key={idx} className={`bg-gradient-to-br from-primary/20 to-secondary/20 rounded-[30px] h-48 flex flex-col items-center justify-center shadow-lg border-2 border-primary/10 hover:border-primary/30 transition-all scroll-reveal ${idx === 0 ? "reveal-flip" : "reveal-rotate-in"}`} style={{ animationDelay: `${2 + idx * 0.25}s` }}>
+                <item.icon className="w-12 h-12 text-primary mb-3" />
                 <p className="font-bold text-gray-800">{item.label}</p>
                 <p className="text-sm text-gray-600">{item.sub}</p>
               </div>
@@ -79,14 +81,15 @@ export default function About() {
       <section className="py-16 md:py-24 bg-white border-t-2 border-gray-100 relative overflow-hidden">
         <div className="rainfall-overlay" aria-hidden="true" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-12 scroll-reveal reveal-raise">Our Vision & Mission</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-primary mb-12 scroll-reveal reveal-rotate-in">Our Vision & Mission</h2>
           <div className="grid md:grid-cols-2 gap-12">
-            <div className="bg-white rounded-[30px] shadow-lg overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-300 scroll-reveal reveal-left-slow delay-600 animate-sway">
+            <div className="bg-white rounded-[30px] shadow-lg overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-300 scroll-reveal reveal-rotate-in delay-600 animate-sway">
               <div className="bg-gradient-to-r from-secondary to-secondary/80 text-white py-8 px-8">
                 <h3 className="section-header text-white">Our Mission</h3>
               </div>
               <div className="relative">
-                <img src="/team-on-site.png" alt="KSOHTC mission — team on site" className="w-full h-40 object-cover" loading="lazy" decoding="async" />
+                <img src="/ksohtc-8.jpeg" alt="KSOHTC mission — team on site" className="w-full h-40 object-cover" loading="lazy" decoding="async" />
+                <div className="img-overlay" aria-hidden="true" />
               </div>
               <div className="p-6 sm:p-8 pt-5 sm:pt-6">
                 <p className="text-sm text-gray-700 leading-relaxed font-medium mb-6">
@@ -101,7 +104,7 @@ export default function About() {
                     { icon: Users, title: "Proactive Safety Culture", desc: "Across construction, industrial and mining sectors" },
                   ].map((item, idx) => (
                     <div key={idx} className="flex items-start gap-4 group">
-                      <item.icon className="w-8 h-8 text-primary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                      <item.icon className="w-6 h-6 text-primary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
                       <div>
                         <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">{item.title}</h4>
                         <p className="text-gray-600 text-sm mt-0.5">{item.desc}</p>
@@ -111,12 +114,13 @@ export default function About() {
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-[30px] shadow-lg overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-300 reveal-right" style={{ animationDelay: "0.2s" }}>
+            <div className="bg-white rounded-[30px] shadow-lg overflow-hidden border border-gray-200 hover:shadow-2xl transition-all duration-300 scroll-reveal reveal-flip delay-1000">
               <div className="bg-gradient-to-r from-primary to-primary/80 text-white py-8 px-8">
                 <h3 className="section-header text-white">Our Vision</h3>
               </div>
               <div className="relative">
-                <img src="/training-classroom.png" alt="KSOHTC vision — training" className="w-full h-40 object-cover" loading="lazy" decoding="async" />
+                <img src="/ksohtc-9.jpeg" alt="KSOHTC vision — training" className="w-full h-40 object-cover" loading="lazy" decoding="async" />
+                <div className="img-overlay" aria-hidden="true" />
               </div>
               <div className="p-8">
                 <p className="text-sm text-gray-700 leading-relaxed mb-6">
@@ -131,7 +135,7 @@ export default function About() {
                     { icon: Globe, title: "Regional Leadership", desc: "Setting the standard for OSH education across the region" },
                   ].map((item, idx) => (
                     <div key={idx} className="flex items-center gap-4 group">
-                      <item.icon className="w-8 h-8 text-primary flex-shrink-0" />
+                      <item.icon className="w-6 h-6 text-primary flex-shrink-0" />
                       <div>
                         <h4 className="font-bold text-gray-800">{item.title}</h4>
                         <p className="text-gray-600 text-sm">{item.desc}</p>
@@ -148,16 +152,17 @@ export default function About() {
       {/* What Our Graduates Are Trained To Do */}
       <section className="py-16 md:py-24 bg-gradient-to-br from-primary to-primary/90 text-white relative overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="section-header text-white mb-2 text-xl sm:text-2xl md:text-3xl scroll-reveal text-reveal-up">What Our Graduates Are Trained To Do</h2>
+          <h2 className="section-header text-white mb-2 text-xl sm:text-2xl md:text-3xl scroll-reveal reveal-bounce">What Our Graduates Are Trained To Do</h2>
           <p className="text-white/90 text-xs sm:text-sm mb-8 scroll-reveal text-reveal-fade" style={{ animationDelay: "0.2s" }}>Essential safety competencies.</p>
-          <div className="mb-12 rounded-[30px] overflow-hidden shadow-xl ring-2 ring-white/20 scroll-reveal reveal-zoom delay-1200">
+          <div className="mb-12 rounded-[30px] overflow-hidden shadow-xl ring-2 ring-white/20 scroll-reveal reveal-bounce delay-1200 relative">
             <img
-              src="/training-classroom.png"
+              src="/ksohtc-7.jpeg"
               alt="KSOHTC graduates training"
               className="w-full h-48 md:h-56 object-cover rounded-[30px]"
               loading="lazy"
               decoding="async"
             />
+            <div className="img-overlay rounded-[30px]" aria-hidden="true" />
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {[
@@ -168,8 +173,8 @@ export default function About() {
               { title: "Safety Manager", desc: "With experience." },
               { title: "Compliance", desc: "Standards & regulations." },
             ].map((item, idx) => (
-              <div key={idx} className="flex gap-4 p-6 bg-white/10 backdrop-blur rounded-lg hover:bg-white/20 transition-all duration-300 scroll-reveal reveal-up-slow" style={{ animationDelay: `${1.6 + idx * 0.2}s` }}>
-                <CheckCircle2 className="w-8 h-8 text-accent flex-shrink-0" />
+              <div key={idx} className="flex gap-4 p-6 bg-white/10 backdrop-blur rounded-lg hover:bg-white/20 transition-all duration-300 scroll-reveal reveal-spring" style={{ animationDelay: `${1.6 + idx * 0.2}s` }}>
+                <CheckCircle2 className="w-6 h-6 text-accent flex-shrink-0" />
                 <div>
                   <h3 className="text-lg font-bold mb-2 text-white">{item.title}</h3>
                   <p className="text-white/90">{item.desc}</p>

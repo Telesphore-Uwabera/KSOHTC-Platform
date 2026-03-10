@@ -20,19 +20,20 @@ export default function Index() {
     <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />
       {/* Spacer so content is not hidden under fixed nav */}
-      <div className="h-20 sm:h-24 md:h-28 lg:h-32" aria-hidden="true" />
+      <div className="h-24 sm:h-28 md:h-32 lg:h-36" aria-hidden="true" />
 
       {/* Hero Section — taller; buttons separated below main content */}
       <section id="home" className="relative text-white py-16 sm:py-20 md:py-24 lg:py-32 overflow-hidden min-h-[85vh] sm:min-h-[88vh] flex flex-col justify-between">
         {/* Background image (Unsplash - professionals/training) */}
         <div className="absolute inset-0">
           <img
-            src="/hero-team.jpg"
+            src="/ksohtc-1.jpeg"
             alt=""
             className="w-full h-full object-cover hero-zoom"
             decoding="async"
             aria-hidden
           />
+          <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-br from-secondary/95 via-secondary/90 to-primary/90" />
         </div>
         <div className="absolute inset-0 opacity-10 pointer-events-none">
@@ -43,7 +44,7 @@ export default function Index() {
         <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center flex-1 justify-center">
           <div className="w-full max-w-7xl flex flex-col items-center space-y-4 sm:space-y-6">
             <div className="inline-flex items-center gap-2 bg-accent/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full hero-reveal-slow" style={{ animationDelay: "0.3s", animationFillMode: "both" }}>
-              <Award className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />
+              <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent" />
               <span className="text-accent font-semibold text-xs sm:text-sm text-animate-fade-in-out">Professional OSH Training Institution</span>
             </div>
             <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight hero-reveal-slow sm:whitespace-nowrap" style={{ animationDelay: "0.7s", animationFillMode: "both" }}>
@@ -58,8 +59,8 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 sm:pb-10 md:pb-12 flex flex-col items-center">
-          <div className="flex flex-row flex-nowrap gap-2 sm:gap-3 hero-reveal-slow" style={{ animationDelay: "1.9s", animationFillMode: "both" }}>
+        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-10 md:pt-12 pb-8 sm:pb-10 md:pb-12 flex flex-col items-center">
+          <div className="flex flex-row flex-nowrap gap-4 sm:gap-6 hero-reveal-slow" style={{ animationDelay: "1.9s", animationFillMode: "both" }}>
             <Link to="/login" className="group bg-accent text-black px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-bold text-sm sm:text-base hover:bg-accent/90 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transform inline-flex items-center justify-center shrink-0">
               ENROLL NOW!
               <Target className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5 group-hover:translate-x-1 transition-transform" />
@@ -76,24 +77,25 @@ export default function Index() {
       <section id="who" className="py-12 sm:py-16 md:py-20 lg:py-28 bg-gray-50 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-[30px] border border-gray-200/60 bg-white/50 shadow-inner py-12 sm:py-16 animate-windy">
           <div className="mb-10 sm:mb-16">
-            <div className="inline-block bg-primary text-white px-6 py-2.5 sm:px-8 sm:py-3 rounded-lg mb-3 sm:mb-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] scroll-reveal text-reveal-slide-left">
+            <div className="inline-block bg-primary text-white px-6 py-2.5 sm:px-8 sm:py-3 rounded-lg mb-3 sm:mb-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] scroll-reveal reveal-flip">
               <h2 className="section-header">Who We Are</h2>
             </div>
             <p className="text-gray-600 text-base sm:text-lg mt-3 sm:mt-4 max-w-2xl scroll-reveal text-reveal-fade" style={{ animationDelay: "0.15s" }}>A Professional Occupational Safety and Health (OSH) Training Institution</p>
           </div>
 
-          <div className="mb-8 sm:mb-12 rounded-[30px] overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-right-slow delay-800">
+          <div className="mb-8 sm:mb-12 rounded-[30px] overflow-hidden shadow-lg border border-gray-200 scroll-reveal reveal-flip delay-800 relative" style={{ animationDelay: "0.4s" }}>
             <img
-              src="/team-on-site.png"
+              src="/ksohtc-2.jpeg"
               alt="KSOHTC team on site — who we are"
               className="w-full h-44 sm:h-52 md:h-64 object-cover rounded-[30px]"
               loading="lazy"
               decoding="async"
             />
+            <div className="img-overlay rounded-[30px]" aria-hidden="true" />
           </div>
 
           <div className="space-y-10 sm:space-y-12">
-            <p className="text-sm text-gray-700 leading-relaxed max-w-3xl scroll-reveal reveal-up-slow delay-1200">
+            <p className="text-sm text-gray-700 leading-relaxed max-w-3xl scroll-reveal reveal-spring delay-1200">
               <span className="font-bold text-primary text-base sm:text-lg">KSOHTC</span> — competent safety professionals for construction, industrial & mining. Structured, regulation-aligned programs.
             </p>
 
@@ -104,8 +106,8 @@ export default function Index() {
                 { icon: Users, title: "Structured Training", desc: "Practice-oriented culture.", bg: "bg-primary/10" },
                 { icon: Shield, title: "Risk & Incidents", desc: "Fewer accidents, compliance.", bg: "bg-secondary/10" },
               ].map((item, i) => (
-                <div key={i} className="flex flex-col sm:flex-row gap-4 p-5 rounded-[30px] border border-gray-200/80 hover:border-primary/30 hover:shadow-md bg-white transition-all duration-300 group scroll-reveal reveal-scale-slow" style={{ animationDelay: `${1.4 + i * 0.25}s` }}>
-                  <span className={`flex-shrink-0 w-12 h-12 rounded-xl ${item.bg} flex items-center justify-center text-primary group-hover:scale-110 transition-transform`}>
+                <div key={i} className="flex flex-col sm:flex-row gap-4 p-5 rounded-[30px] border border-gray-200/80 hover:border-primary/30 hover:shadow-md bg-white transition-all duration-300 group scroll-reveal reveal-bounce" style={{ animationDelay: `${1.4 + i * 0.25}s` }}>
+                  <span className={`flex-shrink-0 w-10 h-10 rounded-xl ${item.bg} flex items-center justify-center text-primary group-hover:scale-110 transition-transform`}>
                     <item.icon className="w-6 h-6" />
                   </span>
                   <div className="min-w-0">
@@ -118,23 +120,23 @@ export default function Index() {
 
             {/* Icon cards (Construction, Industrial, Mining) — same row, blur-in */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
-              <div className="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-[30px] min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer border-2 border-primary/10 hover:border-primary/30 scroll-reveal reveal-blur delay-2200">
+              <div className="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-[30px] min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer border-2 border-primary/10 hover:border-primary/30 scroll-reveal reveal-rotate-in delay-2200">
                 <div className="text-center p-4">
-                  <HardHat className="w-16 h-16 sm:w-20 sm:h-20 text-primary mb-3 group-hover:scale-110 transition-transform duration-300 mx-auto" />
+                  <HardHat className="w-12 h-12 sm:w-14 sm:h-14 text-primary mb-3 group-hover:scale-110 transition-transform duration-300 mx-auto" />
                   <p className="font-bold text-gray-800 text-base sm:text-lg">OSH in Construction</p>
                   <p className="text-sm text-gray-600">Construction & infrastructure</p>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-accent/20 to-primary/20 rounded-[30px] min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer border-2 border-accent/10 hover:border-accent/30 scroll-reveal reveal-blur delay-2500">
+              <div className="bg-gradient-to-br from-accent/20 to-primary/20 rounded-[30px] min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer border-2 border-accent/10 hover:border-accent/30 scroll-reveal reveal-rotate-in delay-2500">
                 <div className="text-center p-4">
-                  <Building className="w-16 h-16 sm:w-20 sm:h-20 text-accent mb-3 group-hover:scale-110 transition-transform duration-300 mx-auto" />
+                  <Building className="w-12 h-12 sm:w-14 sm:h-14 text-accent mb-3 group-hover:scale-110 transition-transform duration-300 mx-auto" />
                   <p className="font-bold text-gray-800 text-base sm:text-lg">OSH in Industrial</p>
                   <p className="text-sm text-gray-600">Manufacturing & industrial</p>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-secondary/20 to-accent/20 rounded-[30px] min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer border-2 border-secondary/10 hover:border-secondary/30 scroll-reveal reveal-blur delay-2800">
+              <div className="bg-gradient-to-br from-secondary/20 to-accent/20 rounded-[30px] min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 group cursor-pointer border-2 border-secondary/10 hover:border-secondary/30 scroll-reveal reveal-rotate-in delay-2800">
                 <div className="text-center p-4">
-                  <Pickaxe className="w-16 h-16 sm:w-20 sm:h-20 text-secondary mb-3 group-hover:scale-110 transition-transform duration-300 mx-auto" />
+                  <Pickaxe className="w-12 h-12 sm:w-14 sm:h-14 text-secondary mb-3 group-hover:scale-110 transition-transform duration-300 mx-auto" />
                   <p className="font-bold text-gray-800 text-base sm:text-lg">OSH in Mining</p>
                   <p className="text-sm text-gray-600">Mining & extraction</p>
                 </div>
@@ -149,21 +151,22 @@ export default function Index() {
         <div className="rainfall-overlay" aria-hidden="true" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="mb-16">
-            <div className="inline-block bg-secondary text-white px-8 py-3 rounded-lg mb-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 scroll-reveal text-reveal-up">
+            <div className="inline-block bg-secondary text-white px-8 py-3 rounded-lg mb-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 scroll-reveal reveal-bounce">
               <h2 className="section-header">What We Provide</h2>
             </div>
-            <p className="text-gray-600 text-xs mt-2 max-w-2xl scroll-reveal text-reveal-blur" style={{ animationDelay: "0.2s" }}>Practical OSH for competent professionals.</p>
+            <p className="text-gray-600 text-xs mt-2 max-w-2xl scroll-reveal text-reveal-fade" style={{ animationDelay: "0.2s" }}>Practical OSH for competent professionals.</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-stretch">
-            <div className="rounded-[30px] overflow-hidden shadow-lg border border-gray-200 min-h-[16rem] sm:min-h-[20rem] scroll-reveal reveal-raise">
+            <div className="rounded-[30px] overflow-hidden shadow-lg border border-gray-200 min-h-[16rem] sm:min-h-[20rem] scroll-reveal reveal-flip relative">
               <img
-                src="/training-classroom.png"
+                src="/ksohtc-3.jpeg"
                 alt="KSOHTC training session — Stages of Risk Management"
                 className="w-full h-full min-h-[16rem] sm:min-h-[20rem] object-cover rounded-[30px]"
                 loading="lazy"
                 decoding="async"
               />
+              <div className="img-overlay rounded-[30px]" aria-hidden="true" />
             </div>
             <div className="grid grid-cols-2 gap-4 sm:gap-6">
               {[
@@ -198,11 +201,11 @@ export default function Index() {
               ].map((item, idx) => (
                 <div
                   key={idx}
-                  className={`bg-gradient-to-br ${item.color} rounded-[30px] p-5 sm:p-6 border-l-4 ${item.border} hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 scroll-reveal reveal-up-slow`}
-                  style={{ animationDelay: `${1.2 + idx * 0.3}s` }}
+className={`bg-gradient-to-br ${item.color} rounded-[30px] p-5 sm:p-6 border-l-4 ${item.border} hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 scroll-reveal reveal-spring`}
+                style={{ animationDelay: `${1.2 + idx * 0.3}s` }}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-start gap-3">
-                    <item.icon className="w-8 h-8 sm:w-10 sm:h-10 text-primary flex-shrink-0 hover:scale-125 transition-transform duration-300" />
+                    <item.icon className="w-6 h-6 sm:w-8 sm:h-8 text-primary flex-shrink-0 hover:scale-125 transition-transform duration-300" />
                     <div className="min-w-0">
                       <h3 className="text-base sm:text-lg font-bold text-primary mb-1 sm:mb-2">{item.title}</h3>
                       <p className="text-gray-700 text-sm sm:text-base">{item.desc}</p>
@@ -219,30 +222,33 @@ export default function Index() {
       <section id="industries" className="py-12 sm:py-16 md:py-20 lg:py-28 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 rounded-[30px] border-2 border-accent/20 bg-white/70 shadow-lg py-12 sm:py-16 animate-drift">
           <div className="text-center mb-10 sm:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-3 sm:mb-4 scroll-reveal text-reveal-scale">Industries We Serve</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-primary mb-3 sm:mb-4 scroll-reveal reveal-flip">Industries We Serve</h2>
             <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto px-2 scroll-reveal text-reveal-fade" style={{ animationDelay: "0.15s" }}>Specialized training for Rwanda's key sectors</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {[
-              { icon: HardHat, name: "OSH in Construction", desc: "Height, scaffolding, PPE. Officer, Supervisor, Inspector.", img: "/construction-worker.png" },
-              { icon: Building, name: "OSH in Industrial", desc: "LOTO, chemical, fire. Officer, HSE Assistant.", img: "/training-classroom.png" },
-              { icon: Pickaxe, name: "OSH in Mining", desc: "Blasting, ventilation. Mining Officer, Supervisor.", img: "/team-on-site.png" },
+              { icon: HardHat, name: "OSH in Construction", desc: "Height, scaffolding, PPE. Officer, Supervisor, Inspector.", img: "/ksohtc-4.jpeg" },
+              { icon: Building, name: "OSH in Industrial", desc: "LOTO, chemical, fire. Officer, HSE Assistant.", img: "/ksohtc-5.jpeg" },
+              { icon: Pickaxe, name: "OSH in Mining", desc: "Blasting, ventilation. Mining Officer, Supervisor.", img: "/ksohtc-6.jpeg" },
             ].map((industry, idx) => (
               <div
                 key={idx}
-                className={`bg-gradient-to-br from-primary/5 to-accent/5 rounded-[30px] overflow-hidden text-center border-2 border-primary/20 hover:border-primary hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.99] group cursor-pointer scroll-reveal ${idx === 1 ? "reveal-rain" : "reveal-raise"}`}
+                className={`bg-gradient-to-br from-primary/5 to-accent/5 rounded-[30px] overflow-hidden text-center border-2 border-primary/20 hover:border-primary hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.99] group cursor-pointer scroll-reveal ${idx === 0 ? "reveal-flip" : idx === 1 ? "reveal-bounce" : "reveal-spring"}`}
                 style={{ animationDelay: `${1.3 + idx * 0.35}s` }}
               >
-                <img
-                  src={industry.img}
-                  alt={industry.name}
-                  className="w-full h-40 sm:h-44 object-cover rounded-[30px]"
-                  loading="lazy"
-                  decoding="async"
-                />
+                <div className="relative">
+                  <img
+                    src={industry.img}
+                    alt={industry.name}
+                    className="w-full h-40 sm:h-44 object-cover rounded-[30px]"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <div className="img-overlay rounded-[30px]" aria-hidden="true" />
+                </div>
                 <div className="p-8">
-                  <industry.icon className="w-24 h-24 text-primary mb-6 inline-block group-hover:scale-125 transition-transform duration-300" />
+                  <industry.icon className="w-16 h-16 text-primary mb-4 inline-block group-hover:scale-125 transition-transform duration-300" />
                   <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2 sm:mb-3 group-hover:text-accent transition-colors">{industry.name}</h3>
                   <p className="text-gray-600 text-sm sm:text-base group-hover:text-gray-800 transition-colors leading-snug">{industry.desc}</p>
                 </div>
@@ -261,18 +267,19 @@ export default function Index() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-16">
-            <h2 className="section-header text-white mb-2 text-xl sm:text-2xl md:text-3xl scroll-reveal text-reveal-up">What Our Graduates Are Trained To Do</h2>
+            <h2 className="section-header text-white mb-2 text-xl sm:text-2xl md:text-3xl scroll-reveal reveal-bounce">What Our Graduates Are Trained To Do</h2>
             <p className="text-primary/90 text-sm sm:text-base md:text-lg scroll-reveal text-reveal-fade" style={{ animationDelay: "0.2s" }}>Essential safety competencies for workplace excellence</p>
           </div>
 
-          <div className="mb-8 sm:mb-12 rounded-[30px] overflow-hidden shadow-xl ring-2 ring-white/20 scroll-reveal reveal-rain delay-800">
+          <div className="mb-8 sm:mb-12 rounded-[30px] overflow-hidden shadow-xl ring-2 ring-white/20 scroll-reveal reveal-bounce delay-800 relative">
             <img
-              src="/training-classroom.png"
+              src="/ksohtc-7.jpeg"
               alt="KSOHTC graduates training — classroom"
               className="w-full h-44 sm:h-52 md:h-56 object-cover rounded-[30px]"
               loading="lazy"
               decoding="async"
             />
+            <div className="img-overlay rounded-[30px]" aria-hidden="true" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
@@ -286,10 +293,10 @@ export default function Index() {
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="flex gap-4 p-6 bg-white/10 backdrop-blur rounded-[30px] hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1 scroll-reveal reveal-up-slow"
+                className="flex gap-4 p-6 bg-white/10 backdrop-blur rounded-[30px] hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:-translate-y-1 scroll-reveal reveal-spring"
                 style={{ animationDelay: `${1.2 + idx * 0.15}s` }}
               >
-                <CheckCircle2 className="w-8 h-8 text-accent flex-shrink-0 hover:scale-110 transition-transform" />
+                <CheckCircle2 className="w-6 h-6 text-accent flex-shrink-0 hover:scale-110 transition-transform" />
                 <div>
                   <h3 className="text-base sm:text-lg font-bold mb-1.5 text-white hover:text-accent transition-colors">{item.title}</h3>
                   <p className="text-white/90 text-xs sm:text-sm">{item.desc}</p>
@@ -304,23 +311,24 @@ export default function Index() {
       <section id="mission" className="py-16 md:py-28 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-16">
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-primary scroll-reveal text-reveal-slide-right">Our Vision & Mission</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-primary scroll-reveal reveal-rotate-in">Our Vision & Mission</h2>
           </div>
 
           <div className="grid md:grid-cols-2 gap-12 items-stretch">
             {/* Mission */}
-            <div className="bg-white rounded-[30px] shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 scroll-reveal reveal-left-slow delay-600 animate-sway">
+            <div className="bg-white rounded-[30px] shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 scroll-reveal reveal-rotate-in delay-600 animate-sway">
               <div className="bg-gradient-to-r from-secondary to-secondary/80 text-white py-8 px-8">
                 <h3 className="section-header text-white">Our Mission</h3>
               </div>
               <div className="relative">
                 <img
-                  src="/team-on-site.png"
-                  alt="KSOHTC team on site — our mission in action"
+                  src="/ksohtc-8.jpeg"
+                  alt="KSOHTC mission in action"
                   className="w-full h-36 sm:h-44 object-cover"
                   loading="lazy"
                   decoding="async"
                 />
+                <div className="img-overlay" aria-hidden="true" />
               </div>
               <div className="p-6 sm:p-8 pt-5 sm:pt-6">
                 <p className="text-sm text-gray-700 leading-relaxed font-medium mb-5">
@@ -328,35 +336,35 @@ export default function Index() {
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4 group">
-                    <Award className="w-8 h-8 text-primary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                    <Award className="w-6 h-6 text-primary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
                     <div>
                       <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">High-Quality Training</h4>
                       <p className="text-gray-600 text-sm mt-0.5">Practical, industry-aligned OSH education</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4 group">
-                    <UserCheck className="w-8 h-8 text-secondary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                    <UserCheck className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
                     <div>
                       <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">Competent Professionals</h4>
                       <p className="text-gray-600 text-sm mt-0.5">Develop safety officers, supervisors, inspectors</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4 group">
-                    <AlertTriangle className="w-8 h-8 text-accent flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                    <AlertTriangle className="w-6 h-6 text-accent flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
                     <div>
                       <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">Prevent Accidents</h4>
                       <p className="text-gray-600 text-sm mt-0.5">Reduce workplace accidents and hazards</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4 group">
-                    <Shield className="w-8 h-8 text-primary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                    <Shield className="w-6 h-6 text-primary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
                     <div>
                       <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">Strengthen Compliance</h4>
                       <p className="text-gray-600 text-sm mt-0.5">Regulatory and international best practices</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4 group">
-                    <Users className="w-8 h-8 text-secondary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                    <Users className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
                     <div>
                       <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">Proactive Safety Culture</h4>
                       <p className="text-gray-600 text-sm mt-0.5">Across construction, industrial and mining sectors</p>
@@ -367,18 +375,19 @@ export default function Index() {
             </div>
 
             {/* Vision */}
-            <div className="bg-white rounded-[30px] shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 scroll-reveal reveal-right-slow delay-1000">
+            <div className="bg-white rounded-[30px] shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:scale-105 scroll-reveal reveal-flip delay-1000">
               <div className="bg-gradient-to-r from-primary to-primary/80 text-white py-8 px-8">
                 <h3 className="section-header text-white">Our Vision</h3>
               </div>
               <div className="relative">
                 <img
-                  src="/training-classroom.png"
+                  src="/ksohtc-9.jpeg"
                   alt="KSOHTC training — our vision"
                   className="w-full h-36 sm:h-44 object-cover"
                   loading="lazy"
                   decoding="async"
                 />
+                <div className="img-overlay" aria-hidden="true" />
               </div>
               <div className="p-6 sm:p-8 pt-5 sm:pt-6">
                 <p className="text-sm text-gray-700 leading-relaxed font-medium mb-5">
@@ -386,35 +395,35 @@ export default function Index() {
                 </p>
                 <div className="space-y-4">
                   <div className="flex items-start gap-4 group">
-                    <Crown className="w-8 h-8 text-primary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                    <Crown className="w-6 h-6 text-primary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
                     <div>
                       <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">Excellence</h4>
                       <p className="text-gray-600 text-sm mt-0.5">Commitment to highest standards in OSH training and education</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4 group">
-                    <Star className="w-8 h-8 text-secondary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                    <Star className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
                     <div>
                       <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">Accreditation</h4>
                       <p className="text-gray-600 text-sm mt-0.5">Recognized certification and regulatory compliance</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4 group">
-                    <Star className="w-8 h-8 text-accent flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                    <Star className="w-6 h-6 text-accent flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
                     <div>
                       <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">Industry Impact</h4>
                       <p className="text-gray-600 text-sm mt-0.5">Measurable improvements in workplace safety across Rwanda</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4 group">
-                    <Target className="w-8 h-8 text-primary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                    <Target className="w-6 h-6 text-primary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
                     <div>
                       <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">Quality Assurance</h4>
                       <p className="text-gray-600 text-sm mt-0.5">Continuous improvement of training delivery and outcomes</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4 group">
-                    <Globe className="w-8 h-8 text-secondary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
+                    <Globe className="w-6 h-6 text-secondary flex-shrink-0 mt-0.5 group-hover:scale-125 transition-transform" />
                     <div>
                       <h4 className="font-bold text-gray-800 group-hover:text-primary transition-colors">Regional Leadership</h4>
                       <p className="text-gray-600 text-sm mt-0.5">Setting the standard for OSH education across the region</p>
@@ -431,7 +440,7 @@ export default function Index() {
       <section id="testimonials" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
           <div className="text-center mb-10 sm:mb-14 w-full max-w-3xl">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3 scroll-reveal reveal-raise">What Our Participants Say</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3 scroll-reveal reveal-bounce">What Our Participants Say</h2>
             <p className="text-gray-600 text-base sm:text-lg scroll-reveal text-reveal-fade" style={{ animationDelay: "0.15s" }}>Stories from professionals who trained with us</p>
           </div>
           {isLoading ? (
@@ -443,17 +452,17 @@ export default function Index() {
               {testimonials.map((t, idx) => (
                 <div
                   key={t.id}
-                  className={`bg-white rounded-[30px] border-2 border-gray-200 p-6 shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal ${idx === 0 ? "reveal-raise" : idx === 1 ? "reveal-rain" : "reveal-up"}`}
+                  className={`bg-white rounded-[30px] border-2 border-gray-200 p-6 shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal ${idx === 0 ? "reveal-flip" : idx === 1 ? "reveal-bounce" : "reveal-spring"}`}
                   style={{ animationDelay: `${0.1 + idx * 0.08}s` }}
                 >
-                  <Quote className="w-8 h-8 text-primary/60 mb-3" />
+                  <Quote className="w-6 h-6 text-primary/60 mb-3" />
                   <p className="text-gray-700 text-sm sm:text-base leading-relaxed mb-4">&ldquo;{t.quote}&rdquo;</p>
                   <div className="flex items-center gap-3">
                     {t.avatarUrl ? (
                       <img src={t.avatarUrl} alt="" className="w-10 h-10 rounded-full object-cover bg-gray-200" loading="lazy" decoding="async" />
                     ) : (
                       <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                        <UserCheck className="w-5 h-5 text-primary" />
+                        <UserCheck className="w-4 h-4 text-primary" />
                       </div>
                     )}
                     <div>
@@ -472,7 +481,7 @@ export default function Index() {
       <section id="faq" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center">
           <div className="text-center mb-10 sm:mb-14 w-full max-w-3xl">
-            <h2 className="text-xl sm:text-2xl font-bold text-primary mb-2 scroll-reveal text-reveal-up">Frequently Asked Questions</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-primary mb-2 scroll-reveal reveal-fade-scale">Frequently Asked Questions</h2>
             <p className="text-gray-600 text-xs sm:text-sm scroll-reveal text-reveal-fade" style={{ animationDelay: "0.15s" }}>OSH training and enrollment</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 w-full max-w-5xl mx-auto">
@@ -486,7 +495,7 @@ export default function Index() {
             ].map((faq, idx) => (
               <details
                 key={idx}
-                className="group bg-white rounded-[30px] border-2 border-gray-200 overflow-hidden shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal reveal-up"
+                className="group bg-white rounded-[30px] border-2 border-gray-200 overflow-hidden shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal reveal-fade-scale"
                 style={{ animationDelay: `${0.2 + idx * 0.06}s` }}
               >
                 <summary className="flex items-start sm:items-center justify-between gap-4 px-5 py-4 sm:px-6 sm:py-5 cursor-pointer list-none font-semibold text-gray-800 hover:text-primary transition-colors min-h-[3.5rem]">
@@ -508,7 +517,7 @@ export default function Index() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16 ">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-3 scroll-reveal reveal-rain">Get In Touch</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3 scroll-reveal reveal-spring">Get In Touch</h2>
             <p className="text-accent text-sm scroll-reveal text-reveal-fade" style={{ animationDelay: "0.15s" }}>Questions? We’re here to help.</p>
           </div>
 
@@ -537,7 +546,7 @@ export default function Index() {
               const isAddress = contact.content === "Kicukiro, Kigali, Rwanda" && contact.link === "/contact#map";
               const cardContent = (
                 <>
-                  <Icon className="w-12 h-12 mx-auto mb-4 text-accent group-hover:scale-125 transition-transform" />
+                  <Icon className="w-10 h-10 mx-auto mb-3 text-accent group-hover:scale-125 transition-transform" />
                   <h3 className="text-base sm:text-lg md:text-xl font-bold mb-1.5 text-white group-hover:text-accent transition-colors">{contact.title}</h3>
                   <p className="text-gray-200 whitespace-pre-line text-sm sm:text-base">
                     {contact.link ? (
@@ -559,7 +568,7 @@ export default function Index() {
                   </p>
                 </>
               );
-              const cardClass = "bg-gray-600/50 backdrop-blur rounded-[30px] p-8 text-center hover:bg-gray-500/50 transition-all duration-300 hover:scale-110 hover:-translate-y-2 group scroll-reveal reveal-scale-slow";
+              const cardClass = "bg-gray-600/50 backdrop-blur rounded-[30px] p-8 text-center hover:bg-gray-500/50 transition-all duration-300 hover:scale-110 hover:-translate-y-2 group scroll-reveal reveal-bounce";
               const delayStyle = { animationDelay: `${1.2 + idx * 0.35}s` };
               return (
                 <div key={idx}>
@@ -601,7 +610,7 @@ export default function Index() {
           </div>
 
           <div className="text-center">
-            <Link to="/login" className="inline-block bg-gradient-to-r from-accent to-accent/80 text-black px-8 sm:px-12 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] transform scroll-reveal reveal-zoom delay-2200">
+            <Link to="/login" className="inline-block bg-gradient-to-r from-accent to-accent/80 text-black px-8 sm:px-12 py-3 sm:py-4 rounded-lg font-bold text-base sm:text-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] transform scroll-reveal reveal-flip delay-2200">
               ENROLL NOW!
             </Link>
           </div>
