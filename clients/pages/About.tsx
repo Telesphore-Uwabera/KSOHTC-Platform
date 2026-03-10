@@ -11,7 +11,7 @@ export default function About() {
       {/* Page hero with background image */}
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/ksohtc-2.jpeg" alt="" className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-pan" decoding="async" aria-hidden />
+          <img src="/ksohtc-2.webp" alt="" className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-pan" decoding="async" aria-hidden />
           <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
         </div>
@@ -24,7 +24,7 @@ export default function About() {
       {/* Who We Are — background image with overlay and text on top */}
       <section className="relative py-16 sm:py-20 md:py-28 min-h-[60vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/ksohtc-2.jpeg" alt="" className="w-full h-full object-cover bg-image-animate bg-image-drift" loading="lazy" decoding="async" aria-hidden />
+          <img src="/ksohtc-2.webp" alt="" className="w-full h-full object-cover bg-image-animate bg-image-drift" loading="lazy" decoding="async" aria-hidden />
           <div className="absolute inset-0 bg-black/50" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/70" aria-hidden="true" />
         </div>
@@ -82,7 +82,7 @@ export default function About() {
                 <h3 className="section-header text-white">Our Mission</h3>
               </div>
               <div className="relative">
-                <img src="/ksohtc-8.jpeg" alt="KSOHTC mission — team on site" className="w-full h-40 object-cover" loading="lazy" decoding="async" />
+                <img src="/ksohtc-8.webp" alt="KSOHTC mission — team on site" className="w-full h-40 object-cover" loading="lazy" decoding="async" />
                 <div className="img-overlay" aria-hidden="true" />
               </div>
               <div className="p-6 sm:p-8 pt-5 sm:pt-6">
@@ -113,7 +113,7 @@ export default function About() {
                 <h3 className="section-header text-white">Our Vision</h3>
               </div>
               <div className="relative">
-                <img src="/ksohtc-9.jpeg" alt="KSOHTC vision — training" className="w-full h-40 object-cover" loading="lazy" decoding="async" />
+                <img src="/ksohtc-9.webp" alt="KSOHTC vision — training" className="w-full h-40 object-cover" loading="lazy" decoding="async" />
                 <div className="img-overlay" aria-hidden="true" />
               </div>
               <div className="p-8">
@@ -146,7 +146,7 @@ export default function About() {
       {/* What Our Graduates Are Trained To Do — background image with overlay and text on top */}
       <section className="relative py-16 md:py-24 min-h-[50vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/ksohtc-7.jpeg" alt="" className="w-full h-full object-cover bg-image-animate bg-image-pulse" loading="lazy" decoding="async" aria-hidden />
+          <img src="/ksohtc-7.webp" alt="" className="w-full h-full object-cover bg-image-animate bg-image-pulse" loading="lazy" decoding="async" aria-hidden />
           <div className="absolute inset-0 bg-black/50" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/70" aria-hidden="true" />
         </div>

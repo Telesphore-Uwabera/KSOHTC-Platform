@@ -61,7 +61,7 @@ export default function Header() {
             <div className={`flex items-center gap-2 lg:gap-4 pl-3 pr-3 sm:pl-4 sm:pr-4 transition-all duration-300 ${scrolled ? "py-1.5 gap-2" : "py-2 sm:py-3"}`}>
               <Link to="/" className="flex-shrink-0 flex items-center group cursor-pointer transition-all duration-300 hover:scale-105">
                 <img
-                  src="/logo.jpeg"
+                  src="/logo.webp"
                   alt="KSOHTC Logo"
                   className={`object-contain max-w-full h-auto transition-all duration-300 group-hover:rotate-3 ${scrolled ? "w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11" : "w-12 h-12 sm:w-14 sm:h-14 lg:w-[4.25rem] lg:h-[4.25rem] xl:w-20 xl:h-20"}`}
                 />
@@ -94,7 +94,7 @@ export default function Header() {
 
           <Link to="/" className="md:hidden flex-shrink-0 flex items-center group cursor-pointer transition-all duration-300 hover:scale-105">
             <img
-              src="/logo.jpeg"
+              src="/logo.webp"
               alt="KSOHTC Logo"
               className={`object-contain max-w-full h-auto transition-all duration-300 group-hover:rotate-3 ${scrolled ? "w-14 h-14 sm:w-16 sm:h-16" : "w-16 h-16 sm:w-20 sm:h-20"}`}
             />

@@ -12,7 +12,7 @@ export default function Footer() {
           <div className="flex flex-col items-start text-left lg:col-span-1 lg:col-start-1">
             <Link to="/" className="block">
               <img
-                src="/logo.jpeg"
+                src="/logo.webp"
                 alt="KSOHTC Footer Logo"
                 className="w-24 h-24 sm:w-32 sm:h-32 md:w-36 md:h-36 lg:w-40 lg:h-40 xl:w-44 xl:h-44 object-contain max-w-full transition-all duration-300 hover:scale-110 mb-4 sm:mb-6"
                 loading="lazy"

@@ -27,7 +27,7 @@ export default function Index() {
         {/* Background image (Unsplash - professionals/training) */}
         <div className="absolute inset-0">
           <img
-            src="/ksohtc-1.jpeg"
+            src="/ksohtc-1.webp"
             alt=""
             className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-zoom"
             decoding="async"
@@ -136,7 +136,7 @@ export default function Index() {
       {/* What We Provide Section — background image with overlay and text on top */}
       <section id="provide" className="relative py-16 md:py-28 min-h-[50vh] flex flex-col justify-center overflow-hidden text-white">
         <div className="absolute inset-0">
-          <img src="/ksohtc-3.jpeg" alt="" className="w-full h-full object-cover bg-image-animate bg-image-pan" loading="lazy" decoding="async" aria-hidden />
+          <img src="/ksohtc-3.webp" alt="" className="w-full h-full object-cover bg-image-animate bg-image-pan" loading="lazy" decoding="async" aria-hidden />
           <div className="absolute inset-0 bg-black/50" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/70" aria-hidden="true" />
         </div>
@@ -204,7 +204,7 @@ export default function Index() {
       {/* Graduates Training Section — background image with overlay and text on top */}
       <section className="relative py-16 md:py-28 min-h-[50vh] flex flex-col justify-center overflow-hidden text-white">
         <div className="absolute inset-0">
-          <img src="/ksohtc-7.jpeg" alt="" className="w-full h-full object-cover bg-image-animate bg-image-drift" loading="lazy" decoding="async" aria-hidden />
+          <img src="/ksohtc-7.webp" alt="" className="w-full h-full object-cover bg-image-animate bg-image-drift" loading="lazy" decoding="async" aria-hidden />
           <div className="absolute inset-0 bg-black/50" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/70" aria-hidden="true" />
         </div>
@@ -254,7 +254,7 @@ export default function Index() {
               </div>
               <div className="relative">
                 <img
-                  src="/ksohtc-8.jpeg"
+                  src="/ksohtc-8.webp"
                   alt="KSOHTC mission in action"
                   className="w-full h-36 sm:h-44 object-cover"
                   loading="lazy"
@@ -313,7 +313,7 @@ export default function Index() {
               </div>
               <div className="relative">
                 <img
-                  src="/ksohtc-9.jpeg"
+                  src="/ksohtc-9.webp"
                   alt="KSOHTC training — our vision"
                   className="w-full h-36 sm:h-44 object-cover"
                   loading="lazy"

@@ -24,7 +24,7 @@ export default function Programs() {
 
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/ksohtc-3.jpeg" alt="" className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-drift" aria-hidden />
+          <img src="/ksohtc-3.webp" alt="" className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-drift" aria-hidden />
           <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
         </div>
@@ -38,7 +38,7 @@ export default function Programs() {
       <section className="relative py-12 sm:py-16 md:py-20 lg:py-24 min-h-[60vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="/ksohtc-3.jpeg"
+            src="/ksohtc-3.webp"
             alt=""
             className="w-full h-full object-cover bg-image-animate bg-image-pan"
             loading="lazy"

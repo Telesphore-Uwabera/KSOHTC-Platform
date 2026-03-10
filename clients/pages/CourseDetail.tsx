@@ -41,7 +41,7 @@ export default function CourseDetail() {
       <section className="relative text-white py-12 sm:py-16 min-h-[30vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="/ksohtc-3.jpeg"
+            src="/ksohtc-3.webp"
             alt=""
             className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-pan"
             decoding="async"

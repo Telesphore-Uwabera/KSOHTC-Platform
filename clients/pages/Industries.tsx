@@ -3,9 +3,9 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 const industries = [
-  { icon: HardHat, name: "OSH in Construction", desc: "Height, scaffolding, PPE. Officer, Supervisor, Inspector.", img: "/ksohtc-4.jpeg" },
-  { icon: Building, name: "OSH in Industrial", desc: "LOTO, chemical, fire. Officer, HSE Assistant.", img: "/ksohtc-5.jpeg" },
-  { icon: Pickaxe, name: "OSH in Mining", desc: "Blasting, ventilation. Mining Officer, Supervisor.", img: "/ksohtc-6.jpeg" },
+  { icon: HardHat, name: "OSH in Construction", desc: "Height, scaffolding, PPE. Officer, Supervisor, Inspector.", img: "/ksohtc-4.webp" },
+  { icon: Building, name: "OSH in Industrial", desc: "LOTO, chemical, fire. Officer, HSE Assistant.", img: "/ksohtc-5.webp" },
+  { icon: Pickaxe, name: "OSH in Mining", desc: "Blasting, ventilation. Mining Officer, Supervisor.", img: "/ksohtc-6.webp" },
 ];
 
 const faqs = [
@@ -21,7 +21,7 @@ export default function Industries() {
 
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/ksohtc-4.jpeg" alt="" className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-pulse" decoding="async" aria-hidden />
+          <img src="/ksohtc-4.webp" alt="" className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-pulse" decoding="async" aria-hidden />
           <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
         </div>
