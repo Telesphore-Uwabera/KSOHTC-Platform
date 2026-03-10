@@ -66,12 +66,12 @@ pnpm test       # Run Vitest tests
 ### New API Route
 
 1. Optionally add a shared type in `shared/api.ts`.
-2. Add handler in `server/routes/` and register in `server/index.ts` under `/api/...`.
+2. Add handler in `backend/routes/` and register in `backend/index.ts` under `/api/...`.
 
 ### New Page
 
-1. Create `client/pages/MyPage.tsx`.
-2. Add `<Route path="/my-page" element={<MyPage />} />` in `client/App.tsx` (above the catch-all `*` route).
+1. Create `clients/pages/MyPage.tsx`.
+2. Add `<Route path="/my-page" element={<MyPage />} />` in `clients/App.tsx` (above the catch-all `*` route).
 
 ## Production
 
@@ -88,7 +88,7 @@ pnpm test       # Run Vitest tests
 3. **Connect your repository** (e.g. GitHub) and select this repo.
 
 4. **Build settings** (usually auto-filled from `netlify.toml`):
-   - **Build command:** `pnpm run build:client`
+   - **Build command:** `pnpm run build` or `pnpm run build:clients`
    - **Publish directory:** `dist/spa`
    - **Functions directory:** `netlify/functions`
 
