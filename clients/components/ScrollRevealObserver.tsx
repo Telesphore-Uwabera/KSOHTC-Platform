@@ -118,13 +118,18 @@ export function ScrollRevealObserver() {
     timeouts.push(setTimeout(run, 100));
     timeouts.push(setTimeout(run, 400));
     timeouts.push(setTimeout(run, 900));
+    timeouts.push(setTimeout(run, 1500));
 
     const onResize = () => run();
+    const onLoad = () => run();
     window.addEventListener("resize", onResize);
+    window.addEventListener("load", onLoad);
+    if (document.readyState === "complete") onLoad();
 
     return () => {
       timeouts.forEach((id) => clearTimeout(id));
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("load", onLoad);
       observerRef.current?.disconnect();
       observerRef.current = null;
       connectorObserverRef.current?.disconnect();

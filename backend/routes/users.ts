@@ -38,7 +38,10 @@ export async function postRegister(req: Request, res: Response): Promise<void> {
       approved: false,
       createdAt: new Date().toISOString(),
     };
-    await col.doc(user.id).set(user);
+    const forFirestore = Object.fromEntries(
+      Object.entries(user).filter(([, v]) => v !== undefined)
+    ) as Record<string, unknown>;
+    await col.doc(user.id).set(forFirestore);
     res.status(201).json({ user: toPublic(user) });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
