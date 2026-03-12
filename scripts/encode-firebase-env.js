@@ -1,21 +1,37 @@
 /**
- * Outputs FIREBASE_SERVICE_ACCOUNT from backend/.env as base64.
- * Use the output as FIREBASE_SERVICE_ACCOUNT_BASE64 on Render to avoid paste/escaping issues.
- * Run from project root: node scripts/encode-firebase-env.js
+ * Outputs Firebase service account as base64 for Render.
+ * Reads from FIREBASE_SERVICE_ACCOUNT in backend/.env, or from the file at GOOGLE_APPLICATION_CREDENTIALS.
+ * Run from project root: pnpm run encode:firebase
  */
 import { config } from "dotenv";
 import path from "path";
+import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const envPath = path.resolve(__dirname, "..", "backend", ".env");
+const projectRoot = path.resolve(__dirname, "..");
+const envPath = path.join(projectRoot, "backend", ".env");
 config({ path: envPath });
 
-const json = process.env.FIREBASE_SERVICE_ACCOUNT;
+let json = process.env.FIREBASE_SERVICE_ACCOUNT;
 if (!json) {
-  console.error("FIREBASE_SERVICE_ACCOUNT not found in backend/.env");
-  process.exit(1);
+  const credPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+  if (credPath) {
+    const resolved = path.isAbsolute(credPath)
+      ? credPath
+      : path.join(projectRoot, credPath.replace(/^["']|["']$/g, "").trim());
+    try {
+      json = readFileSync(resolved, "utf8");
+    } catch (e) {
+      console.error("Could not read GOOGLE_APPLICATION_CREDENTIALS file:", resolved, e?.message);
+      process.exit(1);
+    }
+  } else {
+    console.error("Set FIREBASE_SERVICE_ACCOUNT or GOOGLE_APPLICATION_CREDENTIALS in backend/.env");
+    process.exit(1);
+  }
 }
-const base64 = Buffer.from(json.trim().replace(/^["']|["']$/g, ""), "utf8").toString("base64");
+const raw = json.trim().replace(/^["']|["']$/g, "");
+const base64 = Buffer.from(raw, "utf8").toString("base64");
 console.log("Paste this as FIREBASE_SERVICE_ACCOUNT_BASE64 on Render:\n");
 console.log(base64);
