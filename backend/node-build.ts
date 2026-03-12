@@ -1,5 +1,6 @@
 import path from "path";
 import { createServer } from "./index";
+import { getDb, usersCollection } from "./lib/firestore";
 import * as express from "express";
 
 console.log("[START] Backend process starting...");
@@ -21,11 +22,19 @@ if (!apiOnly) {
   });
 }
 
-app.listen(port, () => {
+app.listen(port, async () => {
   if (apiOnly) {
+    try {
+      getDb();
+      await usersCollection().limit(1).get();
+      console.log("[FIRESTORE] OK - credentials valid, register/login will work");
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error("[FIRESTORE] FAIL:", msg);
+      console.error("[FIRESTORE] Fix: set FIREBASE_SERVICE_ACCOUNT_BASE64 in Render → Environment (run pnpm run encode:firebase locally), then redeploy.");
+    }
     console.log(`[OK] API server running on port ${port}`);
     console.log(`[API] Base URL: http://localhost:${port}/api`);
-    console.log(`[LOG] Hit GET /health to verify Firestore. Logs appear in Render -> your service -> Logs tab.`);
   } else {
     console.log(`[OK] Server running on port ${port}`);
     console.log(`[APP] Frontend: http://localhost:${port}`);
