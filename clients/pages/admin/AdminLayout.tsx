@@ -1,4 +1,5 @@
 import { Link, Outlet, NavLink, Navigate, useLocation } from "react-router-dom";
+import { useRef } from "react";
 import { ArrowLeft, LayoutDashboard, BookOpen, Users, MessageSquareQuote, BarChart3, FolderOpen } from "lucide-react";
 import Header from "../../components/Header";
 import { cn } from "@/lib/utils";
@@ -14,10 +15,16 @@ const nav = [
 
 export default function AdminLayout() {
   const location = useLocation();
+  const adminVerifiedRef = useRef(false);
   const user = getStoredUser();
-  if (!user || (user as { role?: string }).role !== "admin") {
-    return <Navigate to="/admin/login" replace state={{ from: location.pathname }} />;
+  const isAdmin = user && (user as { role?: string }).role === "admin";
+
+  if (!user || !isAdmin) adminVerifiedRef.current = false;
+  if (!adminVerifiedRef.current) {
+    if (!isAdmin) return <Navigate to="/admin/login" replace state={{ from: location.pathname }} />;
+    adminVerifiedRef.current = true;
   }
+
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />
@@ -54,7 +61,7 @@ export default function AdminLayout() {
                 ))}
               </nav>
               <div className="mt-5 pt-4 border-t border-gray-100 text-xs text-gray-500">
-                Signed in as <span className="font-semibold text-gray-700">{user.email}</span>
+                Signed in as <span className="font-semibold text-gray-700">{user?.email ?? ""}</span>
               </div>
             </aside>
 
