@@ -37,7 +37,8 @@ export function getDb(): Firestore {
       }
     } else if (credBase64) {
       try {
-        const decoded = Buffer.from(credBase64.trim(), "base64").toString("utf8");
+        const raw = credBase64.replace(/\s/g, "").trim();
+        const decoded = Buffer.from(raw, "base64").toString("utf8");
         const cred = parseServiceAccountJson(decoded);
         initializeApp({ credential: cert(cred), projectId: cred.project_id });
       } catch (e) {
@@ -53,6 +54,12 @@ export function getDb(): Firestore {
         throw new Error("Firebase config invalid. Use FIREBASE_SERVICE_ACCOUNT (single-line JSON) or FIREBASE_SERVICE_ACCOUNT_BASE64 to avoid paste issues on Render.");
       }
     } else {
+      const isProduction = process.env.NODE_ENV === "production" || process.env.RENDER === "true";
+      if (isProduction) {
+        throw new Error(
+          "Firebase credentials missing on Render. Set FIREBASE_SERVICE_ACCOUNT_BASE64: run `pnpm run encode:firebase` locally, copy the output, and add it in Render → Environment. Then redeploy."
+        );
+      }
       initializeApp();
     }
   }

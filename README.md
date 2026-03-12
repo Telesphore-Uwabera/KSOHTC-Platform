@@ -115,7 +115,14 @@ Routes: `/admin`, `/admin/courses`, `/admin/course-content`, etc. Admin login at
    - **`FRONTEND_URL`** – Your Netlify URL, e.g. `https://ksohtc.netlify.app` (for CORS).
    - Optional: `RENDER=true`, `NODE_ENV=production`.
 
-**If register or login returns 500:** Add or fix `FIREBASE_SERVICE_ACCOUNT` in Render → Environment, then redeploy.
+**If register or login returns 500:** Add or fix `FIREBASE_SERVICE_ACCOUNT` (or `FIREBASE_SERVICE_ACCOUNT_BASE64`) in Render → Environment, then redeploy.
+
+**If logs show `16 UNAUTHENTICATED: Request had invalid authentication credentials`:** The backend on Render is not using a valid Firebase service account. Register, login, testimonials, and courses will all return 500 until you set credentials:
+
+1. Locally: ensure `backend/.env` has `FIREBASE_SERVICE_ACCOUNT` (full JSON from Firebase Console → Project settings → Service accounts → Generate new private key).
+2. Run: `pnpm run encode:firebase` and copy the **single line** of base64 output (no spaces or line breaks).
+3. In Render → your backend service → **Environment**: add **`FIREBASE_SERVICE_ACCOUNT_BASE64`** and paste that value. Remove or leave empty `FIREBASE_SERVICE_ACCOUNT` if you had it (base64 is more reliable on Render).
+4. **Save** and **Redeploy**. After deploy, open `https://your-service.onrender.com/health`; you should see `{"ok":true,"firestore":"connected"}`. Then try register/login again.
 
 **Viewing backend logs on Render:** Open your service → **Logs** tab (left sidebar under the service name). Use "Live" or "All" to see stdout/stderr. After deploy, you should see `[START] Backend process starting...` and `[OK] API server running...`. Hit `GET https://your-service.onrender.com/health` to test Firestore; logs will show `[HEALTH] Firestore OK` or `[HEALTH] Firestore FAIL: <message>`.
 
