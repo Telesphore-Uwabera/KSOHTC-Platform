@@ -25,7 +25,8 @@
     "format.fix": "prettier --write .",
     "typecheck": "tsc",
     "seed:courses": "tsx scripts/seed-courses-firestore.ts",
-    "firebase:deploy-rules": "firebase deploy --only firestore:rules"
+    "firebase:deploy-rules": "firebase deploy --only firestore:rules",
+    "encode:firebase": "node scripts/encode-firebase-env.js"
   },
   "dependencies": {
     "dotenv": "^17.2.1",

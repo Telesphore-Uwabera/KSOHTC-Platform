@@ -10,13 +10,22 @@ import path from "node:path";
 
 let db: Firestore | null = null;
 
+function parseServiceAccountJson(jsonString: string): ServiceAccount {
+  const normalized = jsonString.trim().replace(/^["']|["']$/g, "");
+  const cred = JSON.parse(normalized) as ServiceAccount;
+  if (!cred.project_id || !cred.private_key) {
+    throw new Error("Service account JSON missing project_id or private_key");
+  }
+  return cred;
+}
+
 export function getDb(): Firestore {
   if (db) return db;
   if (getApps().length === 0) {
     const credPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
     const credJson = process.env.FIREBASE_SERVICE_ACCOUNT;
+    const credBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
     if (credPath) {
-      // Normalize path (e.g. forward slashes from .env work on all platforms)
       const normalizedPath = path.normalize(credPath.replace(/^["']|["']$/g, "").trim());
       try {
         const raw = readFileSync(normalizedPath, "utf8");
@@ -26,17 +35,22 @@ export function getDb(): Firestore {
         console.warn("Firestore: failed to read GOOGLE_APPLICATION_CREDENTIALS, using default credentials");
         initializeApp();
       }
-    } else if (credJson) {
+    } else if (credBase64) {
       try {
-        const normalized = credJson.trim().replace(/^["']|["']$/g, "");
-        const cred = JSON.parse(normalized) as ServiceAccount;
-        if (!cred.project_id || !cred.private_key) {
-          throw new Error("FIREBASE_SERVICE_ACCOUNT missing project_id or private_key");
-        }
+        const decoded = Buffer.from(credBase64.trim(), "base64").toString("utf8");
+        const cred = parseServiceAccountJson(decoded);
         initializeApp({ credential: cert(cred), projectId: cred.project_id });
       } catch (e) {
-        console.error("Firestore: FIREBASE_SERVICE_ACCOUNT invalid or incomplete.", e instanceof Error ? e.message : e);
-        throw new Error("Firebase config invalid. Ensure FIREBASE_SERVICE_ACCOUNT is valid JSON on a single line (no line breaks).");
+        console.error("Firestore: FIREBASE_SERVICE_ACCOUNT_BASE64 invalid.", e instanceof Error ? e.message : e);
+        throw new Error("Firebase config invalid. Check FIREBASE_SERVICE_ACCOUNT_BASE64 is base64-encoded JSON.");
+      }
+    } else if (credJson) {
+      try {
+        const cred = parseServiceAccountJson(credJson);
+        initializeApp({ credential: cert(cred), projectId: cred.project_id });
+      } catch (e) {
+        console.error("Firestore: FIREBASE_SERVICE_ACCOUNT invalid.", e instanceof Error ? e.message : e);
+        throw new Error("Firebase config invalid. Use FIREBASE_SERVICE_ACCOUNT (single-line JSON) or FIREBASE_SERVICE_ACCOUNT_BASE64 to avoid paste issues on Render.");
       }
     } else {
       initializeApp();

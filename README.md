@@ -109,7 +109,7 @@ Routes: `/admin`, `/admin/courses`, `/admin/course-content`, etc. Admin login at
 2. **Build:** `pnpm install && pnpm run build:backend`
 3. **Start:** `node dist/backend/production.mjs` (or per `render.yaml`)
 4. **Environment variables (required):** In Render → your service → **Environment** tab, add these. Your `backend/.env` is not deployed (gitignored), so Render must have them:
-   - **`FIREBASE_SERVICE_ACCOUNT`** – Paste the full Firebase service account JSON (single line, no line breaks). Without this, register/login will return **500** because the backend cannot connect to Firestore.
+   - **`FIREBASE_SERVICE_ACCOUNT`** – Paste the full Firebase service account JSON (single line, no line breaks). Without this, register/login will return **500**. If pasting JSON on Render still causes 500s (quoting/newline issues), use **`FIREBASE_SERVICE_ACCOUNT_BASE64`** instead: run `pnpm run encode:firebase` locally (with `backend/.env` set), copy the printed base64 string, and set that as `FIREBASE_SERVICE_ACCOUNT_BASE64` on Render; remove or leave `FIREBASE_SERVICE_ACCOUNT` empty.
    - **`ADMIN_EMAIL`** – Admin login email.
    - **`ADMIN_PASSWORD`** – Admin login password.
    - **`FRONTEND_URL`** – Your Netlify URL, e.g. `https://ksohtc.netlify.app` (for CORS).
