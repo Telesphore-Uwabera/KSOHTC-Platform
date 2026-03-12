@@ -1,13 +1,22 @@
+import { useEffect } from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, FileText, ExternalLink, ClipboardList } from "lucide-react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { ArrowLeft, FileText, ExternalLink, ClipboardList, Lock } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { getStoredUser } from "../lib/auth";
 import { getApiBase } from "@/lib/apiBase";
-import type { CourseDoc, ModuleDoc, LessonDoc, AssessmentDoc } from "@shared/api";
+import type { CourseDoc, ModuleDoc, LessonDoc, AssessmentDoc, ProgressDoc } from "@shared/api";
 
 const getCourseContentApi = () => getApiBase() + "/api/course-content";
+
+async function ensureEnrolled(userId: string, courseId: string): Promise<void> {
+  await fetch(`${getApiBase()}/api/enrollments`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId, courseId }),
+  });
+}
 
 async function fetchCourse(courseId: string): Promise<CourseDoc | null> {
   const res = await fetch(`${getCourseContentApi()}/courses/${courseId}`);
@@ -22,24 +31,28 @@ async function fetchModules(courseId: string): Promise<ModuleDoc[]> {
   return data.modules ?? [];
 }
 
-async function fetchLessons(courseId: string, moduleId: string): Promise<LessonDoc[]> {
-  const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules/${moduleId}/lessons`);
+type ModuleItem = { type: "lesson"; data: LessonDoc } | { type: "assessment"; data: AssessmentDoc };
+
+async function fetchModuleItems(courseId: string, moduleId: string): Promise<ModuleItem[]> {
+  const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules/${moduleId}/items`);
   if (!res.ok) return [];
   const data = await res.json();
-  return data.lessons ?? [];
+  return data.items ?? [];
 }
 
-async function fetchAssessments(courseId: string, moduleId: string): Promise<AssessmentDoc[]> {
-  const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules/${moduleId}/assessments`);
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.assessments ?? [];
-}
-
-async function fetchLegacyQuiz(courseId: string): Promise<{ title?: string; description?: string } | null> {
-  const res = await fetch(getApiBase() + `/api/courses/${courseId}/quiz`);
+async function fetchProgress(userId: string, courseId: string): Promise<ProgressDoc | null> {
+  const res = await fetch(`${getApiBase()}/api/progress?userId=${encodeURIComponent(userId)}&courseId=${encodeURIComponent(courseId)}`);
   if (!res.ok) return null;
-  return res.json();
+  const data = await res.json();
+  return data.progress ?? null;
+}
+
+async function markLessonComplete(userId: string, courseId: string, lessonId: string): Promise<void> {
+  await fetch(`${getApiBase()}/api/progress`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId, courseId, completedLessonId: lessonId }),
+  });
 }
 
 function youtubeEmbedUrl(url: string): string {
@@ -51,19 +64,35 @@ function youtubeEmbedUrl(url: string): string {
 function ModuleBlock({
   courseId,
   module: mod,
+  progress,
+  userId,
+  onProgressUpdate,
 }: {
   courseId: string;
   module: ModuleDoc;
+  progress: ProgressDoc | null;
+  userId: string;
+  onProgressUpdate: () => void;
 }) {
-  const { data: lessons = [] } = useQuery({
-    queryKey: ["course-content", "lessons", courseId, mod.id],
-    queryFn: () => fetchLessons(courseId, mod.id),
+  const { data: items = [] } = useQuery({
+    queryKey: ["course-content", "items", courseId, mod.id],
+    queryFn: () => fetchModuleItems(courseId, mod.id),
   });
-  const { data: assessments = [] } = useQuery({
-    queryKey: ["course-content", "assessments", courseId, mod.id],
-    queryFn: () => fetchAssessments(courseId, mod.id),
+  const completedLessons = new Set(progress?.completedLessonIds ?? []);
+  const completedAssessments = new Set(progress?.completedAssessmentIds ?? []);
+
+  const markCompleteMutation = useMutation({
+    mutationFn: (lessonId: string) => markLessonComplete(userId, courseId, lessonId),
+    onSuccess: () => onProgressUpdate(),
   });
-  const firstAssessment = assessments[0];
+
+  function isLessonUnlocked(itemIndex: number): boolean {
+    for (let i = 0; i < itemIndex; i++) {
+      const prev = items[i];
+      if (prev.type === "assessment" && !completedAssessments.has(prev.data.id)) return false;
+    }
+    return true;
+  }
 
   return (
     <div className="mb-10">
@@ -71,49 +100,79 @@ function ModuleBlock({
         <FileText className="w-5 h-5" />
         {mod.title}
       </h2>
-      <ul className="space-y-3 mb-4">
-        {lessons.map((lesson) => (
-          <li key={lesson.id} className="flex flex-col gap-2">
-            <span className="font-medium text-gray-900">{lesson.title}</span>
-            {lesson.youtubeUrl && (
-              <div className="rounded-lg overflow-hidden bg-gray-100 aspect-video max-w-2xl">
-                <iframe
-                  title={lesson.title}
-                  src={youtubeEmbedUrl(lesson.youtubeUrl)}
-                  className="w-full h-full"
-                  allowFullScreen
-                />
+      <ul className="space-y-4">
+        {items.map((item, itemIndex) => {
+          if (item.type === "lesson") {
+            const lesson = item.data;
+            const unlocked = isLessonUnlocked(itemIndex);
+
+            return (
+              <li key={`lesson-${lesson.id}`} className="flex flex-col gap-2">
+                <span className="font-medium text-gray-900">{lesson.title}</span>
+                {lesson.youtubeUrl && (
+                  <div className="rounded-lg overflow-hidden bg-gray-100 aspect-video max-w-2xl">
+                    <iframe
+                      title={lesson.title}
+                      src={youtubeEmbedUrl(lesson.youtubeUrl)}
+                      className="w-full h-full"
+                      allowFullScreen
+                    />
+                  </div>
+                )}
+                {lesson.pdfUrl && (
+                  <>
+                    {unlocked ? (
+                      <a
+                        href={lesson.pdfUrl.startsWith("http") ? lesson.pdfUrl : lesson.pdfUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => {
+                          if (!completedLessons.has(lesson.id)) markCompleteMutation.mutate(lesson.id);
+                        }}
+                        className="inline-flex items-center gap-2 text-primary hover:text-accent font-medium underline underline-offset-2"
+                      >
+                        Open PDF
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    ) : (
+                      <p className="inline-flex items-center gap-2 text-gray-500 text-sm">
+                        <Lock className="w-4 h-4" />
+                        Complete the break quiz above to unlock this PDF.
+                      </p>
+                    )}
+                  </>
+                )}
+                {lesson.contentHtml && (
+                  <div
+                    className="prose prose-sm max-w-none text-gray-700"
+                    dangerouslySetInnerHTML={{ __html: lesson.contentHtml }}
+                  />
+                )}
+              </li>
+            );
+          }
+          const assessment = item.data;
+          const passed = completedAssessments.has(assessment.id);
+          return (
+            <li key={`assessment-${assessment.id}`} className="pt-2">
+              <div className="flex items-center gap-2 p-3 rounded-xl bg-primary/5 border border-primary/20">
+                <ClipboardList className="w-5 h-5 text-primary" />
+                <span className="font-medium text-gray-900">{assessment.title}</span>
+                {passed && <span className="text-sm text-green-700">(passed)</span>}
+                {!passed && (
+                  <Link
+                    to={`/courses/${courseId}/modules/${mod.id}/quiz/${assessment.id}`}
+                    className="ml-auto inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 text-sm"
+                  >
+                    Take break quiz
+                    <ExternalLink className="w-4 h-4" />
+                  </Link>
+                )}
               </div>
-            )}
-            {lesson.pdfUrl && (
-              <a
-                href={lesson.pdfUrl.startsWith("http") ? lesson.pdfUrl : lesson.pdfUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-primary hover:text-accent font-medium underline underline-offset-2"
-              >
-                Open PDF
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            )}
-            {lesson.contentHtml && (
-              <div
-                className="prose prose-sm max-w-none text-gray-700"
-                dangerouslySetInnerHTML={{ __html: lesson.contentHtml }}
-              />
-            )}
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
-      {firstAssessment && (
-        <Link
-          to={`/courses/${courseId}/modules/${mod.id}/quiz/${firstAssessment.id}`}
-          className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-lg font-semibold hover:bg-primary/20"
-        >
-          <ClipboardList className="w-4 h-4" />
-          Take module quiz
-        </Link>
-      )}
     </div>
   );
 }
@@ -137,11 +196,25 @@ export default function CourseDetail() {
     enabled: !!courseId && !!course,
   });
 
+  const { data: progress, refetch: refetchProgress } = useQuery({
+    queryKey: ["progress", user?.id, courseId],
+    queryFn: () => fetchProgress(user!.id, courseId!),
+    enabled: !!user?.id && !!courseId && canAccess,
+  });
+
   const { data: legacyQuiz } = useQuery({
     queryKey: ["quiz", courseId],
     queryFn: () => fetchLegacyQuiz(courseId!),
     enabled: !!courseId && canAccess,
   });
+
+  const enrollMutation = useMutation({
+    mutationFn: () => ensureEnrolled(user!.id, courseId!),
+  });
+
+  useEffect(() => {
+    if (canAccess && user?.id && courseId) enrollMutation.mutate();
+  }, [canAccess, user?.id, courseId]);
 
   if (!courseId) return <Navigate to="/courses" replace />;
   if (courseLoading) {
@@ -220,7 +293,14 @@ export default function CourseDetail() {
               ) : (
                 <div className="space-y-10">
                   {modules.map((mod) => (
-                    <ModuleBlock key={mod.id} courseId={courseId!} module={mod} />
+                    <ModuleBlock
+                      key={mod.id}
+                      courseId={courseId!}
+                      module={mod}
+                      progress={progress ?? null}
+                      userId={user!.id}
+                      onProgressUpdate={() => refetchProgress()}
+                    />
                   ))}
 
                   {legacyQuiz && (

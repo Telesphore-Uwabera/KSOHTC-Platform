@@ -19,6 +19,8 @@ import {
   assessmentDoc,
   isValidCourseSlug,
 } from "../lib/course-firestore";
+import { submissionsCollection, progressCollection } from "../lib/firestore";
+import type { SubmissionDoc, ProgressDoc } from "@shared/api";
 
 /** GET /api/course-content/courses – list all courses from Firestore */
 export async function listCourses(_req: Request, res: Response): Promise<void> {
@@ -55,7 +57,7 @@ export async function createCourse(req: Request, res: Response): Promise<void> {
     const body = req.body as { slug?: string; title: string; description?: string; sector?: string; duration?: string };
     const slug = (body.slug ?? "").trim() as CourseId;
     if (!slug || !isValidCourseSlug(slug)) {
-      res.status(400).json({ error: "Valid slug required: construction | industrial-safety | mining | safety-management" });
+      res.status(400).json({ error: "Valid slug required: construction | industrial-safety | mining | safety-management | safety-for-all" });
       return;
     }
     const now = new Date().toISOString();
@@ -114,6 +116,22 @@ export async function updateCourse(req: Request, res: Response): Promise<void> {
     console.error("updateCourse:", e);
     res.status(500).json({ error: "Failed to update course." });
   }
+}
+
+/** Return total lesson + assessment count for a course (for completion %) */
+export async function getCourseTotalSteps(courseId: string): Promise<{ totalLessons: number; totalAssessments: number }> {
+  const modsSnap = await modulesRef(courseId).orderBy("order", "asc").get();
+  let totalLessons = 0;
+  let totalAssessments = 0;
+  for (const modDoc of modsSnap.docs) {
+    const [lessonsSnap, assessmentsSnap] = await Promise.all([
+      lessonsRef(courseId, modDoc.id).get(),
+      assessmentsRef(courseId, modDoc.id).get(),
+    ]);
+    totalLessons += lessonsSnap.size;
+    totalAssessments += assessmentsSnap.size;
+  }
+  return { totalLessons, totalAssessments };
 }
 
 /** GET /api/course-content/courses/:courseId/modules – list modules */
@@ -314,16 +332,40 @@ export async function listAssessments(req: Request, res: Response): Promise<void
   try {
     const { courseId, moduleId } = req.params;
     const snap = await assessmentsRef(courseId, moduleId).get();
-    const assessments: AssessmentDoc[] = snap.docs.map((d) => ({
-      id: d.id,
-      courseId,
-      moduleId,
-      ...d.data(),
-    } as AssessmentDoc));
+    const assessments: AssessmentDoc[] = snap.docs
+      .map((d) => ({ id: d.id, courseId, moduleId, ...d.data() } as AssessmentDoc))
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     res.json({ assessments });
   } catch (e) {
     console.error("listAssessments:", e);
     res.status(500).json({ error: "Failed to list assessments." });
+  }
+}
+
+/** GET .../modules/:moduleId/items – ordered list of lessons and break quizzes (for gating next PDF) */
+export async function getModuleItems(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId, moduleId } = req.params;
+    const [lessonsSnap, assessmentsSnap] = await Promise.all([
+      lessonsRef(courseId, moduleId).orderBy("order", "asc").get(),
+      assessmentsRef(courseId, moduleId).get(),
+    ]);
+    const lessons: LessonDoc[] = lessonsSnap.docs.map((d) => ({ id: d.id, courseId, moduleId, ...d.data() } as LessonDoc));
+    const assessments: AssessmentDoc[] = assessmentsSnap.docs
+      .map((d) => ({ id: d.id, courseId, moduleId, ...d.data() } as AssessmentDoc))
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    const items: Array<{ type: "lesson"; data: LessonDoc } | { type: "assessment"; data: AssessmentDoc }> = [];
+    for (const lesson of lessons) {
+      items.push({ type: "lesson", data: lesson });
+      const afterQuiz = assessments.filter((a) => a.afterLessonId === lesson.id);
+      for (const a of afterQuiz) items.push({ type: "assessment", data: a });
+    }
+    const rest = assessments.filter((a) => !a.afterLessonId);
+    for (const a of rest) items.push({ type: "assessment", data: a });
+    res.json({ items });
+  } catch (e) {
+    console.error("getModuleItems:", e);
+    res.status(500).json({ error: "Failed to get module items." });
   }
 }
 
@@ -343,7 +385,7 @@ export async function getAssessment(req: Request, res: Response): Promise<void> 
   }
 }
 
-/** POST /api/course-content/courses/:courseId/modules/:moduleId/assessments – add assessment (quiz) */
+/** POST /api/course-content/courses/:courseId/modules/:moduleId/assessments – add assessment (break quiz) */
 export async function createAssessment(req: Request, res: Response): Promise<void> {
   try {
     const { courseId, moduleId } = req.params;
@@ -352,6 +394,8 @@ export async function createAssessment(req: Request, res: Response): Promise<voi
       description?: string;
       questions?: Array<{ text: string; options: string[]; correctIndex: number }>;
       passThreshold?: number;
+      order?: number;
+      afterLessonId?: string;
     };
     const moduleSnap = await moduleDoc(courseId, moduleId).get();
     if (!moduleSnap.exists) {
@@ -360,7 +404,7 @@ export async function createAssessment(req: Request, res: Response): Promise<voi
     }
     const now = new Date().toISOString();
     const id = crypto.randomUUID();
-    const questions: QuizQuestion[] = (body.questions ?? []).map((q, i) => ({
+    const questions: QuizQuestion[] = (body.questions ?? []).map((q) => ({
       id: crypto.randomUUID(),
       text: String(q.text ?? "").trim(),
       options: Array.isArray(q.options) ? q.options.map((o) => String(o).trim()) : [],
@@ -369,11 +413,13 @@ export async function createAssessment(req: Request, res: Response): Promise<voi
     const data: Omit<AssessmentDoc, "id"> = {
       courseId,
       moduleId,
-      title: String(body.title ?? "Module assessment").trim(),
+      title: String(body.title ?? "Break quiz").trim(),
       description: typeof body.description === "string" ? body.description : undefined,
       questions,
       passThreshold: Math.max(0, Math.min(100, Number(body.passThreshold) ?? 70)),
       published: true,
+      order: body.order !== undefined ? Number(body.order) : 0,
+      ...(body.afterLessonId && { afterLessonId: body.afterLessonId }),
       createdAt: now,
       updatedAt: now,
     };
@@ -395,6 +441,8 @@ export async function updateAssessment(req: Request, res: Response): Promise<voi
       questions?: Array<{ id?: string; text: string; options: string[]; correctIndex: number }>;
       passThreshold?: number;
       published?: boolean;
+      order?: number;
+      afterLessonId?: string;
     };
     const ref = assessmentDoc(courseId, moduleId, assessmentId);
     const snap = await ref.get();
@@ -420,6 +468,8 @@ export async function updateAssessment(req: Request, res: Response): Promise<voi
       questions,
       ...(body.passThreshold !== undefined && { passThreshold: Math.max(0, Math.min(100, Number(body.passThreshold))) }),
       ...(body.published !== undefined && { published: Boolean(body.published) }),
+      ...(body.order !== undefined && { order: Number(body.order) }),
+      ...(body.afterLessonId !== undefined && { afterLessonId: body.afterLessonId || undefined }),
       updatedAt: now,
     };
     await ref.set(updated);
@@ -445,5 +495,70 @@ export async function deleteAssessment(req: Request, res: Response): Promise<voi
   } catch (e) {
     console.error("deleteAssessment:", e);
     res.status(500).json({ error: "Failed to delete assessment." });
+  }
+}
+
+/** POST .../assessments/:assessmentId/submit – submit quiz answers; server marks using correctIndex and updates progress */
+export async function submitAssessment(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId, moduleId, assessmentId } = req.params;
+    const body = req.body as { userId: string; answers: number[] };
+    const { userId, answers } = body;
+    if (!userId || !Array.isArray(answers)) {
+      res.status(400).json({ error: "userId and answers (array) are required." });
+      return;
+    }
+    const assessRef = assessmentDoc(courseId, moduleId, assessmentId);
+    const assessSnap = await assessRef.get();
+    if (!assessSnap.exists) {
+      res.status(404).json({ error: "Assessment not found." });
+      return;
+    }
+    const assessment = { id: assessSnap.id, ...assessSnap.data() } as AssessmentDoc;
+    const questions = assessment.questions ?? [];
+    let correct = 0;
+    questions.forEach((q, i) => {
+      const selected = answers[i];
+      if (selected === q.correctIndex) correct++;
+    });
+    const maxScore = questions.length;
+    const score = correct;
+    const percentage = maxScore > 0 ? Math.round((correct / maxScore) * 100) : 0;
+    const passed = percentage >= (assessment.passThreshold ?? 70);
+    const now = new Date().toISOString();
+    const submissionId = crypto.randomUUID();
+    const submission: SubmissionDoc = {
+      id: submissionId,
+      userId,
+      courseId,
+      moduleId,
+      assessmentId,
+      answers,
+      score,
+      maxScore,
+      percentage,
+      passed,
+      submittedAt: now,
+    };
+    await submissionsCollection().doc(submissionId).set(submission);
+
+    const progressId = `${userId}_${courseId}`;
+    const progressRef = progressCollection().doc(progressId);
+    const progressSnap = await progressRef.get();
+    const completedAssessmentIds = progressSnap.exists
+      ? [...((progressSnap.data() as ProgressDoc).completedAssessmentIds ?? [])]
+      : [];
+    if (passed && !completedAssessmentIds.includes(assessmentId)) {
+      completedAssessmentIds.push(assessmentId);
+      const progressData: ProgressDoc = progressSnap.exists
+        ? { ...(progressSnap.data() as ProgressDoc), completedAssessmentIds, updatedAt: now }
+        : { id: progressId, userId, courseId, completedLessonIds: [], completedAssessmentIds, updatedAt: now };
+      await progressRef.set(progressData);
+    }
+
+    res.status(201).json({ submission: { ...submission }, passed });
+  } catch (e) {
+    console.error("submitAssessment:", e);
+    res.status(500).json({ error: "Failed to submit quiz." });
   }
 }

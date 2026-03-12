@@ -25,16 +25,25 @@ export default function AdminCourseContent() {
           Course content
         </h1>
         <p className="text-gray-600 text-sm mb-6">
-          Edit modules, lessons (YouTube + text), and assessments per subunit. Run{" "}
-          <code className="bg-gray-100 px-1 rounded text-xs">pnpm run seed:courses</code> once to create courses from{" "}
-          <code className="bg-gray-100 px-1 rounded text-xs">public/courses</code>.
+          This is where you manage course structure: modules, lessons (PDFs, YouTube, text), and break quizzes. Once courses exist, you’ll see them below and can edit each one.
         </p>
         {isLoading ? (
           <p className="text-gray-500 text-sm">Loading…</p>
         ) : courses.length === 0 ? (
-          <p className="text-gray-500 text-sm">
-            No courses in Firestore. Run <code className="bg-gray-100 px-1 rounded">pnpm run seed:courses</code> from the project root to seed from public/courses.
-          </p>
+          <div className="rounded-xl border border-amber-200 bg-amber-50/80 p-5 text-amber-900">
+            <p className="font-medium mb-2">No courses yet</p>
+            <p className="text-sm text-amber-800/90 mb-3">
+              Courses are created by running the seed script once (from your machine or CI). It reads PDFs from{" "}
+              <code className="bg-amber-100 px-1 rounded text-xs">public/courses</code> and creates construction, industrial-safety, mining, safety-management, and safety-for-all in Firestore.
+            </p>
+            <p className="text-sm">
+              From the project root run:{" "}
+              <code className="bg-amber-100 px-2 py-1 rounded font-mono text-xs">pnpm run seed:courses</code>
+            </p>
+            <p className="text-xs mt-3 text-amber-700">
+              After that, this page will list all courses and you can edit modules, lessons, and add break quizzes here.
+            </p>
+          </div>
         ) : (
           <ul className="space-y-2">
             {courses.map((c) => (

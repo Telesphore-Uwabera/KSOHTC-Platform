@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import type { User, UserCreate, UserPublic } from "@shared/api";
 import { usersCollection } from "../lib/firestore";
+import type { EnrollmentWithPercent } from "./enrollments";
+import { getEnrollmentsForUser } from "./enrollments";
 
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
@@ -109,6 +111,27 @@ export async function getUsers(_req: Request, res: Response): Promise<void> {
   } catch (e) {
     console.error("Get users error:", e);
     res.status(500).json({ error: "Failed to list users." });
+  }
+}
+
+/** GET /api/users/learners-summary – users plus enrollments with completion % (for admin learners page) */
+export async function getLearnersSummary(_req: Request, res: Response): Promise<void> {
+  try {
+    const snap = await usersCollection().get();
+    const users = snap.docs
+      .map((d) => toPublic(d.data() as User))
+      .sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
+    const enrollmentsByUserId: Record<string, EnrollmentWithPercent[]> = {};
+    await Promise.all(
+      users.map(async (u) => {
+        const enrollments = await getEnrollmentsForUser(u.id);
+        enrollmentsByUserId[u.id] = enrollments;
+      })
+    );
+    res.json({ users, enrollmentsByUserId });
+  } catch (e) {
+    console.error("Learners summary error:", e);
+    res.status(500).json({ error: "Failed to load learners summary." });
   }
 }
 

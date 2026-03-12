@@ -40,8 +40,8 @@ export interface User {
 export type UserCreate = Pick<User, "email" | "password" | "name" | "organization">;
 export type UserPublic = Omit<User, "password">;
 
-/** Course identifier (must match client course ids) */
-export type CourseId = "construction" | "industrial-safety" | "mining" | "safety-management";
+/** Course identifier (must match client course ids). safety-for-all = common safety course after the three main courses */
+export type CourseId = "construction" | "industrial-safety" | "mining" | "safety-management" | "safety-for-all";
 
 /** Course document (Firestore) */
 export interface CourseDoc {
@@ -92,7 +92,7 @@ export interface LessonDoc {
   updatedAt: string;
 }
 
-/** Assessment (quiz) after a subunit - stored per module */
+/** Assessment (break quiz) – can be placed after a specific lesson via afterLessonId and order */
 export interface AssessmentDoc {
   id: string;
   courseId: string;
@@ -102,9 +102,16 @@ export interface AssessmentDoc {
   questions: QuizQuestion[];
   passThreshold: number;
   published: boolean;
+  /** Display order within module (for interleaving with lessons) */
+  order: number;
+  /** If set, this quiz is a "break" that must be passed before the learner can open the next lesson */
+  afterLessonId?: string;
   createdAt: string;
   updatedAt: string;
 }
+
+/** Enrollment status for admin/learners view */
+export type EnrollmentStatus = "not_approved" | "active" | "completed";
 
 /** Enrollment: learner enrolled in course */
 export interface EnrollmentDoc {
@@ -112,6 +119,7 @@ export interface EnrollmentDoc {
   userId: string;
   courseId: string;
   enrolledAt: string;
+  status?: EnrollmentStatus;
 }
 
 /** Submission: learner's quiz attempt */
@@ -129,12 +137,14 @@ export interface SubmissionDoc {
   submittedAt: string;
 }
 
-/** Progress: learner progress in a course */
+/** Progress: learner progress in a course (used to gate next PDF until break quiz passed) */
 export interface ProgressDoc {
   id: string;
   userId: string;
   courseId: string;
   completedLessonIds: string[];
+  /** Break quizzes passed (required to unlock next lesson when afterLessonId is set) */
+  completedAssessmentIds: string[];
   lastLessonId?: string;
   updatedAt: string;
 }

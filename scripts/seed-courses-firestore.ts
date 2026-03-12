@@ -91,7 +91,7 @@ async function seedCourse(
     sector,
     duration,
     published: true,
-    order: slug === "construction" ? 1 : slug === "industrial-safety" ? 2 : slug === "mining" ? 3 : 4,
+    order: slug === "construction" ? 1 : slug === "industrial-safety" ? 2 : slug === "mining" ? 3 : slug === "safety-management" ? 4 : 5,
     createdAt: now,
     updatedAt: now,
   });
@@ -173,6 +173,19 @@ async function main() {
     },
   ];
   await seedCourse("safety-management", "Safety Management (General)", "General", "1 week", safetyOnlyModules);
+
+  const safetyForAllModules: SeedModule[] = [
+    {
+      title: "Safety for Everyone",
+      lessons: [
+        { title: "Introduction to Workplace Safety" },
+        { title: "Hazard Awareness" },
+        { title: "Emergency Procedures" },
+        { title: "Personal Protective Equipment" },
+      ],
+    },
+  ];
+  await seedCourse("safety-for-all", "Safety Course for All", "General", "1 week", safetyForAllModules);
 
   console.log("\nDone. You can now edit courses in the admin panel and add YouTube links and rich text.");
 }

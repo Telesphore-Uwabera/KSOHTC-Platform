@@ -12,6 +12,7 @@ const iconBySlug: Record<string, typeof HardHat> = {
   "industrial-safety": Building,
   mining: Pickaxe,
   "safety-management": Shield,
+  "safety-for-all": Shield,
 };
 
 async function fetchCourses(): Promise<CourseDoc[]> {

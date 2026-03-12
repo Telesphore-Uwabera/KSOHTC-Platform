@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Save, Loader2, Trash2, Plus, ArrowLeft } from "lucide-react";
-import type { AssessmentDoc, QuizQuestion } from "@shared/api";
+import type { AssessmentDoc, QuizQuestion, LessonDoc } from "@shared/api";
 import { getApiBase } from "@/lib/apiBase";
 
 const getCourseContentApi = () => getApiBase() + "/api/course-content";
@@ -13,6 +13,13 @@ async function fetchAssessment(courseId: string, moduleId: string, assessmentId:
   const data = await res.json();
   const list = (data as { assessments: AssessmentDoc[] }).assessments ?? [];
   return list.find((a) => a.id === assessmentId) ?? null;
+}
+
+async function fetchLessons(courseId: string, moduleId: string): Promise<LessonDoc[]> {
+  const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules/${moduleId}/lessons`);
+  if (!res.ok) return [];
+  const data = await res.json();
+  return (data as { lessons: LessonDoc[] }).lessons ?? [];
 }
 
 function emptyQuestion(): QuizQuestion {
@@ -30,7 +37,15 @@ export default function AdminModuleAssessment() {
   const [title, setTitle] = useState("Assessment");
   const [description, setDescription] = useState("");
   const [passThreshold, setPassThreshold] = useState(70);
+  const [order, setOrder] = useState(0);
+  const [afterLessonId, setAfterLessonId] = useState<string>("");
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+
+  const { data: lessons = [] } = useQuery({
+    queryKey: ["course-content", "lessons", courseId, moduleId],
+    queryFn: () => fetchLessons(courseId!, moduleId!),
+    enabled: !!(courseId && moduleId),
+  });
 
   const { data: assessment, isLoading } = useQuery({
     queryKey: ["course-content", "assessments", courseId, moduleId],
@@ -43,6 +58,8 @@ export default function AdminModuleAssessment() {
       setTitle(assessment.title);
       setDescription(assessment.description ?? "");
       setPassThreshold(assessment.passThreshold);
+      setOrder(assessment.order ?? 0);
+      setAfterLessonId(assessment.afterLessonId ?? "");
       setQuestions(
         assessment.questions?.length
           ? assessment.questions.map((q) => ({ ...q, id: q.id || crypto.randomUUID() }))
@@ -58,7 +75,14 @@ export default function AdminModuleAssessment() {
       const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules/${moduleId}/assessments/${assessmentId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description: description || undefined, passThreshold, questions }),
+        body: JSON.stringify({
+          title,
+          description: description || undefined,
+          passThreshold,
+          questions,
+          order,
+          afterLessonId: afterLessonId || undefined,
+        }),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
@@ -164,6 +188,32 @@ export default function AdminModuleAssessment() {
               max={100}
               value={passThreshold}
               onChange={(e) => setPassThreshold(Number(e.target.value))}
+              className="w-24 px-4 py-2 rounded-lg border border-gray-200"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Break placement – show quiz after which lesson?</label>
+            <p className="text-xs text-gray-500 mb-1">Learners must pass this quiz before opening the next lesson.</p>
+            <select
+              value={afterLessonId}
+              onChange={(e) => setAfterLessonId(e.target.value)}
+              className="w-full max-w-md px-4 py-2 rounded-lg border border-gray-200 bg-white"
+            >
+              <option value="">End of module (no break)</option>
+              {lessons.map((l) => (
+                <option key={l.id} value={l.id}>
+                  After: {l.title}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Order (number for sorting)</label>
+            <input
+              type="number"
+              min={0}
+              value={order}
+              onChange={(e) => setOrder(Number(e.target.value))}
               className="w-24 px-4 py-2 rounded-lg border border-gray-200"
             />
           </div>

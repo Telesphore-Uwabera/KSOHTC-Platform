@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -35,10 +35,13 @@ export default function TakeModuleQuiz() {
     assessmentId: string;
   }>();
   const user = getStoredUser();
+  const queryClient = useQueryClient();
   const canAccess = user?.approved ?? false;
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState<number | null>(null);
+  const [passed, setPassed] = useState<boolean | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const { data: course } = useQuery({
     queryKey: ["course-content", "course", courseId],
@@ -57,16 +60,35 @@ export default function TakeModuleQuiz() {
     setAnswers((a) => ({ ...a, [questionId]: optionIndex }));
   };
 
-  const handleSubmit = () => {
-    if (!assessment || submitted) return;
-    const correct = assessment.questions.filter(
-      (q) => answers[q.id] === q.correctIndex
-    ).length;
-    const pct = assessment.questions.length
-      ? Math.round((correct / assessment.questions.length) * 100)
-      : 0;
-    setScore(pct);
-    setSubmitted(true);
+  const handleSubmit = async () => {
+    if (!assessment || !user?.id || submitted || submitting) return;
+    setSubmitting(true);
+    try {
+      const answersArray = assessment.questions.map((q) => answers[q.id] ?? -1);
+      const res = await fetch(
+        `${getCourseContentApi()}/courses/${courseId}/modules/${moduleId}/assessments/${assessmentId}/submit`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: user.id, answers: answersArray }),
+        }
+      );
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error ?? "Submit failed");
+      }
+      const data = (await res.json()) as { submission?: { percentage: number }; passed: boolean };
+      setScore(data.submission?.percentage ?? 0);
+      setPassed(data.passed ?? false);
+      setSubmitted(true);
+      queryClient.invalidateQueries({ queryKey: ["progress"] });
+    } catch {
+      setScore(0);
+      setPassed(false);
+      setSubmitted(true);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (!courseId || !moduleId || !assessmentId) {
@@ -124,7 +146,7 @@ export default function TakeModuleQuiz() {
     );
   }
 
-  const passed = score !== null && score >= assessment.passThreshold;
+  const passedResult = passed !== null ? passed : (score !== null && score >= assessment.passThreshold);
   const courseTitle = course?.title ?? "Course";
 
   return (
@@ -178,11 +200,11 @@ export default function TakeModuleQuiz() {
                   type="button"
                   onClick={handleSubmit}
                   disabled={
-                    Object.keys(answers).length < assessment.questions.length
+                    Object.keys(answers).length < assessment.questions.length || submitting
                   }
                   className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Submit answers
+                  {submitting ? "Submitting…" : "Submit answers"}
                 </button>
                 <p className="text-sm text-gray-500 mt-2">
                   You have selected answers for {Object.keys(answers).length} of{" "}
@@ -194,17 +216,17 @@ export default function TakeModuleQuiz() {
             <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8">
               <div
                 className={`flex items-center gap-3 mb-4 ${
-                  passed ? "text-green-700" : "text-amber-700"
+                  passedResult ? "text-green-700" : "text-amber-700"
                 }`}
               >
-                {passed ? (
+                {passedResult ? (
                   <CheckCircle className="w-10 h-10" />
                 ) : (
                   <XCircle className="w-10 h-10" />
                 )}
                 <div>
                   <p className="text-xl font-bold">
-                    {passed ? "Passed" : "Not passed"}
+                    {passedResult ? "Passed" : "Not passed"}
                   </p>
                   <p className="text-lg">
                     Score: {score}% (required: {assessment.passThreshold}%)

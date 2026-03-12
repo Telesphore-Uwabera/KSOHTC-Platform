@@ -310,23 +310,55 @@ function ModuleBlock({
       {expanded && (
         <div className="border-t border-gray-100 bg-gray-50/50 p-4 space-y-4">
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-2">Lessons (add YouTube link and/or text per topic)</p>
+            <p className="text-sm font-medium text-gray-700 mb-2">Lessons & break points — add a quiz after any lesson to gate the next; learners must pass it before opening the next lesson. Quizzes are fully editable (title, questions, correct answers, placement).</p>
             <ul className="space-y-2 mb-3">
-              {lessons.map((l) => (
-                <li key={l.id} className="flex items-center justify-between gap-2 py-2 px-3 rounded-xl bg-white border border-gray-100">
-                  <div className="flex items-center gap-2 min-w-0">
-                    {l.pdfUrl ? <FileText className="w-4 h-4 text-amber-600 shrink-0" title="PDF" /> : null}
-                    {l.youtubeUrl ? <Youtube className="w-4 h-4 text-red-600 shrink-0" /> : null}
-                    {!l.pdfUrl && !l.youtubeUrl ? <FileText className="w-4 h-4 text-gray-400 shrink-0" /> : null}
-                    <span className="truncate font-medium text-gray-900">{l.title}</span>
+              {lessons.map((l, idx) => (
+                <li key={l.id} className="space-y-1">
+                  <div className="flex items-center justify-between gap-2 py-2 px-3 rounded-xl bg-white border border-gray-100">
+                    <div className="flex items-center gap-2 min-w-0">
+                      {l.pdfUrl ? <FileText className="w-4 h-4 text-amber-600 shrink-0" title="PDF" /> : null}
+                      {l.youtubeUrl ? <Youtube className="w-4 h-4 text-red-600 shrink-0" /> : null}
+                      {!l.pdfUrl && !l.youtubeUrl ? <FileText className="w-4 h-4 text-gray-400 shrink-0" /> : null}
+                      <span className="truncate font-medium text-gray-900">{idx + 1}. {l.title}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => onEditLesson(l)}
+                      className="inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline shrink-0"
+                    >
+                      <Pencil className="w-3.5 h-3.5" /> Edit
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => onEditLesson(l)}
-                    className="inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline shrink-0"
-                  >
-                    <Pencil className="w-3.5 h-3.5" /> Edit
-                  </button>
+                  <div className="pl-4 flex items-center gap-2 flex-wrap">
+                    {assessments.filter((a) => a.afterLessonId === l.id).map((a) => (
+                      <span key={a.id} className="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary px-2 py-1 rounded-lg">
+                        <ClipboardList className="w-3 h-3" />
+                        Break here: {a.title}
+                        <Link to={`/admin/course-content/${courseId}/modules/${mod.id}/assessments/${a.id}`} className="font-medium hover:underline">Edit</Link>
+                      </span>
+                    ))}
+                    {addingAssessment === `after-${l.id}` ? (
+                      <AddAssessmentForm
+                        courseId={courseId}
+                        moduleId={mod.id}
+                        afterLessonId={l.id}
+                        order={idx + 1}
+                        onClose={() => setAddingAssessment(null)}
+                        onSuccess={() => {
+                          queryClient.invalidateQueries({ queryKey: ["course-content", "assessments", courseId, mod.id] });
+                          setAddingAssessment(null);
+                        }}
+                      />
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setAddingAssessment(`after-${l.id}`)}
+                        className="inline-flex items-center gap-1 text-xs text-primary font-medium hover:underline"
+                      >
+                        <Plus className="w-3 h-3" /> Add break quiz after this lesson
+                      </button>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
@@ -397,15 +429,15 @@ function ModuleBlock({
             )}
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-700 mb-2">Assessments (quiz after this subunit)</p>
-            {assessments.length > 0 ? (
+            <p className="text-sm font-medium text-gray-700 mb-2">Other assessments (end-of-module quizzes, no break placement)</p>
+            {assessments.filter((a) => !a.afterLessonId).length > 0 ? (
               <ul className="space-y-2">
-                {assessments.map((a) => (
+                {assessments.filter((a) => !a.afterLessonId).map((a) => (
                   <li key={a.id} className="flex items-center justify-between gap-2 py-2 px-3 rounded-xl bg-white border border-gray-100">
                     <div className="flex items-center gap-2">
                       <ClipboardList className="w-4 h-4 text-primary" />
                       <span className="font-medium text-gray-900">{a.title}</span>
-                      <span className="text-sm text-gray-500">({a.questions.length} questions)</span>
+                      <span className="text-sm text-gray-500">({a.questions?.length ?? 0} questions)</span>
                     </div>
                     <Link
                       to={`/admin/course-content/${courseId}/modules/${mod.id}/assessments/${a.id}`}
@@ -417,7 +449,7 @@ function ModuleBlock({
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-gray-500">No assessment yet.</p>
+              <p className="text-sm text-gray-500">No end-of-module quiz.</p>
             )}
             {addingAssessment === mod.id ? (
               <AddAssessmentForm
@@ -435,7 +467,7 @@ function ModuleBlock({
                 onClick={() => setAddingAssessment(mod.id)}
                 className="mt-2 inline-flex items-center gap-2 text-primary font-medium text-sm hover:underline"
               >
-                <Plus className="w-4 h-4" /> Add assessment (quiz)
+                <Plus className="w-4 h-4" /> Add quiz (end of module)
               </button>
             )}
           </div>
@@ -448,15 +480,19 @@ function ModuleBlock({
 function AddAssessmentForm({
   courseId,
   moduleId,
+  afterLessonId,
+  order = 0,
   onClose,
   onSuccess,
 }: {
   courseId: string;
   moduleId: string;
+  afterLessonId?: string;
+  order?: number;
   onClose: () => void;
   onSuccess: () => void;
 }) {
-  const [title, setTitle] = useState("Module assessment");
+  const [title, setTitle] = useState(afterLessonId ? "Break quiz" : "Module assessment");
   const [passThreshold, setPassThreshold] = useState(70);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -469,7 +505,13 @@ function AddAssessmentForm({
       const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules/${moduleId}/assessments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, passThreshold, questions: [] }),
+        body: JSON.stringify({
+          title,
+          passThreshold,
+          questions: [],
+          order,
+          ...(afterLessonId && { afterLessonId }),
+        }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));

@@ -113,7 +113,7 @@ export default function AdminCourseQuiz() {
 
   if (!courseId) return null;
 
-  const validCourseIds: CourseId[] = ["construction", "industrial-safety", "mining"];
+  const validCourseIds: CourseId[] = ["construction", "industrial-safety", "mining", "safety-management", "safety-for-all"];
   const courseLabel = validCourseIds.includes(courseId as CourseId)
     ? courseId.replace("-", " ").replace(/\b\w/g, (c) => c.toUpperCase())
     : courseId;

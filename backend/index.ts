@@ -8,7 +8,7 @@ import express, { type Request, type Response, type NextFunction } from "express
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { getTestimonials, postTestimonial } from "./routes/testimonials";
-import { postRegister, postLogin, getUsers, patchUserApprove } from "./routes/users";
+import { postRegister, postLogin, getUsers, getLearnersSummary, patchUserApprove } from "./routes/users";
 import { getCourses, getCourseQuiz, putCourseQuiz, deleteCourseQuiz } from "./routes/courses";
 import { getCourseUsage } from "./routes/analytics";
 import {
@@ -29,7 +29,11 @@ import {
   createAssessment,
   updateAssessment,
   deleteAssessment,
+  submitAssessment,
+  getModuleItems,
 } from "./routes/course-content";
+import { postEnrollment, getEnrollments, patchEnrollment } from "./routes/enrollments";
+import { getProgress, patchProgress } from "./routes/progress";
 import { getDb, usersCollection } from "./lib/firestore";
 
 /** Log each request and response to the terminal (method, path, status, duration) */
@@ -106,6 +110,7 @@ export function createServer(options?: { apiOnly?: boolean }) {
   app.post("/api/register", postRegister);
   app.post("/api/login", postLogin);
   app.get("/api/users", getUsers);
+  app.get("/api/users/learners-summary", getLearnersSummary);
   app.patch("/api/users/:id/approve", patchUserApprove);
 
   // Courses (list) and per-course quiz (get, create/update, delete)
@@ -131,10 +136,18 @@ export function createServer(options?: { apiOnly?: boolean }) {
   app.put("/api/course-content/courses/:courseId/modules/:moduleId/lessons/:lessonId", updateLesson);
   app.delete("/api/course-content/courses/:courseId/modules/:moduleId/lessons/:lessonId", deleteLesson);
   app.get("/api/course-content/courses/:courseId/modules/:moduleId/assessments", listAssessments);
+  app.get("/api/course-content/courses/:courseId/modules/:moduleId/items", getModuleItems);
   app.get("/api/course-content/courses/:courseId/modules/:moduleId/assessments/:assessmentId", getAssessment);
   app.post("/api/course-content/courses/:courseId/modules/:moduleId/assessments", createAssessment);
   app.put("/api/course-content/courses/:courseId/modules/:moduleId/assessments/:assessmentId", updateAssessment);
   app.delete("/api/course-content/courses/:courseId/modules/:moduleId/assessments/:assessmentId", deleteAssessment);
+  app.post("/api/course-content/courses/:courseId/modules/:moduleId/assessments/:assessmentId/submit", submitAssessment);
+
+  app.post("/api/enrollments", postEnrollment);
+  app.get("/api/enrollments", getEnrollments);
+  app.patch("/api/enrollments/:id", patchEnrollment);
+  app.get("/api/progress", getProgress);
+  app.patch("/api/progress", patchProgress);
 
   return app;
 }
