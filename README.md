@@ -108,13 +108,22 @@ Routes: `/admin`, `/admin/courses`, `/admin/course-content`, etc. Admin login at
 1. Web Service, connect repo.
 2. **Build:** `pnpm install && pnpm run build:backend`
 3. **Start:** `node dist/backend/production.mjs` (or per `render.yaml`)
-4. **Env:** `GOOGLE_APPLICATION_CREDENTIALS` or `FIREBASE_SERVICE_ACCOUNT`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `FRONTEND_URL` (Netlify URL for CORS). Optional: `RENDER=true`, `NODE_ENV=production`.
+4. **Environment variables (required):** In Render → your service → **Environment** tab, add these. Your `backend/.env` is not deployed (gitignored), so Render must have them:
+   - **`FIREBASE_SERVICE_ACCOUNT`** – Paste the full Firebase service account JSON (single line, no line breaks). Without this, register/login will return **500** because the backend cannot connect to Firestore.
+   - **`ADMIN_EMAIL`** – Admin login email.
+   - **`ADMIN_PASSWORD`** – Admin login password.
+   - **`FRONTEND_URL`** – Your Netlify URL, e.g. `https://ksohtc.netlify.app` (for CORS).
+   - Optional: `RENDER=true`, `NODE_ENV=production`.
+
+**If register or login returns 500:** Add or fix `FIREBASE_SERVICE_ACCOUNT` in Render → Environment, then redeploy.
 
 ### Frontend (Netlify)
 
 1. **Build:** `pnpm run build:clients` (or `pnpm install && pnpm run build:clients`)
 2. **Publish:** `dist/spa`
-3. **Env:** `VITE_API_URL` = Render API URL (e.g. `https://your-api.onrender.com`, no trailing slash). Redeploy after setting.
+3. **Env:** In Netlify → Site settings → Environment variables, add **`VITE_API_URL`** = your backend URL (e.g. `https://ksohtc-platform.onrender.com`, no trailing slash). **Redeploy** after adding or changing it (Vite bakes `VITE_*` in at build time; `clients/.env` is not used on Netlify).
+
+If login/register return 404: the app is calling Netlify’s URL for `/api`. Set `VITE_API_URL` in Netlify and trigger a new deploy.
 
 Backend and frontend are separate: backend on Render, frontend on Netlify; frontend calls backend via `VITE_API_URL`.
 

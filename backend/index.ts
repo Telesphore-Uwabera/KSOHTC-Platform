@@ -59,7 +59,7 @@ export function createServer(options?: { apiOnly?: boolean }) {
 
   // Only register / and /api when running standalone (not inside Vite). When apiOnly, let Vite serve / so the website loads.
   if (!apiOnly) {
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:8080";
+    const frontendUrl = process.env.FRONTEND_URL || process.env.FRONTEND_URI || "http://localhost:8080";
     app.get("/", (_req, res) => {
       res.json({
         service: "backend",

@@ -28,11 +28,15 @@ export function getDb(): Firestore {
       }
     } else if (credJson) {
       try {
-        const cred = JSON.parse(credJson) as ServiceAccount;
-        initializeApp({ credential: cert(cred), projectId: cred.projectId });
-      } catch {
-        console.warn("Firestore: FIREBASE_SERVICE_ACCOUNT invalid JSON, using default credentials");
-        initializeApp();
+        const normalized = credJson.trim().replace(/^["']|["']$/g, "");
+        const cred = JSON.parse(normalized) as ServiceAccount;
+        if (!cred.project_id || !cred.private_key) {
+          throw new Error("FIREBASE_SERVICE_ACCOUNT missing project_id or private_key");
+        }
+        initializeApp({ credential: cert(cred), projectId: cred.project_id });
+      } catch (e) {
+        console.error("Firestore: FIREBASE_SERVICE_ACCOUNT invalid or incomplete.", e instanceof Error ? e.message : e);
+        throw new Error("Firebase config invalid. Ensure FIREBASE_SERVICE_ACCOUNT is valid JSON on a single line (no line breaks).");
       }
     } else {
       initializeApp();
