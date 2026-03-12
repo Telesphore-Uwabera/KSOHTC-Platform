@@ -123,6 +123,8 @@ export default function CourseDetail() {
   const user = getStoredUser();
   const canAccess = user?.approved ?? false;
 
+  if (!user) return <Navigate to="/register" replace state={{ from: "course" }} />;
+
   const { data: course, isLoading: courseLoading } = useQuery({
     queryKey: ["course-content", "course", courseId],
     queryFn: () => fetchCourse(courseId!),

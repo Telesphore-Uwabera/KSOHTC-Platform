@@ -138,13 +138,20 @@ export default function Courses() {
                         View materials
                         <ArrowRight className="w-4 h-4" />
                       </Link>
+                    ) : user ? (
+                      <span
+                        className="mt-4 inline-flex items-center gap-2 font-semibold text-sm text-gray-400 cursor-not-allowed"
+                        title="Your account must be approved by an admin before you can access courses"
+                      >
+                        Enroll (pending approval)
+                        <ArrowRight className="w-4 h-4" />
+                      </span>
                     ) : (
                       <Link
-                        to={user ? "#" : "/login"}
-                        className={`mt-4 inline-flex items-center gap-2 font-semibold text-sm transition-colors ${user ? "text-gray-400 cursor-not-allowed" : "text-primary hover:text-accent"}`}
-                        onClick={user ? (e) => e.preventDefault() : undefined}
+                        to="/register"
+                        className="mt-4 inline-flex items-center gap-2 text-primary font-semibold text-sm hover:text-accent transition-colors"
                       >
-                        {pending ? "Enroll (pending approval)" : "Enroll now"}
+                        Register to enroll
                         <ArrowRight className="w-4 h-4" />
                       </Link>
                     )}
