@@ -5,6 +5,8 @@
  */
 import { initializeApp, getApps, cert, type ServiceAccount } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 
 let db: Firestore | null = null;
 
@@ -14,11 +16,20 @@ function getDb(): Firestore {
     const credPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
     const credJson = process.env.FIREBASE_SERVICE_ACCOUNT;
     if (credPath) {
-      initializeApp({ credential: cert(credPath) });
+      // Normalize path (e.g. forward slashes from .env work on all platforms)
+      const normalizedPath = path.normalize(credPath.replace(/^["']|["']$/g, "").trim());
+      try {
+        const raw = readFileSync(normalizedPath, "utf8");
+        const cred = JSON.parse(raw) as ServiceAccount;
+        initializeApp({ credential: cert(cred), projectId: cred.projectId });
+      } catch (e) {
+        console.warn("Firestore: failed to read GOOGLE_APPLICATION_CREDENTIALS, using default credentials");
+        initializeApp();
+      }
     } else if (credJson) {
       try {
         const cred = JSON.parse(credJson) as ServiceAccount;
-        initializeApp({ credential: cert(cred) });
+        initializeApp({ credential: cert(cred), projectId: cred.projectId });
       } catch {
         console.warn("Firestore: FIREBASE_SERVICE_ACCOUNT invalid JSON, using default credentials");
         initializeApp();

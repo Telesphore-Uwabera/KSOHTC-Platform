@@ -16,6 +16,11 @@ export default function Index() {
     queryKey: ["testimonials"],
     queryFn: fetchTestimonials,
   });
+  // Website shows only the latest 3 testimonials; layout 3 cols (lg) / 1 col (md/sm)
+  const latestTestimonials = [...testimonials]
+    .sort((a, b) => (b.createdAt ?? "").localeCompare(a.createdAt ?? ""))
+    .slice(0, 3);
+
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />
@@ -377,11 +382,11 @@ export default function Index() {
           </div>
           {isLoading ? (
             <p className="text-gray-500 text-center py-8">Loading testimonials…</p>
-          ) : testimonials.length === 0 ? (
+          ) : latestTestimonials.length === 0 ? (
             <p className="text-gray-500 text-center py-8">No testimonials yet. Check back soon.</p>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto">
-              {testimonials.map((t, idx) => (
+            <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto">
+              {latestTestimonials.map((t, idx) => (
                 <div
                   key={t.id}
                   className={`bg-white rounded-[30px] border-2 border-gray-200 p-6 shadow-sm hover:border-primary/40 hover:shadow-md transition-all duration-300 scroll-reveal ${idx === 0 ? "reveal-flip" : idx === 1 ? "reveal-bounce" : "reveal-spring"}`}

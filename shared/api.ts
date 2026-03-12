@@ -33,6 +33,7 @@ export interface User {
   name: string;
   organization?: string;
   approved: boolean;
+  role?: "learner" | "admin";
   createdAt: string;
 }
 
@@ -72,3 +73,15 @@ export interface Quiz {
 
 export type QuizCreate = Omit<Quiz, "id" | "createdAt" | "updatedAt">;
 export type QuizUpdate = Partial<Omit<Quiz, "id" | "courseId" | "createdAt">> & { updatedAt: string };
+
+/** Per-course usage for dashboard analytics (main dashboard only) */
+export interface CourseUsageItem {
+  courseId: string;
+  title: string;
+  sector: string;
+  duration: string;
+  hasQuiz: boolean;
+  enrollmentCount: number;
+  completionCount: number;
+  completionRatePercent: number;
+}

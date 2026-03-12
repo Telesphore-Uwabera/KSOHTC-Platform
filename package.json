@@ -2,6 +2,9 @@
   "name": "fusion-starter",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20 <21"
+  },
   "pkg": {
     "assets": [
       "dist/spa/*"
@@ -12,6 +15,8 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:backend": "tsx backend/dev.ts",
+    "dev:frontend": "vite",
     "build": "npm run build:clients && npm run build:backend",
     "build:clients": "vite build",
     "build:backend": "vite build --config vite.config.server.ts",

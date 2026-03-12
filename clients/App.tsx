@@ -21,9 +21,12 @@ const CourseDetail = lazy(() => import("./pages/CourseDetail"));
 const Register = lazy(() => import("./pages/Register"));
 const Login = lazy(() => import("./pages/Login"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
+const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const AdminCourses = lazy(() => import("./pages/admin/AdminCourses"));
 const AdminCourseQuiz = lazy(() => import("./pages/admin/AdminCourseQuiz"));
+const AdminLearners = lazy(() => import("./pages/admin/AdminLearners"));
+const AdminTestimonials = lazy(() => import("./pages/admin/AdminTestimonials"));
 const TakeQuiz = lazy(() => import("./pages/TakeQuiz"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -61,10 +64,13 @@ const App = () => (
             <Route path="/courses/:courseId" element={<CourseDetail />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="courses" element={<AdminCourses />} />
               <Route path="courses/:courseId/quiz" element={<AdminCourseQuiz />} />
+              <Route path="learners" element={<AdminLearners />} />
+              <Route path="testimonials" element={<AdminTestimonials />} />
             </Route>
             <Route path="/courses/:courseId/quiz/take" element={<TakeQuiz />} />
             <Route path="*" element={<NotFound />} />

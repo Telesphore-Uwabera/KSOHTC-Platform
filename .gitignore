@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+!.env.example
 
 # Editor directories and files
 .vscode/*
@@ -24,4 +26,9 @@ dist-ssr
 *.sw?
 
 .config/
-!.env
+
+# Firebase Admin SDK keys (never commit)
+firebase-admin*.json
+*firebase-adminsdk*.json
+serviceAccount*.json
+*-service-account*.json

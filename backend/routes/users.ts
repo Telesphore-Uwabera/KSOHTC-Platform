@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import type { User, UserCreate, UserPublic } from "@shared/api";
 import { usersCollection } from "../lib/firestore";
 
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
 function toPublic(u: User): UserPublic {
   const { password: _, ...rest } = u;
   return rest;
@@ -49,8 +53,27 @@ export async function postLogin(req: Request, res: Response): Promise<void> {
       res.status(400).json({ error: "Email and password are required." });
       return;
     }
+
+    // Admin login via environment variables (recommended for initial setup)
+    const adminEmail = process.env.ADMIN_EMAIL ? normalizeEmail(process.env.ADMIN_EMAIL) : "";
+    const adminPassword = process.env.ADMIN_PASSWORD ?? "";
+    if (adminEmail && adminPassword && normalizeEmail(email) === adminEmail && password === adminPassword) {
+      const now = new Date().toISOString();
+      const adminUser: User = {
+        id: "admin",
+        email: adminEmail,
+        password: "__env__",
+        name: "Administrator",
+        approved: true,
+        role: "admin",
+        createdAt: now,
+      };
+      res.json({ user: toPublic(adminUser) });
+      return;
+    }
+
     const col = usersCollection();
-    const snap = await col.where("email", "==", email.trim().toLowerCase()).limit(1).get();
+    const snap = await col.where("email", "==", normalizeEmail(email)).limit(1).get();
     const doc = snap.docs[0];
     if (!doc) {
       res.status(401).json({ error: "Invalid email or password." });
@@ -61,6 +84,8 @@ export async function postLogin(req: Request, res: Response): Promise<void> {
       res.status(401).json({ error: "Invalid email or password." });
       return;
     }
+    // Default to learner role if not set
+    if (!user.role) user.role = "learner";
     res.json({ user: toPublic(user) });
   } catch (e) {
     console.error("Login error:", e);
