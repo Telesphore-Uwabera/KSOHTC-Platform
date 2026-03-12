@@ -30,7 +30,7 @@ import {
   updateAssessment,
   deleteAssessment,
 } from "./routes/course-content";
-import { getDb } from "./lib/firestore";
+import { getDb, usersCollection } from "./lib/firestore";
 
 /** Log each request and response to the terminal (method, path, status, duration) */
 function requestLogger(req: Request, res: Response, next: NextFunction): void {
@@ -77,9 +77,11 @@ export function createServer(options?: { apiOnly?: boolean }) {
     });
   }
 
-  app.get("/health", (_req, res) => {
+  app.get("/health", async (_req, res) => {
     try {
-      getDb();
+      const db = getDb();
+      // Prove credentials work with a minimal read (otherwise health can pass but register fails with UNAUTHENTICATED)
+      await usersCollection().limit(1).get();
       console.log("[HEALTH] Firestore OK");
       res.status(200).json({ ok: true, firestore: "connected" });
     } catch (e) {

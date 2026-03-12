@@ -85,14 +85,13 @@ export default function Header() {
                 ))}
                 <Link
                   to="/dashboard"
-                  className={`px-2 sm:px-3 py-1.5 sm:py-2 font-medium transition-all duration-300 relative group text-xs sm:text-sm lg:text-base ${
-                    location.pathname === "/dashboard" ? "text-primary" : "text-gray-700 hover:text-primary"
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-semibold transition-all duration-300 text-xs sm:text-sm lg:text-base border-2 ${
+                    location.pathname === "/dashboard"
+                      ? "bg-primary text-white border-primary shadow-md"
+                      : "border-primary text-primary bg-primary/10 hover:bg-primary hover:text-white hover:shadow-md"
                   }`}
                 >
                   Dashboard
-                  <span className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-300 ${
-                    location.pathname === "/dashboard" ? "w-full" : "w-0 group-hover:w-full"
-                  }`} />
                 </Link>
               </nav>
             </div>
@@ -142,8 +141,10 @@ export default function Header() {
               <Link
                 to="/dashboard"
                 onClick={() => setIsOpen(false)}
-                className={`block px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
-                  location.pathname === "/dashboard" ? "bg-primary/10 text-primary" : "text-gray-700 hover:bg-primary/10 hover:text-primary"
+                className={`block px-4 py-3 rounded-xl font-semibold transition-all duration-300 border-2 ${
+                  location.pathname === "/dashboard"
+                    ? "bg-primary text-white border-primary"
+                    : "border-primary text-primary bg-primary/10 hover:bg-primary hover:text-white"
                 }`}
               >
                 Dashboard

@@ -45,7 +45,9 @@ export async function postRegister(req: Request, res: Response): Promise<void> {
     res.status(201).json({ user: toPublic(user) });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
-    console.error("Register error:", msg, e instanceof Error ? e.stack : "");
+    const stack = e instanceof Error ? e.stack : "";
+    console.error("[REGISTER]", msg);
+    if (stack) console.error("[REGISTER stack]", stack);
     res.status(500).json({ error: "Registration failed. Please try again later or contact support." });
   }
 }

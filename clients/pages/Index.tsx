@@ -67,13 +67,19 @@ export default function Index() {
 
         <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-6 sm:pb-8 flex flex-col items-center">
           <div className="flex flex-row flex-nowrap gap-4 sm:gap-6">
-            <Link to="/login" className="group cursor-pointer bg-transparent border-2 border-white text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-bold text-sm sm:text-base transition-all duration-300 hover:bg-transparent hover:opacity-90 hover:scale-[1.02] hover:shadow-lg hover:border-white/90 focus:bg-transparent active:bg-transparent active:scale-[0.98] inline-flex items-center justify-center shrink-0">
+            <Link
+              to="/login"
+              className="group cursor-pointer bg-transparent border-2 border-white text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-bold text-sm sm:text-base transition-all duration-300 hover:bg-white hover:text-primary hover:scale-105 hover:shadow-xl hover:border-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent active:scale-[0.98] inline-flex items-center justify-center shrink-0"
+            >
               ENROLL NOW!
               <Target className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <a href="#who" className="cursor-pointer bg-transparent border-2 border-white text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-bold text-sm sm:text-base transition-all duration-300 hover:bg-transparent hover:opacity-90 hover:scale-[1.02] hover:shadow-lg hover:border-white/90 focus:bg-transparent active:bg-transparent inline-flex items-center justify-center shrink-0">
+            <a
+              href="#who"
+              className="group cursor-pointer bg-transparent border-2 border-white text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-bold text-sm sm:text-base transition-all duration-300 hover:bg-white hover:text-primary hover:scale-105 hover:shadow-xl hover:border-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent active:scale-[0.98] inline-flex items-center justify-center shrink-0"
+            >
               Learn More
-              <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5" />
+              <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5 group-hover:translate-y-0.5 transition-transform" />
             </a>
           </div>
         </div>
