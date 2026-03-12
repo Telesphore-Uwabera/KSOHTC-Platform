@@ -7,8 +7,10 @@ import { createServer } from "./backend";
 export default defineConfig(({ mode }) => {
   // Load env (including non-VITE_ keys) for Vite config usage
   const env = loadEnv(mode, process.cwd(), "");
+  // Only use proxy when explicitly requested (run backend separately with pnpm run dev:backend)
+  const useProxy =
+    env.VITE_DEV_USE_PROXY === "true" && env.BACKEND_URL?.trim();
   const backendUrl = env.BACKEND_URL?.trim();
-  const useSeparateBackend = Boolean(backendUrl);
 
   return {
     server: {
@@ -18,7 +20,7 @@ export default defineConfig(({ mode }) => {
         allow: ["./clients", "./shared"],
         deny: [".env", ".env.*", "*.{crt,pem}", "**/.git/**", "backend/**"],
       },
-      proxy: useSeparateBackend
+      proxy: useProxy && backendUrl
         ? {
             "/api": {
               target: backendUrl,
@@ -31,7 +33,7 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: "dist/spa",
     },
-    plugins: useSeparateBackend ? [react()] : [react(), expressPlugin()],
+    plugins: useProxy ? [react()] : [react(), expressPlugin()],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./clients"),
