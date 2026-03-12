@@ -25,9 +25,14 @@ const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
 const AdminCourses = lazy(() => import("./pages/admin/AdminCourses"));
 const AdminCourseQuiz = lazy(() => import("./pages/admin/AdminCourseQuiz"));
+const AdminCourseContent = lazy(() => import("./pages/admin/AdminCourseContent"));
+const AdminCourseContentDetail = lazy(() => import("./pages/admin/AdminCourseContentDetail"));
+const AdminModuleAssessment = lazy(() => import("./pages/admin/AdminModuleAssessment"));
 const AdminLearners = lazy(() => import("./pages/admin/AdminLearners"));
 const AdminTestimonials = lazy(() => import("./pages/admin/AdminTestimonials"));
 const TakeQuiz = lazy(() => import("./pages/TakeQuiz"));
+const TakeModuleQuiz = lazy(() => import("./pages/TakeModuleQuiz"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -62,6 +67,8 @@ const App = () => (
             <Route path="/contact" element={<Contact />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:courseId" element={<CourseDetail />} />
+            <Route path="/courses/:courseId/modules/:moduleId/quiz/:assessmentId" element={<TakeModuleQuiz />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/admin/login" element={<AdminLogin />} />
@@ -69,6 +76,9 @@ const App = () => (
               <Route index element={<AdminDashboard />} />
               <Route path="courses" element={<AdminCourses />} />
               <Route path="courses/:courseId/quiz" element={<AdminCourseQuiz />} />
+              <Route path="course-content" element={<AdminCourseContent />} />
+              <Route path="course-content/:courseId" element={<AdminCourseContentDetail />} />
+              <Route path="course-content/:courseId/modules/:moduleId/assessments/:assessmentId" element={<AdminModuleAssessment />} />
               <Route path="learners" element={<AdminLearners />} />
               <Route path="testimonials" element={<AdminTestimonials />} />
             </Route>

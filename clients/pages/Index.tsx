@@ -4,9 +4,10 @@ import { CheckCircle2, MapPin, Phone, Mail, Shield, BookOpen, HardHat, Building,
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import type { Testimonial } from "@shared/api";
+import { getApiBase } from "@/lib/apiBase";
 
 async function fetchTestimonials(): Promise<Testimonial[]> {
-  const res = await fetch("/api/testimonials");
+  const res = await fetch(getApiBase() + "/api/testimonials");
   if (!res.ok) throw new Error("Failed to load testimonials");
   return res.json();
 }

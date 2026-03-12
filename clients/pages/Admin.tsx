@@ -5,9 +5,10 @@ import { ArrowLeft, Save, Loader2, Users, CheckCircle } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import type { TestimonialCreate, UserPublic } from "@shared/api";
+import { getApiBase } from "@/lib/apiBase";
 
 async function addTestimonial(data: TestimonialCreate): Promise<unknown> {
-  const res = await fetch("/api/testimonials", {
+  const res = await fetch(getApiBase() + "/api/testimonials", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -20,14 +21,14 @@ async function addTestimonial(data: TestimonialCreate): Promise<unknown> {
 }
 
 async function fetchUsers(): Promise<UserPublic[]> {
-  const res = await fetch("/api/users");
+  const res = await fetch(getApiBase() + "/api/users");
   if (!res.ok) throw new Error("Failed to load users");
   const data = await res.json();
   return (data as { users: UserPublic[] }).users ?? [];
 }
 
 async function approveUser(id: string): Promise<void> {
-  const res = await fetch(`/api/users/${id}/approve`, { method: "PATCH" });
+  const res = await fetch(getApiBase() + `/api/users/${id}/approve`, { method: "PATCH" });
   if (!res.ok) throw new Error("Failed to approve user");
 }
 

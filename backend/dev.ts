@@ -1,4 +1,6 @@
-import "dotenv/config";
+import path from "node:path";
+import { config as loadEnv } from "dotenv";
+loadEnv({ path: path.resolve(process.cwd(), "backend", ".env") });
 import { createServer } from "./index";
 
 const port = Number(process.env.PORT || 8085);

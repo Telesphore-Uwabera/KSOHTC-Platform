@@ -1,0 +1,42 @@
+rules_version = '2';
+
+// All access is via the backend (Admin SDK). Deny direct client access so only your API can read/write.
+// If you add Firebase Auth or client SDK later, add allow rules for authenticated users as needed.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if false;
+    }
+    match /testimonials/{docId} {
+      allow read, write: if false;
+    }
+    match /quizzes/{quizId} {
+      allow read, write: if false;
+    }
+    match /courses/{courseId} {
+      allow read, write: if false;
+      match /modules/{moduleId} {
+        allow read, write: if false;
+        match /lessons/{lessonId} {
+          allow read, write: if false;
+        }
+        match /assessments/{assessmentId} {
+          allow read, write: if false;
+        }
+      }
+    }
+    match /enrollments/{docId} {
+      allow read, write: if false;
+    }
+    match /submissions/{docId} {
+      allow read, write: if false;
+    }
+    match /progress/{docId} {
+      allow read, write: if false;
+    }
+    // Catch-all: deny any other collection
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

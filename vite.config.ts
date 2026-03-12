@@ -5,14 +5,16 @@ import { createServer } from "./backend";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  // Load env (including non-VITE_ keys) for Vite config usage
-  const env = loadEnv(mode, process.cwd(), "");
+  // Frontend uses clients/.env only (see clients/.env.example)
+  const envDir = path.resolve(__dirname, "clients");
+  const env = loadEnv(mode, envDir, "");
   // Only use proxy when explicitly requested (run backend separately with pnpm run dev:backend)
   const useProxy =
     env.VITE_DEV_USE_PROXY === "true" && env.BACKEND_URL?.trim();
   const backendUrl = env.BACKEND_URL?.trim();
 
   return {
+    envDir: "clients",
     server: {
       host: "::",
       port: 8080,
@@ -48,10 +50,16 @@ function expressPlugin(): Plugin {
     name: "express-plugin",
     apply: "serve", // Only apply during development (serve mode)
     configureServer(server) {
-      const app = createServer();
+      // apiOnly: true so Express only handles /api/*; GET / is left for Vite to serve the SPA
+      const app = createServer({ apiOnly: true });
 
-      // Add Express app as middleware to Vite dev server
-      server.middlewares.use(app);
+      // Only send /api requests to Express; everything else (e.g. GET /) stays with Vite so the website loads
+      server.middlewares.use((req, res, next) => {
+        if (req.url?.startsWith("/api") || req.originalUrl?.startsWith("/api")) {
+          return app(req, res, next);
+        }
+        next();
+      });
     },
   };
 }

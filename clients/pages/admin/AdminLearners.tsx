@@ -1,16 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Users, CheckCircle, Loader2 } from "lucide-react";
 import type { UserPublic } from "@shared/api";
+import { getApiBase } from "@/lib/apiBase";
 
 async function fetchUsers(): Promise<UserPublic[]> {
-  const res = await fetch("/api/users");
+  const res = await fetch(getApiBase() + "/api/users");
   if (!res.ok) throw new Error("Failed to load users");
   const data = await res.json();
   return (data as { users: UserPublic[] }).users ?? [];
 }
 
 async function approveUser(id: string): Promise<void> {
-  const res = await fetch(`/api/users/${id}/approve`, { method: "PATCH" });
+  const res = await fetch(getApiBase() + `/api/users/${id}/approve`, { method: "PATCH" });
   if (!res.ok) throw new Error("Failed to approve user");
 }
 

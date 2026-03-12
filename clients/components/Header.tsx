@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import { getStoredUser } from "../lib/auth";
 
 const navLinks = [
   { label: "Home", path: "/" },
@@ -20,6 +21,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const lastYRef = useRef(0);
+  const user = getStoredUser();
 
   useEffect(() => {
     let ticking = false;
@@ -81,13 +83,18 @@ export default function Header() {
                 }`} />
               </Link>
                 ))}
+                <Link
+                  to="/dashboard"
+                  className={`px-2 sm:px-3 py-1.5 sm:py-2 font-medium transition-all duration-300 relative group text-xs sm:text-sm lg:text-base ${
+                    location.pathname === "/dashboard" ? "text-primary" : "text-gray-700 hover:text-primary"
+                  }`}
+                >
+                  Dashboard
+                  <span className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-300 ${
+                    location.pathname === "/dashboard" ? "w-full" : "w-0 group-hover:w-full"
+                  }`} />
+                </Link>
               </nav>
-              <Link
-                to="/login"
-                className={`flex-shrink-0 bg-gradient-to-r from-accent to-accent/80 text-black rounded-lg font-bold hover:shadow-lg hover:scale-105 transition-all duration-300 transform whitespace-nowrap ${scrolled ? "px-2 py-1 sm:px-3 sm:py-1.5 text-xs" : "px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm"}`}
-              >
-                ENROLL NOW!
-              </Link>
             </div>
           </div>
           <div className="hidden md:block md:flex-1 md:min-w-0" />
@@ -133,11 +140,13 @@ export default function Header() {
                 </Link>
               ))}
               <Link
-                to="/login"
+                to="/dashboard"
                 onClick={() => setIsOpen(false)}
-                className="block mt-4 bg-gradient-to-r from-accent to-accent/80 text-black px-4 py-3 rounded-lg font-bold hover:shadow-lg transition-all duration-300 text-center"
+                className={`block px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
+                  location.pathname === "/dashboard" ? "bg-primary/10 text-primary" : "text-gray-700 hover:bg-primary/10 hover:text-primary"
+                }`}
               >
-                ENROLL NOW!
+                Dashboard
               </Link>
             </div>
           </nav>

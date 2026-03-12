@@ -4,6 +4,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { User, Building2, Lock, ShieldCheck, Loader2 } from "lucide-react";
 import { setStoredUser } from "../lib/auth";
+import { getApiBase } from "@/lib/apiBase";
 
 const INDUSTRIES = ["Construction", "Industrial", "Mining", "Other"];
 const COUNTRIES = ["Rwanda", "Uganda", "Kenya", "Tanzania", "Burundi", "Other"];
@@ -31,7 +32,7 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      const res = await fetch("/api/register", {
+      const res = await fetch(getApiBase() + "/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, name, organization: organization || undefined }),

@@ -4,34 +4,157 @@ import { ArrowLeft, FileText, ExternalLink, ClipboardList } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { getStoredUser } from "../lib/auth";
-import {
-  COURSES,
-  SAFETY_MANAGEMENT_FILES,
-  courseFileUrl,
-  type CourseId,
-} from "../data/courses";
-import { cn } from "@/lib/utils";
+import { getApiBase } from "@/lib/apiBase";
+import type { CourseDoc, ModuleDoc, LessonDoc, AssessmentDoc } from "@shared/api";
 
-async function fetchQuiz(courseId: string) {
-  const res = await fetch(`/api/courses/${courseId}/quiz`);
+const getCourseContentApi = () => getApiBase() + "/api/course-content";
+
+async function fetchCourse(courseId: string): Promise<CourseDoc | null> {
+  const res = await fetch(`${getCourseContentApi()}/courses/${courseId}`);
+  if (res.status === 404 || !res.ok) return null;
+  return res.json();
+}
+
+async function fetchModules(courseId: string): Promise<ModuleDoc[]> {
+  const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules`);
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.modules ?? [];
+}
+
+async function fetchLessons(courseId: string, moduleId: string): Promise<LessonDoc[]> {
+  const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules/${moduleId}/lessons`);
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.lessons ?? [];
+}
+
+async function fetchAssessments(courseId: string, moduleId: string): Promise<AssessmentDoc[]> {
+  const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules/${moduleId}/assessments`);
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.assessments ?? [];
+}
+
+async function fetchLegacyQuiz(courseId: string): Promise<{ title?: string; description?: string } | null> {
+  const res = await fetch(getApiBase() + `/api/courses/${courseId}/quiz`);
   if (!res.ok) return null;
   return res.json();
+}
+
+function youtubeEmbedUrl(url: string): string {
+  if (!url) return "";
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+  return m ? `https://www.youtube.com/embed/${m[1]}` : url;
+}
+
+function ModuleBlock({
+  courseId,
+  module: mod,
+}: {
+  courseId: string;
+  module: ModuleDoc;
+}) {
+  const { data: lessons = [] } = useQuery({
+    queryKey: ["course-content", "lessons", courseId, mod.id],
+    queryFn: () => fetchLessons(courseId, mod.id),
+  });
+  const { data: assessments = [] } = useQuery({
+    queryKey: ["course-content", "assessments", courseId, mod.id],
+    queryFn: () => fetchAssessments(courseId, mod.id),
+  });
+  const firstAssessment = assessments[0];
+
+  return (
+    <div className="mb-10">
+      <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+        <FileText className="w-5 h-5" />
+        {mod.title}
+      </h2>
+      <ul className="space-y-3 mb-4">
+        {lessons.map((lesson) => (
+          <li key={lesson.id} className="flex flex-col gap-2">
+            <span className="font-medium text-gray-900">{lesson.title}</span>
+            {lesson.youtubeUrl && (
+              <div className="rounded-lg overflow-hidden bg-gray-100 aspect-video max-w-2xl">
+                <iframe
+                  title={lesson.title}
+                  src={youtubeEmbedUrl(lesson.youtubeUrl)}
+                  className="w-full h-full"
+                  allowFullScreen
+                />
+              </div>
+            )}
+            {lesson.pdfUrl && (
+              <a
+                href={lesson.pdfUrl.startsWith("http") ? lesson.pdfUrl : lesson.pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-primary hover:text-accent font-medium underline underline-offset-2"
+              >
+                Open PDF
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            )}
+            {lesson.contentHtml && (
+              <div
+                className="prose prose-sm max-w-none text-gray-700"
+                dangerouslySetInnerHTML={{ __html: lesson.contentHtml }}
+              />
+            )}
+          </li>
+        ))}
+      </ul>
+      {firstAssessment && (
+        <Link
+          to={`/courses/${courseId}/modules/${mod.id}/quiz/${firstAssessment.id}`}
+          className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-lg font-semibold hover:bg-primary/20"
+        >
+          <ClipboardList className="w-4 h-4" />
+          Take module quiz
+        </Link>
+      )}
+    </div>
+  );
 }
 
 export default function CourseDetail() {
   const { courseId } = useParams<{ courseId: string }>();
   const user = getStoredUser();
   const canAccess = user?.approved ?? false;
-  const course = COURSES.find((c) => c.id === (courseId as CourseId));
-  const { data: quiz } = useQuery({
+
+  const { data: course, isLoading: courseLoading } = useQuery({
+    queryKey: ["course-content", "course", courseId],
+    queryFn: () => fetchCourse(courseId!),
+    enabled: !!courseId,
+  });
+
+  const { data: modules = [], isLoading: modulesLoading } = useQuery({
+    queryKey: ["course-content", "modules", courseId],
+    queryFn: () => fetchModules(courseId!),
+    enabled: !!courseId && !!course,
+  });
+
+  const { data: legacyQuiz } = useQuery({
     queryKey: ["quiz", courseId],
-    queryFn: () => fetchQuiz(courseId!),
+    queryFn: () => fetchLegacyQuiz(courseId!),
     enabled: !!courseId && canAccess,
   });
 
-  if (!course) {
-    return <Navigate to="/courses" replace />;
+  if (!courseId) return <Navigate to="/courses" replace />;
+  if (courseLoading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Header />
+        <div className="h-28 sm:h-32" />
+        <div className="max-w-4xl mx-auto px-4 py-12">
+          <p className="text-gray-600">Loading course…</p>
+        </div>
+        <Footer />
+      </div>
+    );
   }
+  if (!course) return <Navigate to="/courses" replace />;
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
@@ -88,81 +211,36 @@ export default function CourseDetail() {
             </div>
           ) : (
             <>
-              <p className="text-gray-600 mb-10">{course.desc}</p>
+              <p className="text-gray-600 mb-10">{course.description}</p>
 
-              <div className="space-y-10">
-                <div>
-                  <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
-                    <FileText className="w-5 h-5" />
-                    Module 1: Safety Management
-                  </h2>
-                  <p className="text-gray-600 text-sm mb-3">
-                    Core module included in every course.
-                  </p>
-                  <ul className="space-y-2">
-                    {SAFETY_MANAGEMENT_FILES.map((name) => (
-                      <li key={name}>
-                        <a
-                          href={courseFileUrl("safety-management", name)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={cn(
-                            "inline-flex items-center gap-2 text-primary hover:text-accent font-medium",
-                            "underline underline-offset-2"
-                          )}
-                        >
-                          {name.replace(/\.pdf$/i, "")}
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
+              {modulesLoading ? (
+                <p className="text-gray-600">Loading modules…</p>
+              ) : (
+                <div className="space-y-10">
+                  {modules.map((mod) => (
+                    <ModuleBlock key={mod.id} courseId={courseId!} module={mod} />
+                  ))}
+
+                  {legacyQuiz && (
+                    <div>
+                      <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+                        <ClipboardList className="w-5 h-5" />
+                        Course quiz
+                      </h2>
+                      <p className="text-gray-600 text-sm mb-3">
+                        {legacyQuiz.description || "Test your knowledge after completing the materials."}
+                      </p>
+                      <Link
+                        to={`/courses/${courseId}/quiz/take`}
+                        className="inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-primary/90"
+                      >
+                        Take course quiz
+                        <ExternalLink className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  )}
                 </div>
-
-                <div>
-                  <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
-                    <FileText className="w-5 h-5" />
-                    Module 2: {course.sector} materials
-                  </h2>
-                  <ul className="space-y-2">
-                    {course.sectorModuleFiles.map((name) => (
-                      <li key={name}>
-                        <a
-                          href={courseFileUrl(course.id, name)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={cn(
-                            "inline-flex items-center gap-2 text-primary hover:text-accent font-medium",
-                            "underline underline-offset-2"
-                          )}
-                        >
-                          {name.replace(/\.(pdf|pptx)$/i, "")}
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {quiz && (
-                  <div>
-                    <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
-                      <ClipboardList className="w-5 h-5" />
-                      Quiz & assessment
-                    </h2>
-                    <p className="text-gray-600 text-sm mb-3">
-                      {quiz.description || "Test your knowledge after completing the materials."}
-                    </p>
-                    <Link
-                      to={`/courses/${courseId}/quiz/take`}
-                      className="inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-primary/90"
-                    >
-                      Take quiz
-                      <ExternalLink className="w-4 h-4" />
-                    </Link>
-                  </div>
-                )}
-              </div>
+              )}
             </>
           )}
         </div>

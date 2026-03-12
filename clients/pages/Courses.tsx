@@ -1,20 +1,35 @@
 import { Link } from "react-router-dom";
-import { HardHat, Building, Pickaxe, ArrowRight, Clock, LogOut } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { HardHat, Building, Pickaxe, Shield, ArrowRight, Clock, LogOut } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { getStoredUser, clearStoredUser } from "../lib/auth";
-import { COURSES } from "../data/courses";
+import { getApiBase } from "@/lib/apiBase";
+import type { CourseDoc } from "@shared/api";
 
-const iconByCourse = {
+const iconBySlug: Record<string, typeof HardHat> = {
   construction: HardHat,
   "industrial-safety": Building,
   mining: Pickaxe,
+  "safety-management": Shield,
 };
+
+async function fetchCourses(): Promise<CourseDoc[]> {
+  const res = await fetch(getApiBase() + "/api/course-content/courses");
+  if (!res.ok) throw new Error("Failed to load courses");
+  const data = await res.json();
+  return (data.courses ?? []).filter((c: CourseDoc) => c.published !== false);
+}
 
 export default function Courses() {
   const user = getStoredUser();
   const pending = user && !user.approved;
   const canAccess = user && user.approved;
+
+  const { data: courses = [], isLoading, error } = useQuery({
+    queryKey: ["course-content", "courses"],
+    queryFn: fetchCourses,
+  });
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
@@ -49,7 +64,7 @@ export default function Courses() {
               <div>
                 <p className="font-semibold text-amber-900">Account pending approval</p>
                 <p className="text-sm text-amber-800">
-                  You’re logged in as {user?.email}. An admin must approve your registration before you can access courses. After approval, log out and log in again to refresh your access.
+                  You're logged in as {user?.email}. An admin must approve your registration before you can access courses. After approval, log out and log in again to refresh your access.
                 </p>
               </div>
             </div>
@@ -88,9 +103,19 @@ export default function Courses() {
             )}
           </div>
 
+          {isLoading && (
+            <p className="text-gray-600 py-8">Loading courses…</p>
+          )}
+          {error && (
+            <p className="text-red-600 py-8">Could not load courses. Please try again later.</p>
+          )}
+          {!isLoading && !error && courses.length === 0 && (
+            <p className="text-gray-600 py-8">No courses available yet. Run the seed script to add courses from Firestore.</p>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-            {COURSES.map((course, idx) => {
-              const Icon = iconByCourse[course.id];
+            {courses.map((course, idx) => {
+              const Icon = iconBySlug[course.slug] ?? HardHat;
               return (
                 <div
                   key={course.id}
@@ -103,7 +128,7 @@ export default function Courses() {
                     </span>
                     <h3 className="text-xl font-bold text-primary mb-2">{course.title}</h3>
                     <p className="text-sm text-accent font-medium mb-2">{course.sector}</p>
-                    <p className="text-gray-600 text-sm mb-4">{course.desc}</p>
+                    <p className="text-gray-600 text-sm mb-4">{course.description || "Occupational Safety and Health training."}</p>
                     <p className="text-gray-500 text-xs">Duration: {course.duration}</p>
                     {canAccess ? (
                       <Link

@@ -1,97 +1,126 @@
 # KSOHTC Platform
 
-A production-ready full-stack React application template with integrated Express server, featuring React Router 6 SPA mode, TypeScript, Vitest, Zod and modern tooling.
+Production-ready full-stack React app with Express backend: React Router 6 SPA, TypeScript, Vite, TailwindCSS, Firebase Firestore. Only add API endpoints when necessary (e.g. private keys, DB operations).
 
-While the starter comes with an Express server, only create endpoints when strictly necessary—for example to encapsulate logic that must live on the server, such as private keys handling or certain DB operations.
+---
 
-## Tech Stack
+## Tech stack
 
-- **PNPM**: Prefer pnpm
-- **Frontend**: React 18 + React Router 6 (spa) + TypeScript + Vite + TailwindCSS 3
-- **Backend**: Express server integrated with Vite dev server
-- **Testing**: Vitest
-- **UI**: Radix UI + TailwindCSS 3 + Lucide React icons
+- **PNPM** – package manager
+- **Frontend** – React 18, React Router 6, TypeScript, Vite, TailwindCSS 3, Radix UI, Lucide React
+- **Backend** – Express, Firebase Admin (Firestore)
+- **Testing** – Vitest
 
-## Project Structure
+---
+
+## Project structure
 
 ```
-clients/                  # Frontend (React SPA)
-├── pages/                # Route components (Index.tsx = home)
-│   └── admin/            # Admin area: dashboard, courses & quizzes
-├── components/ui/        # Pre-built UI component library
-├── App.tsx               # App entry point and SPA routing setup
-└── global.css            # TailwindCSS 3 theming and global styles
+clients/          # React SPA
+├── pages/        # Route components (Index = home, admin/* = admin)
+├── components/ui/
+├── App.tsx
+└── global.css
 
-backend/                  # Express API (backend)
-├── index.ts              # Server setup and routes
-├── lib/                  # Shared backend logic (e.g. Firestore)
-└── routes/               # API handlers
+backend/          # Express API
+├── index.ts      # Loads .env from root and backend/.env
+├── lib/          # Firestore, etc.
+└── routes/
 
-shared/                   # Types used by clients & backend
-└── api.ts                # Shared API types
+shared/api.ts     # Shared types
 ```
 
-**Storage**: Firebase Firestore is used for **users**, **testimonials**, and **quizzes**. Set `GOOGLE_APPLICATION_CREDENTIALS` (path to service account JSON) or `FIREBASE_SERVICE_ACCOUNT` (JSON string). See `.env.example`.
+**Storage:** Firestore for users, testimonials, quizzes, and course content. Set `GOOGLE_APPLICATION_CREDENTIALS` or `FIREBASE_SERVICE_ACCOUNT` in `.env` (see `.env.example`).
 
-## Development Commands
+---
+
+## Development
 
 ```bash
-pnpm dev        # Start dev server (client + server)
-pnpm build      # Production build
-pnpm start      # Start production server
-pnpm typecheck  # TypeScript validation
-pnpm test       # Run Vitest tests
+pnpm dev          # Client + server (single port 8080)
+pnpm dev:backend  # Backend only on :8085
+pnpm dev:frontend  # Frontend only
+pnpm build        # Production build
+pnpm start        # Production server
+pnpm typecheck
+pnpm test
 ```
 
-## SPA Routing
+- **API prefix:** `/api/`
+- **Backend:** Run from project root; do not run `pnpm dev` from inside `backend/` (that runs Vite). Backend logs each request (method, path, status, duration).
 
-- Routes are defined in `clients/App.tsx` using React Router 6.
-- Route components live in `clients/pages/` (e.g. `Index.tsx` = home). Admin pages live in `clients/pages/admin/`.
+---
 
-## Styling
+## Environment
 
-- **Primary**: TailwindCSS 3 utility classes
-- **Theme**: `clients/global.css` and `tailwind.config.ts`
-- **UI**: Pre-built components in `clients/components/ui/`
-- **Utility**: `cn()` (clsx + tailwind-merge) for conditional classes
+- **Root:** `.env` at project root (see `.env.example`).
+- **Backend:** Also reads `backend/.env` if present. Use for Firebase credentials, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `FRONTEND_URL` (CORS), etc.
 
-## API
+---
 
-- **Dev**: Single port (8080) for frontend and backend
-- **Prefix**: `/api/` for API routes
-- **Example**: `GET /api/ping`, `GET /api/demo`
+## Firebase
 
-## Adding Features
+### Firestore rules (CLI)
 
-### New API Route
+Rules live in **`firestore.rules`** (deny client access; backend uses Admin SDK).
 
-1. Optionally add a shared type in `shared/api.ts`.
-2. Add handler in `backend/routes/` and register in `backend/index.ts` under `/api/...`.
+1. Install CLI: `pnpm add -D firebase-tools`
+2. Login: `pnpm exec firebase login`
+3. Project: `.firebaserc` uses `ksohtc-188e5`; change with `pnpm exec firebase use <project-id>`
+4. Deploy rules: `pnpm run firebase:deploy-rules` or `pnpm exec firebase deploy --only firestore:rules`
 
-### New Page
+---
 
-1. Create `clients/pages/MyPage.tsx`.
-2. Add `<Route path="/my-page" element={<MyPage />} />` in `clients/App.tsx` (above the catch-all `*` route).
+## Courses (Firestore)
 
-## Production
+Course list and content (modules, lessons, assessments) are in Firestore; served at `/api/course-content/*`. Public **Courses** and **Course detail** pages use these APIs.
 
-- **Build**: `pnpm build`
-- **Run**: `pnpm start`
-- **Deploy**: Netlify or Vercel work well with this setup.
+### Upload courses (seed)
 
-## Deploy on Netlify
+1. Set `GOOGLE_APPLICATION_CREDENTIALS` in `.env`.
+2. From project root: `pnpm run seed:courses`
+3. Creates courses: construction, industrial-safety, mining, safety-management (with modules/lessons from `public/courses`). New courses are `published: true`. If the seed fails, add courses in **Admin → Course content** and publish.
 
-1. **Push your code** to a Git host (GitHub, GitLab, or Bitbucket).
+### Where students learn
 
-2. **Log in to [Netlify](https://app.netlify.com)** and click **Add new site** → **Import an existing project**.
+- **Courses** (`/courses`) – list published courses (login + approval required for materials).
+- **Course detail** (`/courses/:courseId`) – description, modules, lessons (PDF, YouTube, text), module quizzes, and course quiz link.
+- **Dashboard** (`/dashboard`) – for approved learners; “My learning” and links to courses. Nav: **Dashboard** → not enrolled goes to **Register**; after approval, dashboard shows courses.
 
-3. **Connect your repository** (e.g. GitHub) and select this repo.
+---
 
-4. **Build settings** (usually auto-filled from `netlify.toml`):
-   - **Build command:** `pnpm run build` or `pnpm run build:clients`
-   - **Publish directory:** `dist/spa`
-   - **Functions directory:** `netlify/functions`
+## Admin
 
-5. **Deploy.** Netlify will install deps with pnpm, run the build, and deploy the SPA. The Express API runs as a serverless function; `/api/*` is forwarded to it automatically.
+- **Dashboard** (`/admin`) – analytics, course usage, learner approvals.
+- **Learners** (`/admin/learners`) – approve registrations.
+- **Testimonials** (`/admin/testimonials`) – add testimonials.
+- **Courses & Quizzes** (`/admin/courses`) – set/edit course quiz.
+- **Course content** (`/admin/course-content`) – edit courses, modules, lessons (YouTube, PDF, text), assessments per module.
 
-6. **Optional:** Set **Node version** to `20` in **Site settings** → **Environment** if needed (also set in `netlify.toml`).
+Routes: `/admin`, `/admin/courses`, `/admin/course-content`, etc. Admin login at `/admin/login`.
+
+---
+
+## Deployment
+
+### Backend (Render)
+
+1. Web Service, connect repo.
+2. **Build:** `pnpm install && pnpm run build:backend`
+3. **Start:** `node dist/backend/production.mjs` (or per `render.yaml`)
+4. **Env:** `GOOGLE_APPLICATION_CREDENTIALS` or `FIREBASE_SERVICE_ACCOUNT`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `FRONTEND_URL` (Netlify URL for CORS). Optional: `RENDER=true`, `NODE_ENV=production`.
+
+### Frontend (Netlify)
+
+1. **Build:** `pnpm run build:clients` (or `pnpm install && pnpm run build:clients`)
+2. **Publish:** `dist/spa`
+3. **Env:** `VITE_API_URL` = Render API URL (e.g. `https://your-api.onrender.com`, no trailing slash). Redeploy after setting.
+
+Backend and frontend are separate: backend on Render, frontend on Netlify; frontend calls backend via `VITE_API_URL`.
+
+---
+
+## Adding features
+
+- **New API route:** Add handler in `backend/routes/`, register in `backend/index.ts` under `/api/...`. Optionally add types in `shared/api.ts`.
+- **New page:** Create `clients/pages/MyPage.tsx`, add `<Route path="/my-page" element={<MyPage />} />` in `clients/App.tsx` (above the `*` route).

@@ -5,27 +5,30 @@ import * as express from "express";
 const app = createServer();
 const port = process.env.PORT || 3000;
 
-// In production, serve the built SPA files
-const __dirname = import.meta.dirname;
-const distPath = path.join(__dirname, "../spa");
+// When API_ONLY or RENDER is set (e.g. backend on Render), only run the API; frontend is on Netlify
+const apiOnly = process.env.API_ONLY === "true" || process.env.RENDER === "true";
 
-// Serve static files
-app.use(express.static(distPath));
-
-// Handle React Router - serve index.html for all non-API routes
-app.get("*", (req, res) => {
-  // Don't serve index.html for API routes
-  if (req.path.startsWith("/api/") || req.path.startsWith("/health")) {
-    return res.status(404).json({ error: "API endpoint not found" });
-  }
-
-  res.sendFile(path.join(distPath, "index.html"));
-});
+if (!apiOnly) {
+  const __dirname = import.meta.dirname;
+  const distPath = path.join(__dirname, "../spa");
+  app.use(express.static(distPath));
+  app.get("/{*path}", (req, res) => {
+    if (req.path.startsWith("/api/") || req.path.startsWith("/health")) {
+      return res.status(404).json({ error: "API endpoint not found" });
+    }
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+}
 
 app.listen(port, () => {
-  console.log(`[OK] Server running on port ${port}`);
-  console.log(`[APP] Frontend: http://localhost:${port}`);
-  console.log(`[API] http://localhost:${port}/api`);
+  if (apiOnly) {
+    console.log(`[OK] API server running on port ${port}`);
+    console.log(`[API] Base URL: http://localhost:${port}/api`);
+  } else {
+    console.log(`[OK] Server running on port ${port}`);
+    console.log(`[APP] Frontend: http://localhost:${port}`);
+    console.log(`[API] http://localhost:${port}/api`);
+  }
 });
 
 // Graceful shutdown

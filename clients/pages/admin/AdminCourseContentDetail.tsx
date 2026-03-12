@@ -1,0 +1,599 @@
+import { useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  BookOpen,
+  ArrowLeft,
+  Plus,
+  Youtube,
+  FileText,
+  ClipboardList,
+  Loader2,
+  ChevronDown,
+  ChevronRight,
+  Pencil,
+  Trash2,
+} from "lucide-react";
+import type { CourseDoc, ModuleDoc, LessonDoc, AssessmentDoc } from "@shared/api";
+
+import { getApiBase } from "@/lib/apiBase";
+
+const getCourseContentApi = () => getApiBase() + "/api/course-content";
+
+async function fetchCourse(courseId: string): Promise<CourseDoc | null> {
+  const res = await fetch(`${getCourseContentApi()}/courses/${courseId}`);
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data as CourseDoc;
+}
+
+async function fetchModules(courseId: string): Promise<ModuleDoc[]> {
+  const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules`);
+  if (!res.ok) return [];
+  const data = await res.json();
+  return (data as { modules: ModuleDoc[] }).modules ?? [];
+}
+
+async function fetchLessons(courseId: string, moduleId: string): Promise<LessonDoc[]> {
+  const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules/${moduleId}/lessons`);
+  if (!res.ok) return [];
+  const data = await res.json();
+  return (data as { lessons: LessonDoc[] }).lessons ?? [];
+}
+
+async function fetchAssessments(courseId: string, moduleId: string): Promise<AssessmentDoc[]> {
+  const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules/${moduleId}/assessments`);
+  if (!res.ok) return [];
+  const data = await res.json();
+  return (data as { assessments: AssessmentDoc[] }).assessments ?? [];
+}
+
+export default function AdminCourseContentDetail() {
+  const { courseId } = useParams<{ courseId: string }>();
+  const queryClient = useQueryClient();
+  const [expandedModule, setExpandedModule] = useState<string | null>(null);
+  const [addingModule, setAddingModule] = useState(false);
+  const [newModuleTitle, setNewModuleTitle] = useState("");
+  const [editingLesson, setEditingLesson] = useState<LessonDoc | null>(null);
+  const [addingLesson, setAddingLesson] = useState<string | null>(null);
+  const [addingAssessment, setAddingAssessment] = useState<string | null>(null);
+
+  const { data: course, isLoading: courseLoading } = useQuery({
+    queryKey: ["course-content", "course", courseId],
+    queryFn: () => fetchCourse(courseId!),
+    enabled: !!courseId,
+  });
+
+  const { data: modules = [], isLoading: modulesLoading } = useQuery({
+    queryKey: ["course-content", "modules", courseId],
+    queryFn: () => fetchModules(courseId!),
+    enabled: !!courseId,
+  });
+
+  const addModuleMutation = useMutation({
+    mutationFn: async (title: string) => {
+      const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, order: modules.length }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error ?? "Failed to add module");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["course-content", "modules", courseId] });
+      setNewModuleTitle("");
+      setAddingModule(false);
+    },
+  });
+
+  const addLessonMutation = useMutation({
+    mutationFn: async ({ moduleId, title, youtubeUrl, pdfUrl, contentHtml }: { moduleId: string; title: string; youtubeUrl?: string; pdfUrl?: string; contentHtml?: string }) => {
+      const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules/${moduleId}/lessons`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, order: 0, youtubeUrl: youtubeUrl || undefined, pdfUrl: pdfUrl || undefined, contentHtml: contentHtml || "" }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error ?? "Failed to add lesson");
+      }
+      return res.json();
+    },
+    onSuccess: (_, { moduleId }) => {
+      queryClient.invalidateQueries({ queryKey: ["course-content", "lessons", courseId, moduleId] });
+      setAddingLesson(null);
+    },
+  });
+
+  const updateLessonMutation = useMutation({
+    mutationFn: async ({ moduleId, lessonId, title, youtubeUrl, pdfUrl, contentHtml }: { moduleId: string; lessonId: string; title: string; youtubeUrl?: string; pdfUrl?: string; contentHtml?: string }) => {
+      const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, youtubeUrl: youtubeUrl || undefined, pdfUrl: pdfUrl || undefined, contentHtml: contentHtml || "" }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error ?? "Failed to update lesson");
+      }
+      return res.json();
+    },
+    onSuccess: (_, { moduleId }) => {
+      queryClient.invalidateQueries({ queryKey: ["course-content", "lessons", courseId, moduleId] });
+      setEditingLesson(null);
+    },
+  });
+
+  if (!courseId || courseLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!course) {
+    return (
+      <div className="bg-white rounded-[30px] border border-gray-200 p-8 text-center">
+        <p className="text-gray-500">Course not found.</p>
+        <Link to="/admin/course-content" className="mt-4 inline-block text-primary font-medium hover:underline">
+          Back to course content
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Link
+          to="/admin/course-content"
+          className="inline-flex items-center gap-2 text-gray-600 hover:text-primary font-medium"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back
+        </Link>
+      </div>
+
+      <div className="bg-white rounded-[30px] shadow-sm border border-gray-200 p-6 sm:p-8">
+        <h1 className="text-2xl font-bold text-primary flex items-center gap-2 mb-1">
+          <BookOpen className="w-6 h-6" />
+          {course.title}
+        </h1>
+        <p className="text-gray-600 text-sm mb-6">{course.sector} · {course.duration}</p>
+
+        {modulesLoading ? (
+          <p className="text-gray-500 text-sm">Loading modules…</p>
+        ) : (
+          <div className="space-y-3">
+            {modules.map((mod) => (
+              <ModuleBlock
+                key={mod.id}
+                courseId={courseId}
+                module={mod}
+                expanded={expandedModule === mod.id}
+                onToggle={() => setExpandedModule(expandedModule === mod.id ? null : mod.id)}
+                onAddLesson={() => setAddingLesson(mod.id)}
+                editingLesson={editingLesson}
+                onEditLesson={setEditingLesson}
+                onCloseEditLesson={() => setEditingLesson(null)}
+                updateLessonMutation={updateLessonMutation}
+                addLessonMutation={addLessonMutation}
+                addingLesson={addingLesson === mod.id}
+                onCloseAddLesson={() => setAddingLesson(null)}
+                addingAssessment={addingAssessment}
+                setAddingAssessment={setAddingAssessment}
+                queryClient={queryClient}
+              />
+            ))}
+
+            {addingModule ? (
+              <div className="flex items-center gap-2 p-4 rounded-2xl border-2 border-dashed border-gray-200">
+                <input
+                  type="text"
+                  value={newModuleTitle}
+                  onChange={(e) => setNewModuleTitle(e.target.value)}
+                  placeholder="Module title"
+                  className="flex-1 px-3 py-2 rounded-lg border border-gray-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => addModuleMutation.mutate(newModuleTitle)}
+                  disabled={!newModuleTitle.trim() || addModuleMutation.isPending}
+                  className="bg-primary text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50"
+                >
+                  {addModuleMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add"}
+                </button>
+                <button type="button" onClick={() => { setAddingModule(false); setNewModuleTitle(""); }} className="text-gray-500 hover:text-gray-700">
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setAddingModule(true)}
+                className="flex items-center gap-2 w-full p-4 rounded-2xl border-2 border-dashed border-gray-200 text-gray-500 hover:border-primary hover:text-primary font-medium"
+              >
+                <Plus className="w-5 h-5" /> Add module (subunit)
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+
+      {editingLesson && (
+        <LessonEditModal
+          lesson={editingLesson}
+          onClose={() => setEditingLesson(null)}
+          onSave={(title, youtubeUrl, pdfUrl, contentHtml) =>
+            updateLessonMutation.mutate({
+              moduleId: editingLesson.moduleId,
+              lessonId: editingLesson.id,
+              title,
+              youtubeUrl,
+              pdfUrl,
+              contentHtml,
+            })
+          }
+          isSaving={updateLessonMutation.isPending}
+        />
+      )}
+    </div>
+  );
+}
+
+function ModuleBlock({
+  courseId,
+  module: mod,
+  expanded,
+  onToggle,
+  onAddLesson,
+  editingLesson,
+  onEditLesson,
+  onCloseEditLesson,
+  updateLessonMutation,
+  addLessonMutation,
+  addingLesson,
+  onCloseAddLesson,
+  addingAssessment,
+  setAddingAssessment,
+  queryClient,
+}: {
+  courseId: string;
+  module: ModuleDoc;
+  expanded: boolean;
+  onToggle: () => void;
+  onAddLesson: () => void;
+  editingLesson: LessonDoc | null;
+  onEditLesson: (l: LessonDoc) => void;
+  onCloseEditLesson: () => void;
+  updateLessonMutation: ReturnType<typeof useMutation>;
+  addLessonMutation: ReturnType<typeof useMutation>;
+  addingLesson: boolean;
+  onCloseAddLesson: () => void;
+  addingAssessment: string | null;
+  setAddingAssessment: (id: string | null) => void;
+  queryClient: ReturnType<typeof useQueryClient>;
+}) {
+  const { data: lessons = [] } = useQuery({
+    queryKey: ["course-content", "lessons", courseId, mod.id],
+    queryFn: () => fetchLessons(courseId, mod.id),
+    enabled: expanded,
+  });
+  const { data: assessments = [] } = useQuery({
+    queryKey: ["course-content", "assessments", courseId, mod.id],
+    queryFn: () => fetchAssessments(courseId, mod.id),
+    enabled: expanded,
+  });
+
+  const [newLessonTitle, setNewLessonTitle] = useState("");
+  const [newLessonYoutube, setNewLessonYoutube] = useState("");
+  const [newLessonPdfUrl, setNewLessonPdfUrl] = useState("");
+  const [newLessonContent, setNewLessonContent] = useState("");
+
+  return (
+    <div className="rounded-2xl border border-gray-200 overflow-hidden">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex items-center justify-between w-full p-4 text-left hover:bg-gray-50"
+      >
+        <div className="flex items-center gap-3">
+          {expanded ? <ChevronDown className="w-5 h-5 text-gray-500" /> : <ChevronRight className="w-5 h-5 text-gray-500" />}
+          <span className="font-semibold text-gray-900">{mod.title}</span>
+          <span className="text-sm text-gray-500">{lessons.length} lessons · {assessments.length} assessments</span>
+        </div>
+      </button>
+      {expanded && (
+        <div className="border-t border-gray-100 bg-gray-50/50 p-4 space-y-4">
+          <div>
+            <p className="text-sm font-medium text-gray-700 mb-2">Lessons (add YouTube link and/or text per topic)</p>
+            <ul className="space-y-2 mb-3">
+              {lessons.map((l) => (
+                <li key={l.id} className="flex items-center justify-between gap-2 py-2 px-3 rounded-xl bg-white border border-gray-100">
+                  <div className="flex items-center gap-2 min-w-0">
+                    {l.pdfUrl ? <FileText className="w-4 h-4 text-amber-600 shrink-0" title="PDF" /> : null}
+                    {l.youtubeUrl ? <Youtube className="w-4 h-4 text-red-600 shrink-0" /> : null}
+                    {!l.pdfUrl && !l.youtubeUrl ? <FileText className="w-4 h-4 text-gray-400 shrink-0" /> : null}
+                    <span className="truncate font-medium text-gray-900">{l.title}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => onEditLesson(l)}
+                    className="inline-flex items-center gap-1 text-primary text-sm font-medium hover:underline shrink-0"
+                  >
+                    <Pencil className="w-3.5 h-3.5" /> Edit
+                  </button>
+                </li>
+              ))}
+            </ul>
+            {addingLesson ? (
+              <div className="space-y-2 p-4 bg-white rounded-xl border border-gray-200">
+                <input
+                  type="text"
+                  value={newLessonTitle}
+                  onChange={(e) => setNewLessonTitle(e.target.value)}
+                  placeholder="Lesson title"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200"
+                />
+                <input
+                  type="url"
+                  value={newLessonYoutube}
+                  onChange={(e) => setNewLessonYoutube(e.target.value)}
+                  placeholder="YouTube URL (optional)"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200"
+                />
+                <input
+                  type="text"
+                  value={newLessonPdfUrl}
+                  onChange={(e) => setNewLessonPdfUrl(e.target.value)}
+                  placeholder="PDF path e.g. /courses/construction/1.1-Health-Safety.pdf"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200"
+                />
+                <textarea
+                  value={newLessonContent}
+                  onChange={(e) => setNewLessonContent(e.target.value)}
+                  placeholder="Content (text; PDF content as text)"
+                  rows={3}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 resize-y"
+                />
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      addLessonMutation.mutate(
+                        { moduleId: mod.id, title: newLessonTitle, youtubeUrl: newLessonYoutube || undefined, pdfUrl: newLessonPdfUrl || undefined, contentHtml: newLessonContent },
+                        {
+                          onSuccess: () => {
+                            setNewLessonTitle("");
+                            setNewLessonYoutube("");
+                            setNewLessonPdfUrl("");
+                            setNewLessonContent("");
+                          },
+                        }
+                      );
+                    }}
+                    disabled={!newLessonTitle.trim() || addLessonMutation.isPending}
+                    className="bg-primary text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50"
+                  >
+                    {addLessonMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : "Add lesson"}
+                  </button>
+                  <button type="button" onClick={onCloseAddLesson} className="text-gray-500 hover:text-gray-700">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={onAddLesson}
+                className="inline-flex items-center gap-2 text-primary font-medium text-sm hover:underline"
+              >
+                <Plus className="w-4 h-4" /> Add lesson
+              </button>
+            )}
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-700 mb-2">Assessments (quiz after this subunit)</p>
+            {assessments.length > 0 ? (
+              <ul className="space-y-2">
+                {assessments.map((a) => (
+                  <li key={a.id} className="flex items-center justify-between gap-2 py-2 px-3 rounded-xl bg-white border border-gray-100">
+                    <div className="flex items-center gap-2">
+                      <ClipboardList className="w-4 h-4 text-primary" />
+                      <span className="font-medium text-gray-900">{a.title}</span>
+                      <span className="text-sm text-gray-500">({a.questions.length} questions)</span>
+                    </div>
+                    <Link
+                      to={`/admin/course-content/${courseId}/modules/${mod.id}/assessments/${a.id}`}
+                      className="text-primary text-sm font-medium hover:underline"
+                    >
+                      Edit
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-gray-500">No assessment yet.</p>
+            )}
+            {addingAssessment === mod.id ? (
+              <AddAssessmentForm
+                courseId={courseId}
+                moduleId={mod.id}
+                onClose={() => setAddingAssessment(null)}
+                onSuccess={() => {
+                  queryClient.invalidateQueries({ queryKey: ["course-content", "assessments", courseId, mod.id] });
+                  setAddingAssessment(null);
+                }}
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setAddingAssessment(mod.id)}
+                className="mt-2 inline-flex items-center gap-2 text-primary font-medium text-sm hover:underline"
+              >
+                <Plus className="w-4 h-4" /> Add assessment (quiz)
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AddAssessmentForm({
+  courseId,
+  moduleId,
+  onClose,
+  onSuccess,
+}: {
+  courseId: string;
+  moduleId: string;
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const [title, setTitle] = useState("Module assessment");
+  const [passThreshold, setPassThreshold] = useState(70);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSaving(true);
+    try {
+      const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/modules/${moduleId}/assessments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, passThreshold, questions: [] }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error((data as { error?: string }).error ?? "Failed to create assessment");
+      }
+      onSuccess();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="mt-3 p-4 bg-white rounded-xl border border-gray-200 space-y-3">
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Assessment title"
+          className="w-full px-3 py-2 rounded-lg border border-gray-200 mb-2"
+          required
+        />
+        <label className="flex items-center gap-2 text-sm text-gray-600">
+          Pass threshold (%):
+          <input
+            type="number"
+            min={0}
+            max={100}
+            value={passThreshold}
+            onChange={(e) => setPassThreshold(Number(e.target.value))}
+            className="w-20 px-2 py-1 rounded border border-gray-200"
+          />
+        </label>
+        {error && <p className="text-red-600 text-sm">{error}</p>}
+        <div className="flex gap-2 mt-2">
+          <button type="submit" disabled={saving} className="bg-primary text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-50">
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create"}
+          </button>
+          <button type="button" onClick={onClose} className="text-gray-600 hover:text-gray-900">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+function LessonEditModal({
+  lesson,
+  onClose,
+  onSave,
+  isSaving,
+}: {
+  lesson: LessonDoc;
+  onClose: () => void;
+  onSave: (title: string, youtubeUrl: string, pdfUrl: string, contentHtml: string) => void;
+  isSaving: boolean;
+}) {
+  const [title, setTitle] = useState(lesson.title);
+  const [youtubeUrl, setYoutubeUrl] = useState(lesson.youtubeUrl ?? "");
+  const [pdfUrl, setPdfUrl] = useState(lesson.pdfUrl ?? "");
+  const [contentHtml, setContentHtml] = useState(lesson.contentHtml ?? "");
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={onClose}>
+      <div className="bg-white rounded-[24px] shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6" onClick={(e) => e.stopPropagation()}>
+        <h3 className="text-lg font-bold text-gray-900 mb-4">Edit lesson</h3>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full px-4 py-2 rounded-lg border border-gray-200"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">YouTube URL (optional)</label>
+            <input
+              type="url"
+              value={youtubeUrl}
+              onChange={(e) => setYoutubeUrl(e.target.value)}
+              placeholder="https://www.youtube.com/watch?v=..."
+              className="w-full px-4 py-2 rounded-lg border border-gray-200"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">PDF path (from public/courses, e.g. /courses/construction/name.pdf)</label>
+            <input
+              type="text"
+              value={pdfUrl}
+              onChange={(e) => setPdfUrl(e.target.value)}
+              placeholder="/courses/construction/1.1-Health-Safety.pdf"
+              className="w-full px-4 py-2 rounded-lg border border-gray-200"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Extra content (optional text)</label>
+            <textarea
+              value={contentHtml}
+              onChange={(e) => setContentHtml(e.target.value)}
+              rows={4}
+              className="w-full px-4 py-2 rounded-lg border border-gray-200 resize-y"
+              placeholder="Optional notes or summary."
+            />
+          </div>
+        </div>
+        <div className="flex gap-3 mt-6">
+          <button
+            type="button"
+            onClick={() => onSave(title, youtubeUrl, pdfUrl, contentHtml)}
+            disabled={isSaving}
+            className="bg-primary text-white px-6 py-2 rounded-lg font-semibold disabled:opacity-50"
+          >
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save"}
+          </button>
+          <button type="button" onClick={onClose} className="text-gray-600 hover:text-gray-900">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

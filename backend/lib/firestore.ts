@@ -10,7 +10,7 @@ import path from "node:path";
 
 let db: Firestore | null = null;
 
-function getDb(): Firestore {
+export function getDb(): Firestore {
   if (db) return db;
   if (getApps().length === 0) {
     const credPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
@@ -46,6 +46,10 @@ export const COLLECTIONS = {
   users: "users",
   testimonials: "testimonials",
   quizzes: "quizzes",
+  courses: "courses",
+  enrollments: "enrollments",
+  submissions: "submissions",
+  progress: "progress",
 } as const;
 
 export function usersCollection() {
@@ -58,4 +62,20 @@ export function testimonialsCollection() {
 
 export function quizzesCollection() {
   return getDb().collection(COLLECTIONS.quizzes);
+}
+
+export function coursesCollection() {
+  return getDb().collection(COLLECTIONS.courses);
+}
+
+export function enrollmentsCollection() {
+  return getDb().collection(COLLECTIONS.enrollments);
+}
+
+export function submissionsCollection() {
+  return getDb().collection(COLLECTIONS.submissions);
+}
+
+export function progressCollection() {
+  return getDb().collection(COLLECTIONS.progress);
 }

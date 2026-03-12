@@ -2,16 +2,17 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { ClipboardList, Edit, Plus } from "lucide-react";
 import type { CoursePublic } from "@shared/api";
+import { getApiBase } from "@/lib/apiBase";
 
 async function fetchCourses(): Promise<CoursePublic[]> {
-  const res = await fetch("/api/courses");
+  const res = await fetch(getApiBase() + "/api/courses");
   if (!res.ok) throw new Error("Failed to load courses");
   const data = await res.json();
   return (data as { courses: CoursePublic[] }).courses ?? [];
 }
 
 async function fetchQuizExists(courseId: string): Promise<boolean> {
-  const res = await fetch(`/api/courses/${courseId}/quiz`);
+  const res = await fetch(getApiBase() + `/api/courses/${courseId}/quiz`);
   return res.ok;
 }
 

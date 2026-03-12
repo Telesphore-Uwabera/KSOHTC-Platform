@@ -41,14 +41,102 @@ export type UserCreate = Pick<User, "email" | "password" | "name" | "organizatio
 export type UserPublic = Omit<User, "password">;
 
 /** Course identifier (must match client course ids) */
-export type CourseId = "construction" | "industrial-safety" | "mining";
+export type CourseId = "construction" | "industrial-safety" | "mining" | "safety-management";
 
-/** Course summary for admin / API */
+/** Course document (Firestore) */
+export interface CourseDoc {
+  id: string;
+  slug: CourseId;
+  title: string;
+  description: string;
+  sector: string;
+  duration: string;
+  coverImageUrl?: string;
+  published: boolean;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Course summary for admin / API (backward compatible) */
 export interface CoursePublic {
   id: CourseId;
   title: string;
   sector: string;
   duration: string;
+}
+
+/** Module (subunit) under a course */
+export interface ModuleDoc {
+  id: string;
+  courseId: string;
+  title: string;
+  order: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Lesson under a module: optional YouTube link, optional PDF (stored in public/courses, path from DB), optional text */
+export interface LessonDoc {
+  id: string;
+  courseId: string;
+  moduleId: string;
+  title: string;
+  order: number;
+  youtubeUrl?: string;
+  /** Public URL or path to PDF e.g. /courses/construction/1.1-Health-Safety.pdf */
+  pdfUrl?: string;
+  contentHtml: string;
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Assessment (quiz) after a subunit - stored per module */
+export interface AssessmentDoc {
+  id: string;
+  courseId: string;
+  moduleId: string;
+  title: string;
+  description?: string;
+  questions: QuizQuestion[];
+  passThreshold: number;
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Enrollment: learner enrolled in course */
+export interface EnrollmentDoc {
+  id: string;
+  userId: string;
+  courseId: string;
+  enrolledAt: string;
+}
+
+/** Submission: learner's quiz attempt */
+export interface SubmissionDoc {
+  id: string;
+  userId: string;
+  courseId: string;
+  assessmentId: string;
+  moduleId: string;
+  answers: number[]; // selected option index per question
+  score: number;
+  maxScore: number;
+  percentage: number;
+  passed: boolean;
+  submittedAt: string;
+}
+
+/** Progress: learner progress in a course */
+export interface ProgressDoc {
+  id: string;
+  userId: string;
+  courseId: string;
+  completedLessonIds: string[];
+  lastLessonId?: string;
+  updatedAt: string;
 }
 
 /** Single quiz/assessment question (multiple choice) */

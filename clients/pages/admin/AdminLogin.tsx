@@ -4,6 +4,7 @@ import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { LogIn, Loader2, ShieldCheck } from "lucide-react";
 import { getStoredUser, setStoredUser } from "@/lib/auth";
+import { getApiBase } from "@/lib/apiBase";
 
 export default function AdminLogin() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export default function AdminLogin() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch(getApiBase() + "/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

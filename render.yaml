@@ -1,0 +1,20 @@
+# Render blueprint: deploy backend API only (frontend on Netlify).
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: ksohtc-api
+    runtime: node
+    region: oregon
+
+    buildCommand: pnpm install && pnpm run build:backend
+    startCommand: node dist/backend/production.mjs
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: RENDER
+        value: true
+      # Set these in Render dashboard (Environment):
+      # - GOOGLE_APPLICATION_CREDENTIALS or FIREBASE_SERVICE_ACCOUNT (Firebase)
+      # - ADMIN_EMAIL, ADMIN_PASSWORD
+      # - FRONTEND_URL (your Netlify URL, e.g. https://your-app.netlify.app for CORS)

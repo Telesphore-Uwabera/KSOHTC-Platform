@@ -1,0 +1,448 @@
+import { Request, Response } from "express";
+import crypto from "node:crypto";
+import type {
+  CourseDoc,
+  CourseId,
+  ModuleDoc,
+  LessonDoc,
+  AssessmentDoc,
+  QuizQuestion,
+} from "@shared/api";
+import {
+  coursesRef,
+  courseDoc,
+  modulesRef,
+  moduleDoc,
+  lessonsRef,
+  lessonDoc,
+  assessmentsRef,
+  assessmentDoc,
+  isValidCourseSlug,
+} from "../lib/course-firestore";
+
+/** GET /api/course-content/courses – list all courses from Firestore */
+export async function listCourses(_req: Request, res: Response): Promise<void> {
+  try {
+    const snap = await coursesRef().orderBy("order", "asc").get();
+    const courses: CourseDoc[] = snap.docs.map((d) => ({ id: d.id, ...d.data() } as CourseDoc));
+    res.json({ courses });
+  } catch (e) {
+    console.error("listCourses:", e);
+    res.status(500).json({ error: "Failed to list courses." });
+  }
+}
+
+/** GET /api/course-content/courses/:courseId – get one course doc */
+export async function getCourse(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId } = req.params;
+    const doc = await courseDoc(courseId).get();
+    if (!doc.exists) {
+      res.status(404).json({ error: "Course not found." });
+      return;
+    }
+    res.json({ id: doc.id, ...doc.data() });
+  } catch (e) {
+    console.error("getCourse:", e);
+    res.status(500).json({ error: "Failed to get course." });
+  }
+}
+
+/** POST /api/course-content/courses – create course (admin) */
+export async function createCourse(req: Request, res: Response): Promise<void> {
+  try {
+    const body = req.body as { slug?: string; title: string; description?: string; sector?: string; duration?: string };
+    const slug = (body.slug ?? "").trim() as CourseId;
+    if (!slug || !isValidCourseSlug(slug)) {
+      res.status(400).json({ error: "Valid slug required: construction | industrial-safety | mining | safety-management" });
+      return;
+    }
+    const now = new Date().toISOString();
+    const ref = courseDoc(slug);
+    const existing = await ref.get();
+    if (existing.exists) {
+      res.status(409).json({ error: "Course with this slug already exists." });
+      return;
+    }
+    const data: Omit<CourseDoc, "id"> = {
+      slug,
+      title: String(body.title ?? "Untitled").trim(),
+      description: String(body.description ?? "").trim(),
+      sector: String(body.sector ?? "").trim(),
+      duration: String(body.duration ?? "").trim(),
+      published: false,
+      order: 0,
+      createdAt: now,
+      updatedAt: now,
+    };
+    await ref.set(data);
+    res.status(201).json({ id: slug, ...data });
+  } catch (e) {
+    console.error("createCourse:", e);
+    res.status(500).json({ error: "Failed to create course." });
+  }
+}
+
+/** PUT /api/course-content/courses/:courseId – update course (admin) */
+export async function updateCourse(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId } = req.params;
+    const body = req.body as Partial<Pick<CourseDoc, "title" | "description" | "sector" | "duration" | "coverImageUrl" | "published" | "order">>;
+    const ref = courseDoc(courseId);
+    const snap = await ref.get();
+    if (!snap.exists) {
+      res.status(404).json({ error: "Course not found." });
+      return;
+    }
+    const now = new Date().toISOString();
+    const current = snap.data() as Omit<CourseDoc, "id">;
+    const updated = {
+      ...current,
+      ...(body.title !== undefined && { title: String(body.title).trim() }),
+      ...(body.description !== undefined && { description: String(body.description).trim() }),
+      ...(body.sector !== undefined && { sector: String(body.sector).trim() }),
+      ...(body.duration !== undefined && { duration: String(body.duration).trim() }),
+      ...(body.coverImageUrl !== undefined && { coverImageUrl: body.coverImageUrl || undefined }),
+      ...(body.published !== undefined && { published: Boolean(body.published) }),
+      ...(body.order !== undefined && { order: Number(body.order) }),
+      updatedAt: now,
+    };
+    await ref.set(updated);
+    res.json({ id: courseId, ...updated });
+  } catch (e) {
+    console.error("updateCourse:", e);
+    res.status(500).json({ error: "Failed to update course." });
+  }
+}
+
+/** GET /api/course-content/courses/:courseId/modules – list modules */
+export async function listModules(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId } = req.params;
+    const snap = await modulesRef(courseId).orderBy("order", "asc").get();
+    const modules: ModuleDoc[] = snap.docs.map((d) => ({
+      id: d.id,
+      courseId,
+      ...d.data(),
+    } as ModuleDoc));
+    res.json({ modules });
+  } catch (e) {
+    console.error("listModules:", e);
+    res.status(500).json({ error: "Failed to list modules." });
+  }
+}
+
+/** POST /api/course-content/courses/:courseId/modules – add module (admin) */
+export async function createModule(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId } = req.params;
+    const body = req.body as { title: string; order?: number };
+    const courseSnap = await courseDoc(courseId).get();
+    if (!courseSnap.exists) {
+      res.status(404).json({ error: "Course not found." });
+      return;
+    }
+    const now = new Date().toISOString();
+    const id = crypto.randomUUID();
+    const order = Number(body.order) ?? 0;
+    const data: Omit<ModuleDoc, "id"> = {
+      courseId,
+      title: String(body.title ?? "Untitled module").trim(),
+      order,
+      createdAt: now,
+      updatedAt: now,
+    };
+    await moduleDoc(courseId, id).set(data);
+    res.status(201).json({ id, ...data });
+  } catch (e) {
+    console.error("createModule:", e);
+    res.status(500).json({ error: "Failed to create module." });
+  }
+}
+
+/** PUT /api/course-content/courses/:courseId/modules/:moduleId – update module */
+export async function updateModule(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId, moduleId } = req.params;
+    const body = req.body as { title?: string; order?: number };
+    const ref = moduleDoc(courseId, moduleId);
+    const snap = await ref.get();
+    if (!snap.exists) {
+      res.status(404).json({ error: "Module not found." });
+      return;
+    }
+    const now = new Date().toISOString();
+    const current = snap.data() as Omit<ModuleDoc, "id">;
+    const updated = {
+      ...current,
+      ...(body.title !== undefined && { title: String(body.title).trim() }),
+      ...(body.order !== undefined && { order: Number(body.order) }),
+      updatedAt: now,
+    };
+    await ref.set(updated);
+    res.json({ id: moduleId, ...updated });
+  } catch (e) {
+    console.error("updateModule:", e);
+    res.status(500).json({ error: "Failed to update module." });
+  }
+}
+
+/** DELETE /api/course-content/courses/:courseId/modules/:moduleId */
+export async function deleteModule(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId, moduleId } = req.params;
+    const ref = moduleDoc(courseId, moduleId);
+    const snap = await ref.get();
+    if (!snap.exists) {
+      res.status(404).json({ error: "Module not found." });
+      return;
+    }
+    const lessonsSnap = await lessonsRef(courseId, moduleId).get();
+    for (const d of lessonsSnap.docs) await d.ref.delete();
+    const assessmentsSnap = await assessmentsRef(courseId, moduleId).get();
+    for (const d of assessmentsSnap.docs) await d.ref.delete();
+    await ref.delete();
+    res.status(204).send();
+  } catch (e) {
+    console.error("deleteModule:", e);
+    res.status(500).json({ error: "Failed to delete module." });
+  }
+}
+
+/** GET /api/course-content/courses/:courseId/modules/:moduleId/lessons */
+export async function listLessons(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId, moduleId } = req.params;
+    const snap = await lessonsRef(courseId, moduleId).orderBy("order", "asc").get();
+    const lessons: LessonDoc[] = snap.docs.map((d) => ({
+      id: d.id,
+      courseId,
+      moduleId,
+      ...d.data(),
+    } as LessonDoc));
+    res.json({ lessons });
+  } catch (e) {
+    console.error("listLessons:", e);
+    res.status(500).json({ error: "Failed to list lessons." });
+  }
+}
+
+/** POST /api/course-content/courses/:courseId/modules/:moduleId/lessons – add lesson (YouTube, pdfUrl, contentHtml) */
+export async function createLesson(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId, moduleId } = req.params;
+    const body = req.body as { title: string; order?: number; youtubeUrl?: string; pdfUrl?: string; contentHtml?: string };
+    const moduleSnap = await moduleDoc(courseId, moduleId).get();
+    if (!moduleSnap.exists) {
+      res.status(404).json({ error: "Module not found." });
+      return;
+    }
+    const now = new Date().toISOString();
+    const id = crypto.randomUUID();
+    const data: Omit<LessonDoc, "id"> = {
+      courseId,
+      moduleId,
+      title: String(body.title ?? "Untitled lesson").trim(),
+      order: Number(body.order) ?? 0,
+      youtubeUrl: typeof body.youtubeUrl === "string" && body.youtubeUrl.trim() ? body.youtubeUrl.trim() : undefined,
+      pdfUrl: typeof body.pdfUrl === "string" && body.pdfUrl.trim() ? body.pdfUrl.trim() : undefined,
+      contentHtml: typeof body.contentHtml === "string" ? body.contentHtml : "",
+      published: true,
+      createdAt: now,
+      updatedAt: now,
+    };
+    await lessonDoc(courseId, moduleId, id).set(data);
+    res.status(201).json({ id, ...data });
+  } catch (e) {
+    console.error("createLesson:", e);
+    res.status(500).json({ error: "Failed to create lesson." });
+  }
+}
+
+/** PUT /api/course-content/courses/:courseId/modules/:moduleId/lessons/:lessonId */
+export async function updateLesson(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId, moduleId, lessonId } = req.params;
+    const body = req.body as { title?: string; order?: number; youtubeUrl?: string; pdfUrl?: string; contentHtml?: string; published?: boolean };
+    const ref = lessonDoc(courseId, moduleId, lessonId);
+    const snap = await ref.get();
+    if (!snap.exists) {
+      res.status(404).json({ error: "Lesson not found." });
+      return;
+    }
+    const now = new Date().toISOString();
+    const current = snap.data() as Omit<LessonDoc, "id">;
+    const updated = {
+      ...current,
+      ...(body.title !== undefined && { title: String(body.title).trim() }),
+      ...(body.order !== undefined && { order: Number(body.order) }),
+      ...(body.youtubeUrl !== undefined && { youtubeUrl: body.youtubeUrl?.trim() || undefined }),
+      ...(body.pdfUrl !== undefined && { pdfUrl: body.pdfUrl?.trim() || undefined }),
+      ...(body.contentHtml !== undefined && { contentHtml: body.contentHtml }),
+      ...(body.published !== undefined && { published: Boolean(body.published) }),
+      updatedAt: now,
+    };
+    await ref.set(updated);
+    res.json({ id: lessonId, ...updated });
+  } catch (e) {
+    console.error("updateLesson:", e);
+    res.status(500).json({ error: "Failed to update lesson." });
+  }
+}
+
+/** DELETE /api/course-content/courses/:courseId/modules/:moduleId/lessons/:lessonId */
+export async function deleteLesson(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId, moduleId, lessonId } = req.params;
+    const ref = lessonDoc(courseId, moduleId, lessonId);
+    const snap = await ref.get();
+    if (!snap.exists) {
+      res.status(404).json({ error: "Lesson not found." });
+      return;
+    }
+    await ref.delete();
+    res.status(204).send();
+  } catch (e) {
+    console.error("deleteLesson:", e);
+    res.status(500).json({ error: "Failed to delete lesson." });
+  }
+}
+
+/** GET /api/course-content/courses/:courseId/modules/:moduleId/assessments */
+export async function listAssessments(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId, moduleId } = req.params;
+    const snap = await assessmentsRef(courseId, moduleId).get();
+    const assessments: AssessmentDoc[] = snap.docs.map((d) => ({
+      id: d.id,
+      courseId,
+      moduleId,
+      ...d.data(),
+    } as AssessmentDoc));
+    res.json({ assessments });
+  } catch (e) {
+    console.error("listAssessments:", e);
+    res.status(500).json({ error: "Failed to list assessments." });
+  }
+}
+
+/** GET /api/course-content/courses/:courseId/modules/:moduleId/assessments/:assessmentId */
+export async function getAssessment(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId, moduleId, assessmentId } = req.params;
+    const doc = await assessmentDoc(courseId, moduleId, assessmentId).get();
+    if (!doc.exists) {
+      res.status(404).json({ error: "Assessment not found." });
+      return;
+    }
+    res.json({ id: doc.id, courseId, moduleId, ...doc.data() });
+  } catch (e) {
+    console.error("getAssessment:", e);
+    res.status(500).json({ error: "Failed to get assessment." });
+  }
+}
+
+/** POST /api/course-content/courses/:courseId/modules/:moduleId/assessments – add assessment (quiz) */
+export async function createAssessment(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId, moduleId } = req.params;
+    const body = req.body as {
+      title: string;
+      description?: string;
+      questions?: Array<{ text: string; options: string[]; correctIndex: number }>;
+      passThreshold?: number;
+    };
+    const moduleSnap = await moduleDoc(courseId, moduleId).get();
+    if (!moduleSnap.exists) {
+      res.status(404).json({ error: "Module not found." });
+      return;
+    }
+    const now = new Date().toISOString();
+    const id = crypto.randomUUID();
+    const questions: QuizQuestion[] = (body.questions ?? []).map((q, i) => ({
+      id: crypto.randomUUID(),
+      text: String(q.text ?? "").trim(),
+      options: Array.isArray(q.options) ? q.options.map((o) => String(o).trim()) : [],
+      correctIndex: Math.max(0, Math.min(Number(q.correctIndex) ?? 0, (q.options?.length ?? 1) - 1)),
+    }));
+    const data: Omit<AssessmentDoc, "id"> = {
+      courseId,
+      moduleId,
+      title: String(body.title ?? "Module assessment").trim(),
+      description: typeof body.description === "string" ? body.description : undefined,
+      questions,
+      passThreshold: Math.max(0, Math.min(100, Number(body.passThreshold) ?? 70)),
+      published: true,
+      createdAt: now,
+      updatedAt: now,
+    };
+    await assessmentDoc(courseId, moduleId, id).set(data);
+    res.status(201).json({ id, ...data });
+  } catch (e) {
+    console.error("createAssessment:", e);
+    res.status(500).json({ error: "Failed to create assessment." });
+  }
+}
+
+/** PUT /api/course-content/courses/:courseId/modules/:moduleId/assessments/:assessmentId */
+export async function updateAssessment(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId, moduleId, assessmentId } = req.params;
+    const body = req.body as {
+      title?: string;
+      description?: string;
+      questions?: Array<{ id?: string; text: string; options: string[]; correctIndex: number }>;
+      passThreshold?: number;
+      published?: boolean;
+    };
+    const ref = assessmentDoc(courseId, moduleId, assessmentId);
+    const snap = await ref.get();
+    if (!snap.exists) {
+      res.status(404).json({ error: "Assessment not found." });
+      return;
+    }
+    const now = new Date().toISOString();
+    const current = snap.data() as Omit<AssessmentDoc, "id">;
+    const questions: QuizQuestion[] =
+      body.questions !== undefined
+        ? body.questions.map((q) => ({
+            id: q.id ?? crypto.randomUUID(),
+            text: String(q.text ?? "").trim(),
+            options: Array.isArray(q.options) ? q.options.map((o) => String(o).trim()) : [],
+            correctIndex: Math.max(0, Math.min(Number(q.correctIndex) ?? 0, (q.options?.length ?? 1) - 1)),
+          }))
+        : current.questions;
+    const updated = {
+      ...current,
+      ...(body.title !== undefined && { title: String(body.title).trim() }),
+      ...(body.description !== undefined && { description: body.description }),
+      questions,
+      ...(body.passThreshold !== undefined && { passThreshold: Math.max(0, Math.min(100, Number(body.passThreshold))) }),
+      ...(body.published !== undefined && { published: Boolean(body.published) }),
+      updatedAt: now,
+    };
+    await ref.set(updated);
+    res.json({ id: assessmentId, ...updated });
+  } catch (e) {
+    console.error("updateAssessment:", e);
+    res.status(500).json({ error: "Failed to update assessment." });
+  }
+}
+
+/** DELETE /api/course-content/courses/:courseId/modules/:moduleId/assessments/:assessmentId */
+export async function deleteAssessment(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId, moduleId, assessmentId } = req.params;
+    const ref = assessmentDoc(courseId, moduleId, assessmentId);
+    const snap = await ref.get();
+    if (!snap.exists) {
+      res.status(404).json({ error: "Assessment not found." });
+      return;
+    }
+    await ref.delete();
+    res.status(204).send();
+  } catch (e) {
+    console.error("deleteAssessment:", e);
+    res.status(500).json({ error: "Failed to delete assessment." });
+  }
+}

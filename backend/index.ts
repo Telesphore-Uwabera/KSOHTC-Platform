@@ -1,4 +1,9 @@
-import "dotenv/config";
+import path from "node:path";
+import { config as loadEnv } from "dotenv";
+
+// Backend uses backend/.env only (see backend/.env.example)
+loadEnv({ path: path.resolve(process.cwd(), "backend", ".env") });
+
 import express, { type Request, type Response, type NextFunction } from "express";
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
@@ -6,6 +11,25 @@ import { getTestimonials, postTestimonial } from "./routes/testimonials";
 import { postRegister, postLogin, getUsers, patchUserApprove } from "./routes/users";
 import { getCourses, getCourseQuiz, putCourseQuiz, deleteCourseQuiz } from "./routes/courses";
 import { getCourseUsage } from "./routes/analytics";
+import {
+  listCourses as listCourseContent,
+  getCourse,
+  createCourse,
+  updateCourse,
+  listModules,
+  createModule,
+  updateModule,
+  deleteModule,
+  listLessons,
+  createLesson,
+  updateLesson,
+  deleteLesson,
+  listAssessments,
+  getAssessment,
+  createAssessment,
+  updateAssessment,
+  deleteAssessment,
+} from "./routes/course-content";
 
 /** Log each request and response to the terminal (method, path, status, duration) */
 function requestLogger(req: Request, res: Response, next: NextFunction): void {
@@ -23,8 +47,9 @@ function requestLogger(req: Request, res: Response, next: NextFunction): void {
   next();
 }
 
-export function createServer() {
+export function createServer(options?: { apiOnly?: boolean }) {
   const app = express();
+  const apiOnly = options?.apiOnly === true;
 
   // Middleware
   app.use(cors());
@@ -32,22 +57,24 @@ export function createServer() {
   app.use(express.urlencoded({ extended: true }));
   app.use(requestLogger);
 
-  // When running standalone, make it clear this is the API server (not the frontend)
-  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:8080";
-  app.get("/", (_req, res) => {
-    res.json({
-      service: "backend",
-      message: "API server. Use the frontend for the website.",
-      api: "/api",
-      frontend: frontendUrl,
+  // Only register / and /api when running standalone (not inside Vite). When apiOnly, let Vite serve / so the website loads.
+  if (!apiOnly) {
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:8080";
+    app.get("/", (_req, res) => {
+      res.json({
+        service: "backend",
+        message: "API server. Use the frontend for the website.",
+        api: "/api",
+        frontend: frontendUrl,
+      });
     });
-  });
-  app.get("/api", (_req, res) => {
-    res.json({
-      message: "API root. Use endpoints like /api/ping, /api/courses, /api/users, etc.",
-      frontend: frontendUrl,
+    app.get("/api", (_req, res) => {
+      res.json({
+        message: "API root. Use endpoints like /api/ping, /api/courses, /api/users, etc.",
+        frontend: frontendUrl,
+      });
     });
-  });
+  }
 
   // Example API routes
   app.get("/api/ping", (_req, res) => {
@@ -75,6 +102,25 @@ export function createServer() {
 
   // Analytics (for main dashboard only)
   app.get("/api/analytics/course-usage", getCourseUsage);
+
+  // Course content (Firestore): courses, modules, lessons, assessments
+  app.get("/api/course-content/courses", listCourseContent);
+  app.get("/api/course-content/courses/:courseId", getCourse);
+  app.post("/api/course-content/courses", createCourse);
+  app.put("/api/course-content/courses/:courseId", updateCourse);
+  app.get("/api/course-content/courses/:courseId/modules", listModules);
+  app.post("/api/course-content/courses/:courseId/modules", createModule);
+  app.put("/api/course-content/courses/:courseId/modules/:moduleId", updateModule);
+  app.delete("/api/course-content/courses/:courseId/modules/:moduleId", deleteModule);
+  app.get("/api/course-content/courses/:courseId/modules/:moduleId/lessons", listLessons);
+  app.post("/api/course-content/courses/:courseId/modules/:moduleId/lessons", createLesson);
+  app.put("/api/course-content/courses/:courseId/modules/:moduleId/lessons/:lessonId", updateLesson);
+  app.delete("/api/course-content/courses/:courseId/modules/:moduleId/lessons/:lessonId", deleteLesson);
+  app.get("/api/course-content/courses/:courseId/modules/:moduleId/assessments", listAssessments);
+  app.get("/api/course-content/courses/:courseId/modules/:moduleId/assessments/:assessmentId", getAssessment);
+  app.post("/api/course-content/courses/:courseId/modules/:moduleId/assessments", createAssessment);
+  app.put("/api/course-content/courses/:courseId/modules/:moduleId/assessments/:assessmentId", updateAssessment);
+  app.delete("/api/course-content/courses/:courseId/modules/:moduleId/assessments/:assessmentId", deleteAssessment);
 
   return app;
 }

@@ -1,5 +1,5 @@
 import { Link, Outlet, NavLink, Navigate, useLocation } from "react-router-dom";
-import { ArrowLeft, LayoutDashboard, BookOpen, Users, MessageSquareQuote, BarChart3 } from "lucide-react";
+import { ArrowLeft, LayoutDashboard, BookOpen, Users, MessageSquareQuote, BarChart3, FolderOpen } from "lucide-react";
 import Header from "../../components/Header";
 import { cn } from "@/lib/utils";
 import { getStoredUser } from "@/lib/auth";
@@ -7,6 +7,7 @@ import { getStoredUser } from "@/lib/auth";
 const nav = [
   { to: "/admin", end: true, label: "Dashboard", icon: BarChart3 },
   { to: "/admin/courses", end: false, label: "Courses & Quizzes", icon: BookOpen },
+  { to: "/admin/course-content", end: true, label: "Course content", icon: FolderOpen },
   { to: "/admin/learners", end: true, label: "Learners", icon: Users },
   { to: "/admin/testimonials", end: true, label: "Testimonials", icon: MessageSquareQuote },
 ];
