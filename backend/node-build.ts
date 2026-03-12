@@ -2,6 +2,7 @@ import path from "path";
 import { createServer } from "./index";
 import * as express from "express";
 
+console.log("[START] Backend process starting...");
 const app = createServer();
 const port = process.env.PORT || 3000;
 
@@ -24,6 +25,7 @@ app.listen(port, () => {
   if (apiOnly) {
     console.log(`[OK] API server running on port ${port}`);
     console.log(`[API] Base URL: http://localhost:${port}/api`);
+    console.log(`[LOG] Hit GET /health to verify Firestore. Logs appear in Render -> your service -> Logs tab.`);
   } else {
     console.log(`[OK] Server running on port ${port}`);
     console.log(`[APP] Frontend: http://localhost:${port}`);

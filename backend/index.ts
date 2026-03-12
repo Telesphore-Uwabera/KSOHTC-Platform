@@ -30,6 +30,7 @@ import {
   updateAssessment,
   deleteAssessment,
 } from "./routes/course-content";
+import { getDb } from "./lib/firestore";
 
 /** Log each request and response to the terminal (method, path, status, duration) */
 function requestLogger(req: Request, res: Response, next: NextFunction): void {
@@ -76,7 +77,18 @@ export function createServer(options?: { apiOnly?: boolean }) {
     });
   }
 
-  // Example API routes
+  app.get("/health", (_req, res) => {
+    try {
+      getDb();
+      console.log("[HEALTH] Firestore OK");
+      res.status(200).json({ ok: true, firestore: "connected" });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error("[HEALTH] Firestore FAIL:", msg);
+      res.status(503).json({ ok: false, firestore: "error", error: msg });
+    }
+  });
+
   app.get("/api/ping", (_req, res) => {
     const ping = process.env.PING_MESSAGE ?? "ping";
     res.json({ message: ping });

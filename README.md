@@ -117,6 +117,8 @@ Routes: `/admin`, `/admin/courses`, `/admin/course-content`, etc. Admin login at
 
 **If register or login returns 500:** Add or fix `FIREBASE_SERVICE_ACCOUNT` in Render → Environment, then redeploy.
 
+**Viewing backend logs on Render:** Open your service → **Logs** tab (left sidebar under the service name). Use "Live" or "All" to see stdout/stderr. After deploy, you should see `[START] Backend process starting...` and `[OK] API server running...`. Hit `GET https://your-service.onrender.com/health` to test Firestore; logs will show `[HEALTH] Firestore OK` or `[HEALTH] Firestore FAIL: <message>`.
+
 ### Frontend (Netlify)
 
 1. **Build:** `pnpm run build:clients` (or `pnpm install && pnpm run build:clients`)
@@ -124,6 +126,8 @@ Routes: `/admin`, `/admin/courses`, `/admin/course-content`, etc. Admin login at
 3. **Env:** In Netlify → Site settings → Environment variables, add **`VITE_API_URL`** = your backend URL (e.g. `https://ksohtc-platform.onrender.com`, no trailing slash). **Redeploy** after adding or changing it (Vite bakes `VITE_*` in at build time; `clients/.env` is not used on Netlify).
 
 If login/register return 404: the app is calling Netlify’s URL for `/api`. Set `VITE_API_URL` in Netlify and trigger a new deploy.
+
+**Preview/thumbnail:** `index.html` has Open Graph and Twitter meta tags so shared links show a preview (og:image points to logo.webp). For Netlify's dashboard card: Site settings → General → Social preview image.
 
 Backend and frontend are separate: backend on Render, frontend on Netlify; frontend calls backend via `VITE_API_URL`.
 

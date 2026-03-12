@@ -11,7 +11,8 @@ export const getTestimonials: RequestHandler = async (_req, res) => {
       .sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
     res.json(list);
   } catch (e) {
-    console.error("Get testimonials error:", e);
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("Get testimonials error:", msg, e instanceof Error ? e.stack : "");
     res.status(500).json({ error: "Failed to load testimonials" });
   }
 };
@@ -37,7 +38,8 @@ export const postTestimonial: RequestHandler = async (req, res) => {
     await testimonialsCollection().doc(testimonial.id).set(testimonial);
     res.status(201).json(testimonial);
   } catch (e) {
-    console.error("Post testimonial error:", e);
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("Post testimonial error:", msg, e instanceof Error ? e.stack : "");
     res.status(500).json({ error: "Failed to add testimonial" });
   }
 };

@@ -27,7 +27,8 @@ export async function listCourses(_req: Request, res: Response): Promise<void> {
     const courses: CourseDoc[] = snap.docs.map((d) => ({ id: d.id, ...d.data() } as CourseDoc));
     res.json({ courses });
   } catch (e) {
-    console.error("listCourses:", e);
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("listCourses:", msg, e instanceof Error ? e.stack : "");
     res.status(500).json({ error: "Failed to list courses." });
   }
 }
