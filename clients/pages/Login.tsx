@@ -25,7 +25,14 @@ export default function Login() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError((data as { error?: string }).error ?? "Login failed.");
+        const serverMessage = (data as { error?: string }).error;
+        if (res.status === 404) {
+          setError("Login service is unavailable. Please try again later or contact support.");
+        } else if (res.status === 401) {
+          setError(serverMessage ?? "Invalid email or password. Please check your credentials and try again.");
+        } else {
+          setError(serverMessage ?? "Login failed. Please try again.");
+        }
         return;
       }
       const user = (data as { user?: unknown }).user;
@@ -34,7 +41,7 @@ export default function Login() {
         navigate("/courses");
       }
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError("Unable to reach the server. Check your connection and try again.");
     } finally {
       setLoading(false);
     }

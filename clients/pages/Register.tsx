@@ -39,7 +39,14 @@ export default function Register() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError((data as { error?: string }).error ?? "Registration failed.");
+        const serverMessage = (data as { error?: string }).error;
+        if (res.status === 404) {
+          setError("Registration service is unavailable. Please try again later or contact support.");
+        } else if (res.status === 409 || res.status === 400) {
+          setError(serverMessage ?? "Registration failed. This email may already be registered.");
+        } else {
+          setError(serverMessage ?? "Registration failed. Please try again.");
+        }
         return;
       }
       const user = (data as { user?: unknown }).user;
@@ -48,7 +55,7 @@ export default function Register() {
         navigate("/courses");
       }
     } catch {
-      setError("Something went wrong. Please try again.");
+      setError("Unable to reach the server. Check your connection and try again.");
     } finally {
       setLoading(false);
     }
