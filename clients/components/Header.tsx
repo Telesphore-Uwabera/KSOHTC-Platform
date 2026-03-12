@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import { getStoredUser } from "../lib/auth";
 
 const navLinks = [
   { label: "Home", path: "/" },
@@ -12,52 +11,39 @@ const navLinks = [
   { label: "Contact", path: "/contact" },
 ];
 
-const SCROLL_THRESHOLD = 60;
-const SCROLL_DELTA = 8;
+const SCROLL_THRESHOLD = 40;
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
-  const lastYRef = useRef(0);
-  const user = getStoredUser();
 
   useEffect(() => {
     let ticking = false;
     const onScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          const y = window.scrollY;
-          const lastY = lastYRef.current;
-          setScrolled(y > SCROLL_THRESHOLD);
-          if (y <= SCROLL_THRESHOLD) {
-            setHidden(false);
-          } else if (y > lastY + SCROLL_DELTA) {
-            setHidden(true);
-          } else if (lastY > y + SCROLL_DELTA) {
-            setHidden(false);
-          }
-          lastYRef.current = y;
+          setScrolled(window.scrollY > SCROLL_THRESHOLD);
           ticking = false;
         });
         ticking = true;
       }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
-    lastYRef.current = window.scrollY;
+    setScrolled(window.scrollY > SCROLL_THRESHOLD);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   const headerClass =
-    "fixed top-0 left-0 right-0 z-50 bg-transparent animate-fade-in-down transition-all duration-300 ease-out";
-  const hiddenClass = hidden ? "-translate-y-full" : "translate-y-0";
-  const compactClass = "";
+    "fixed top-0 left-0 right-0 z-50 animate-fade-in-down transition-all duration-300 ease-out " +
+    (scrolled
+      ? "bg-white/98 shadow-md backdrop-blur-sm"
+      : "bg-transparent");
 
   return (
-    <header className={`${headerClass} ${hiddenClass} ${compactClass}`}>
+    <header className={headerClass}>
       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
-        <div className={`flex items-center gap-1 sm:gap-2 transition-all duration-300 ${scrolled ? "h-14 sm:h-16 md:h-20" : "h-20 sm:h-24 md:h-28"}`}>
+        <div className={`flex items-center gap-1 sm:gap-2 transition-all duration-300 ${scrolled ? "h-12 sm:h-14 md:h-16" : "h-20 sm:h-24 md:h-28"}`}>
           <div className="hidden md:flex md:flex-1 md:items-center md:min-w-0" />
           <div className="hidden md:flex md:items-center md:justify-center md:flex-shrink-0">
             <div className={`flex items-center gap-2 lg:gap-4 pl-3 pr-3 sm:pl-4 sm:pr-4 transition-all duration-300 ${scrolled ? "py-1.5 gap-2" : "py-2 sm:py-3"}`}>

@@ -4,12 +4,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { createRoot } from "react-dom/client";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQueryClient } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Suspense, lazy, useEffect, useState } from "react";
 import { LoadingBar, PageLoaderFallback } from "@/components/PageLoader";
 import { ScrollRevealObserver } from "@/components/ScrollRevealObserver";
 import BackToTop from "@/components/BackToTop";
+import { getApiBase } from "@/lib/apiBase";
 
 const Index = lazy(() => import("./pages/Index"));
 const About = lazy(() => import("./pages/About"));
@@ -35,7 +36,46 @@ const TakeModuleQuiz = lazy(() => import("./pages/TakeModuleQuiz"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 2 * 60 * 1000, // 2 min: show cached data instantly when revisiting a page
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
+function PrefetchKeyData() {
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    queryClient.prefetchQuery({
+      queryKey: ["course-content", "courses"],
+      queryFn: async () => {
+        const res = await fetch(getApiBase() + "/api/course-content/courses");
+        if (!res.ok) return [];
+        const data = await res.json();
+        return (data.courses ?? []).filter((c: { published?: boolean }) => c.published !== false);
+      },
+    });
+    queryClient.prefetchQuery({
+      queryKey: ["testimonials"],
+      queryFn: async () => {
+        const res = await fetch(getApiBase() + "/api/testimonials");
+        if (!res.ok) return [];
+        return res.json();
+      },
+    });
+  }, [queryClient]);
+  return null;
+}
 
 function RouteLoader() {
   const location = useLocation();
@@ -56,6 +96,8 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
+        <PrefetchKeyData />
         <RouteLoader />
         <ScrollRevealObserver />
         <Suspense fallback={<PageLoaderFallback />}>

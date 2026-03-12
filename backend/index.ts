@@ -34,6 +34,7 @@ import {
 } from "./routes/course-content";
 import { postEnrollment, getEnrollments, patchEnrollment } from "./routes/enrollments";
 import { getProgress, patchProgress } from "./routes/progress";
+import { postSeedCourses } from "./routes/seed";
 import { getDb, usersCollection } from "./lib/firestore";
 
 /** Log each request and response to the terminal (method, path, status, duration) */
@@ -143,6 +144,7 @@ export function createServer(options?: { apiOnly?: boolean }) {
   app.delete("/api/course-content/courses/:courseId/modules/:moduleId/assessments/:assessmentId", deleteAssessment);
   app.post("/api/course-content/courses/:courseId/modules/:moduleId/assessments/:assessmentId/submit", submitAssessment);
 
+  app.post("/api/admin/seed-courses", postSeedCourses);
   app.post("/api/enrollments", postEnrollment);
   app.get("/api/enrollments", getEnrollments);
   app.patch("/api/enrollments/:id", patchEnrollment);

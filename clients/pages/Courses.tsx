@@ -111,7 +111,7 @@ export default function Courses() {
             <p className="text-red-600 py-8">Could not load courses. Please try again later.</p>
           )}
           {!isLoading && !error && courses.length === 0 && (
-            <p className="text-gray-600 py-8">No courses available yet. Run the seed script to add courses from Firestore.</p>
+            <p className="text-gray-600 py-8">No courses available yet. Courses will appear here once they’re set up.</p>
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
