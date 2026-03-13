@@ -133,23 +133,18 @@ function PdfViewerModal({
       .finally(() => setLoading(false));
   }, [courseId, title]);
 
-  const pdfUrl = resolvedUrl ?? initialPdfUrl;
-  const src = pdfUrl.startsWith("http") ? pdfUrl : `${base.replace(/\/$/, "")}${pdfUrl.startsWith("/") ? "" : "/"}${pdfUrl}`;
+  const pdfUrl = (resolvedUrl ?? initialPdfUrl).trim();
+  const src = pdfUrl
+    ? (pdfUrl.startsWith("http")
+        ? pdfUrl
+        : `${base.replace(/\/$/, "")}${pdfUrl.startsWith("/") ? "" : "/"}${pdfUrl}`)
+    : "";
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-black/90" role="dialog" aria-modal="true" aria-label="PDF viewer">
       <div className="flex items-center justify-between gap-4 shrink-0 px-4 py-2 bg-gray-900 text-white">
         <span className="font-medium truncate text-sm">{title}</span>
         <div className="flex items-center gap-2">
-          <a
-            href={src}
-            download
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-white/80 hover:text-white underline"
-          >
-            Download
-          </a>
           <button
             type="button"
             onClick={onClose}
@@ -163,13 +158,17 @@ function PdfViewerModal({
       <div className="flex-1 min-h-0 p-2">
         {loading ? (
           <div className="w-full h-full flex items-center justify-center text-white/80">Loading PDF…</div>
-        ) : (
+        ) : src ? (
           <iframe
             title={title}
             src={src}
-            className="w-full h-full rounded-lg bg-white"
+            className="w-full h-full rounded-lg bg-white border-4 border-green-500"
             allow="fullscreen"
           />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-white/80 px-6 text-center">
+            No PDF found for this lesson yet.
+          </div>
         )}
       </div>
     </div>
@@ -206,30 +205,28 @@ function SingleLessonCard({
         {section}
       </h2>
       {title ? <span className="text-xs text-gray-700 line-clamp-2 mb-1.5">{title}</span> : null}
-      {lesson.pdfUrl && (
-        <>
-          {unlocked ? (
-            <div className="flex flex-wrap items-center gap-2 mt-auto">
-              <button
-                type="button"
-                onClick={() => {
-                  if (!completed) onMarkComplete();
-                  onViewPdf(lesson.pdfUrl!, `${section} – ${title}`);
-                }}
-                className="inline-flex items-center gap-1.5 text-primary hover:text-accent font-medium text-xs underline underline-offset-1"
-              >
-                View PDF
-                <ExternalLink className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          ) : (
-            <p className="inline-flex items-center gap-2 text-gray-500 text-xs mt-auto">
-              <Lock className="w-3.5 h-3.5" />
-              Complete the break quiz above to unlock.
-            </p>
-          )}
-        </>
-      )}
+      <>
+        {unlocked ? (
+          <div className="flex flex-wrap items-center gap-2 mt-auto">
+            <button
+              type="button"
+              onClick={() => {
+                if (!completed) onMarkComplete();
+                onViewPdf(lesson.pdfUrl ?? "", `${section} – ${title}`);
+              }}
+              className="inline-flex items-center gap-1.5 text-primary hover:text-accent font-medium text-xs underline underline-offset-1"
+            >
+              View PDF
+              <ExternalLink className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        ) : (
+          <p className="inline-flex items-center gap-2 text-gray-500 text-xs mt-auto">
+            <Lock className="w-3.5 h-3.5" />
+            Complete the break quiz above to unlock.
+          </p>
+        )}
+      </>
     </article>
   );
 }
@@ -337,28 +334,26 @@ function ModuleBlock({
                     />
                   </div>
                 )}
-                {lesson.pdfUrl && (
-                  <>
-                    {unlocked ? (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (!completedLessons.has(lesson.id)) markCompleteMutation.mutate(lesson.id);
-                          onViewPdf(lesson.pdfUrl!, lessonTitle);
-                        }}
-                        className="inline-flex items-center gap-1.5 text-primary hover:text-accent font-medium text-xs underline underline-offset-1 text-left"
-                      >
-                        View PDF
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </button>
-                    ) : (
-                      <p className="inline-flex items-center gap-2 text-gray-500 text-sm">
-                        <Lock className="w-4 h-4" />
-                        Complete the break quiz above to unlock this PDF.
-                      </p>
-                    )}
-                  </>
-                )}
+                <>
+                  {unlocked ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!completedLessons.has(lesson.id)) markCompleteMutation.mutate(lesson.id);
+                        onViewPdf(lesson.pdfUrl ?? "", lessonTitle);
+                      }}
+                      className="inline-flex items-center gap-1.5 text-primary hover:text-accent font-medium text-xs underline underline-offset-1 text-left"
+                    >
+                      View PDF
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </button>
+                  ) : (
+                    <p className="inline-flex items-center gap-2 text-gray-500 text-sm">
+                      <Lock className="w-4 h-4" />
+                      Complete the break quiz above to unlock this PDF.
+                    </p>
+                  )}
+                </>
                 {lesson.contentHtml && (
                   <div
                     className="prose prose-sm max-w-none text-gray-700"

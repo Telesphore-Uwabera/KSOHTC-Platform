@@ -81,6 +81,11 @@ export function createServer(options?: { apiOnly?: boolean }) {
   app.use(express.urlencoded({ extended: true }));
   app.use(requestLogger);
 
+  // Static assets used by learners (PDFs, course covers). These are referenced by `pdfUrl` like `/courses/<courseId>/<file>.pdf`.
+  // When frontend is hosted separately (e.g. Netlify) and backend on Render, the PDF viewer uses `VITE_API_URL` as base.
+  app.use("/courses", express.static(path.resolve(process.cwd(), "public", "courses")));
+  app.use("/course-covers", express.static(path.resolve(process.cwd(), "public", "course-covers")));
+
   // Only register / and /api when running standalone (not inside Vite). When apiOnly, let Vite serve / so the website loads.
   if (!apiOnly) {
     const frontendUrl = process.env.FRONTEND_URL || process.env.FRONTEND_URI || "http://localhost:8080";
