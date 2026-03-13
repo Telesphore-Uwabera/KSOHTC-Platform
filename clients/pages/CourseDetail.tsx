@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams, Navigate } from "react-router-dom";
+import { Link, useParams, useLocation, Navigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { ArrowLeft, FileText, ExternalLink, ClipboardList, Lock, X } from "lucide-react";
 import Header from "../components/Header";
@@ -396,10 +396,11 @@ function ModuleBlock({
 
 export default function CourseDetail() {
   const { courseId } = useParams<{ courseId: string }>();
+  const location = useLocation();
   const user = getStoredUser();
   const canAccess = user?.approved ?? false;
 
-  if (!user) return <Navigate to="/register" replace state={{ from: "course" }} />;
+  if (!user) return <Navigate to="/login" replace state={{ from: location.pathname || "/dashboard" }} />;
 
   const { data: course, isLoading: courseLoading } = useQuery({
     queryKey: ["course-content", "course", courseId],
