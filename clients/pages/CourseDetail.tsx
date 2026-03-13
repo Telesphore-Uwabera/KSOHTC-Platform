@@ -477,7 +477,7 @@ export default function CourseDetail() {
     if (canAccess && user?.id && courseId) enrollMutation.mutate();
   }, [canAccess, user?.id, courseId]);
 
-  if (!courseId) return <Navigate to="/courses" replace />;
+  if (!courseId) return <Navigate to="/dashboard" replace />;
   if (courseLoading) {
     return (
       <div className="min-h-screen bg-white">
@@ -490,7 +490,7 @@ export default function CourseDetail() {
       </div>
     );
   }
-  if (!displayCourse) return <Navigate to="/courses" replace />;
+  if (!displayCourse) return <Navigate to="/dashboard" replace />;
 
   if (canAccess && user?.sector && courseId !== "safety-management" && courseId !== user.sector) {
     const sectorLabel = SECTOR_LABELS[user.sector] ?? user.sector;
@@ -524,10 +524,10 @@ export default function CourseDetail() {
                 Go to my dashboard
               </button>
               <Link
-                to="/courses"
+                to="/dashboard"
                 className="px-4 py-2.5 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors text-center"
               >
-                Back to courses
+                Back to dashboard
               </Link>
             </div>
           </div>
@@ -555,11 +555,11 @@ export default function CourseDetail() {
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <Link
-            to="/courses"
+            to="/dashboard"
             className="inline-flex items-center gap-2 text-white/90 hover:text-white font-medium mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to courses
+            Back to dashboard
           </Link>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">{displayCourse.title}</h1>
           <p className="text-white/90 mt-1">{displayCourse.sector} · {displayCourse.duration}</p>
@@ -576,10 +576,10 @@ export default function CourseDetail() {
               </p>
               <div className="mt-4 flex flex-wrap gap-3">
                 <Link
-                  to="/courses"
+                  to="/dashboard"
                   className="inline-flex items-center gap-2 border-2 border-primary text-primary font-bold py-2 px-4 rounded-lg hover:bg-primary/10"
                 >
-                  Back to courses
+                  Back to dashboard
                 </Link>
                 <button
                   type="button"
