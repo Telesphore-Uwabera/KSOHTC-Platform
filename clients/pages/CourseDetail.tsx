@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Link, useParams, useLocation, Navigate } from "react-router-dom";
+import { Link, useParams, Navigate, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { ArrowLeft, FileText, ExternalLink, ClipboardList, Lock, X } from "lucide-react";
+import { ArrowLeft, FileText, ExternalLink, ClipboardList, Lock, X, AlertCircle } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { getStoredUser } from "../lib/auth";
+import { getStoredUser, clearStoredUser } from "../lib/auth";
 import { getApiBase } from "@/lib/apiBase";
 import type { CourseDoc, ModuleDoc, LessonDoc, AssessmentDoc, ProgressDoc } from "@shared/api";
 
@@ -394,13 +394,19 @@ function ModuleBlock({
   );
 }
 
+const SECTOR_LABELS: Record<string, string> = {
+  construction: "Construction",
+  "industrial-safety": "Industrial Safety",
+  mining: "Mining",
+};
+
 export default function CourseDetail() {
   const { courseId } = useParams<{ courseId: string }>();
-  const location = useLocation();
+  const navigate = useNavigate();
   const user = getStoredUser();
   const canAccess = user?.approved ?? false;
 
-  if (!user) return <Navigate to="/login" replace state={{ from: location.pathname || "/dashboard" }} />;
+  if (!user) return <Navigate to="/login" replace state={{ from: `/courses/${courseId ?? ""}` }} />;
 
   const { data: course, isLoading: courseLoading } = useQuery({
     queryKey: ["course-content", "course", courseId],
@@ -492,7 +498,47 @@ export default function CourseDetail() {
   if (!displayCourse) return <Navigate to="/courses" replace />;
 
   if (canAccess && user?.sector && courseId !== "safety-management" && courseId !== user.sector) {
-    return <Navigate to="/courses" replace state={{ message: "Please join the course related to your registration. You only have access to your sector course and Safety Management." }} />;
+    const sectorLabel = SECTOR_LABELS[user.sector] ?? user.sector;
+    const message = `You are registered for ${sectorLabel}. Please join ${sectorLabel} courses from your dashboard. As an approved learner you can also join Safety Management (General).`;
+    return (
+      <div className="min-h-screen bg-white flex flex-col">
+        <Header />
+        <div className="h-28" aria-hidden="true" />
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div
+            className="bg-white rounded-2xl shadow-xl border border-gray-200 max-w-md w-full p-6 text-center"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="sector-mismatch-title"
+          >
+            <div className="flex justify-center mb-4">
+              <span className="inline-flex w-12 h-12 rounded-full bg-amber-100 items-center justify-center">
+                <AlertCircle className="w-6 h-6 text-amber-700" />
+              </span>
+            </div>
+            <h2 id="sector-mismatch-title" className="text-lg font-bold text-gray-900 mb-2">
+              This course is not available for your registration
+            </h2>
+            <p className="text-gray-600 text-sm mb-6">{message}</p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                type="button"
+                onClick={() => navigate("/dashboard", { replace: true })}
+                className="px-4 py-2.5 bg-primary text-white font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Go to my dashboard
+              </button>
+              <Link
+                to="/courses"
+                className="px-4 py-2.5 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors text-center"
+              >
+                Back to courses
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -529,23 +575,24 @@ export default function CourseDetail() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {!canAccess ? (
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-amber-900">
-              <p className="font-semibold">Access required</p>
+              <p className="font-semibold">Registration under review</p>
               <p className="mt-2">
-                Register and get approved by an admin to view course materials.
+                Thank you for registering with KSOHTC. Your account is currently under review by our administration team. You will be able to view course materials once your registration has been approved. If you have already been approved, please log out and log in again to refresh your access.
               </p>
-              <div className="mt-4 flex gap-3">
+              <div className="mt-4 flex flex-wrap gap-3">
                 <Link
-                  to="/register"
-                  className="inline-flex items-center gap-2 bg-accent text-black font-bold py-2 px-4 rounded-lg"
+                  to="/courses"
+                  className="inline-flex items-center gap-2 border-2 border-primary text-primary font-bold py-2 px-4 rounded-lg hover:bg-primary/10"
                 >
-                  Register
+                  Back to courses
                 </Link>
-                <Link
-                  to="/login"
-                  className="inline-flex items-center border-2 border-primary text-primary font-bold py-2 px-4 rounded-lg"
+                <button
+                  type="button"
+                  onClick={() => { clearStoredUser(); window.location.href = "/login"; }}
+                  className="inline-flex items-center gap-2 text-amber-800 font-semibold hover:text-amber-900"
                 >
-                  Log in
-                </Link>
+                  Log out
+                </button>
               </div>
             </div>
           ) : (

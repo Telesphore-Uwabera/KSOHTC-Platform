@@ -31,12 +31,15 @@ const AdminCourseContentDetail = lazy(() => import("./pages/admin/AdminCourseCon
 const AdminModuleAssessment = lazy(() => import("./pages/admin/AdminModuleAssessment"));
 const AdminLearners = lazy(() => import("./pages/admin/AdminLearners"));
 const AdminTestimonials = lazy(() => import("./pages/admin/AdminTestimonials"));
+const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const TakeQuiz = lazy(() => import("./pages/TakeQuiz"));
 const TakeModuleQuiz = lazy(() => import("./pages/TakeModuleQuiz"));
 const StudentLayout = lazy(() => import("./pages/StudentLayout"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const DashboardCourses = lazy(() => import("./pages/DashboardCourses"));
 const DashboardProgress = lazy(() => import("./pages/DashboardProgress"));
+const DashboardSettings = lazy(() => import("./pages/DashboardSettings"));
+const Terms = lazy(() => import("./pages/Terms"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -110,6 +113,7 @@ const App = () => (
             <Route path="/programs" element={<Programs />} />
             <Route path="/industries" element={<Industries />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/terms" element={<Terms />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:courseId" element={<CourseDetail />} />
             <Route path="/courses/:courseId/modules/:moduleId/quiz/:assessmentId" element={<TakeModuleQuiz />} />
@@ -117,6 +121,7 @@ const App = () => (
               <Route index element={<Dashboard />} />
               <Route path="courses" element={<DashboardCourses />} />
               <Route path="progress" element={<DashboardProgress />} />
+              <Route path="settings" element={<DashboardSettings />} />
             </Route>
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
@@ -130,6 +135,7 @@ const App = () => (
               <Route path="course-content/:courseId/modules/:moduleId/assessments/:assessmentId" element={<AdminModuleAssessment />} />
               <Route path="learners" element={<AdminLearners />} />
               <Route path="testimonials" element={<AdminTestimonials />} />
+              <Route path="settings" element={<AdminSettings />} />
             </Route>
             <Route path="/courses/:courseId/quiz/take" element={<TakeQuiz />} />
             <Route path="*" element={<NotFound />} />

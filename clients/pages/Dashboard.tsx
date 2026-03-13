@@ -37,8 +37,11 @@ export default function Dashboard() {
   if (!canAccess) {
     return (
       <div className="bg-white rounded-[30px] shadow-sm border border-gray-200 p-6 sm:p-8">
-        <p className="text-gray-600">Your account is pending approval. You will access your dashboard once an admin approves your registration.</p>
-        <Link to="/courses" className="text-primary font-medium mt-2 inline-block">View courses</Link>
+        <h2 className="text-lg font-bold text-primary mb-2">Registration under review</h2>
+        <p className="text-gray-600">
+          Thank you for registering with KSOHTC. Your account is currently under review by our administration team. You will be able to access your dashboard and courses once your registration has been approved. If you have already been approved, please log out and log in again to refresh your access.
+        </p>
+        <Link to="/courses" className="text-primary font-medium mt-4 inline-block">View courses</Link>
       </div>
     );
   }

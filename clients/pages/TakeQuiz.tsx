@@ -83,13 +83,23 @@ export default function TakeQuiz() {
   }
 
   if (!canAccess) {
+    const pendingApproval = user && !user.approved;
     return (
       <div className="min-h-screen bg-white">
         <Header />
         <div className="h-28" />
         <div className="max-w-2xl mx-auto px-4 py-12">
-          <p className="text-gray-600">You need to be logged in and approved to take this quiz.</p>
-          <Link to="/courses" className="text-primary font-medium mt-2 inline-block">Back to courses</Link>
+          {pendingApproval ? (
+            <>
+              <h2 className="text-lg font-bold text-primary mb-2">Registration under review</h2>
+              <p className="text-gray-600">
+                Thank you for registering with KSOHTC. Your account is currently under review by our administration team. You will be able to take quizzes once your registration has been approved. If you have already been approved, please log out and log in again to refresh your access.
+              </p>
+            </>
+          ) : (
+            <p className="text-gray-600">You need to be logged in and approved to take this quiz.</p>
+          )}
+          <Link to="/courses" className="text-primary font-medium mt-4 inline-block">Back to courses</Link>
         </div>
         <Footer />
       </div>

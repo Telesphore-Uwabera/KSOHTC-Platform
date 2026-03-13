@@ -1,6 +1,8 @@
-import { MapPin, Phone, Mail, ExternalLink } from "lucide-react";
+import { useState } from "react";
+import { MapPin, Phone, Mail, ExternalLink, Loader2, CheckCircle } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { getApiBase } from "@/lib/apiBase";
 
 const MAP_EMBED_URL = "https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d4729.875635675041!2d30.103122774967193!3d-1.9845040979975614!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMcKwNTknMDQuMiJTIDMwwrAwNicyMC41IkU!5e1!3m2!1sen!2srw!4v1772737124478!5m2!1sen!2srw";
 const MAP_DIRECTIONS_URL = "https://www.google.com/maps/dir//-1.984504,30.103123";
@@ -19,6 +21,44 @@ const faqs = [
 ];
 
 export default function Contact() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccess(false);
+    if (!name.trim() || !email.trim() || !message.trim()) {
+      setError("Please fill in name, email, and message.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(getApiBase() + "/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), message: message.trim() }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError((data as { error?: string }).error ?? "Failed to send message. Please try again.");
+        return;
+      }
+      setSuccess(true);
+      setName("");
+      setEmail("");
+      setMessage("");
+    } catch {
+      setError("Unable to reach the server. Check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />
@@ -82,26 +122,44 @@ export default function Contact() {
 
           <div className="contact-form-panel bg-white rounded-[30px] shadow-lg border-2 border-gray-200 p-6 sm:p-8 md:p-10 mb-12 sm:mb-16 scroll-reveal reveal-left-slow delay-1800">
             <h2 className="text-lg sm:text-xl font-bold text-primary mb-4 sm:mb-6">Send a message</h2>
-            <form className="w-full space-y-4">
+            <form className="w-full space-y-4" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
                 <input
                   type="text"
                   placeholder="Your Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                   className="contact-input w-full px-4 py-3 sm:px-6 sm:py-4 rounded-[30px] border-2 border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                 />
                 <input
                   type="email"
                   placeholder="Your Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="contact-input w-full px-4 py-3 sm:px-6 sm:py-4 rounded-[30px] border-2 border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                 />
               </div>
               <textarea
                 placeholder="Your Message"
                 rows={4}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
                 className="contact-input w-full px-4 py-3 sm:px-6 sm:py-4 rounded-[30px] border-2 border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none"
               />
+              {error && <p className="text-red-600 text-sm">{error}</p>}
+              {success && (
+                <p className="text-green-700 text-sm flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Message sent. We will get back to you soon.
+                </p>
+              )}
               <div className="flex justify-center w-full">
-                <button type="button" className="contact-btn-primary bg-gradient-to-r from-accent to-accent/90 text-black font-bold py-3 px-8 rounded-[30px] hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="contact-btn-primary bg-gradient-to-r from-accent to-accent/90 text-black font-bold py-3 px-8 rounded-[30px] hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed inline-flex items-center gap-2"
+                >
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
                   Send Message
                 </button>
               </div>

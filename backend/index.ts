@@ -52,6 +52,7 @@ import {
 import { postEnrollment, getEnrollments, patchEnrollment } from "./routes/enrollments";
 import { getProgress, patchProgress } from "./routes/progress";
 import { postSeedCourses, postCleanCoursePdfs } from "./routes/seed";
+import { postContact } from "./routes/contact";
 import { getDb, usersCollection } from "./lib/firestore";
 
 /** Log each request and response to the terminal (method, path, status, duration) */
@@ -123,6 +124,9 @@ export function createServer(options?: { apiOnly?: boolean }) {
   // Testimonials (admin-managed)
   app.get("/api/testimonials", getTestimonials);
   app.post("/api/testimonials", postTestimonial);
+
+  // Contact form (saved to Firestore)
+  app.post("/api/contact", postContact);
 
   // Users: register, login, list (admin), approve (admin), CRUD (admin)
   app.post("/api/register", postRegister);

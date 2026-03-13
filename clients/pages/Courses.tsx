@@ -64,7 +64,9 @@ function numberedTitle(index: number, title: string): string {
 
 export default function Courses() {
   const location = useLocation();
-  const stateMessage = (location.state as { message?: string } | null)?.message;
+  const locationState = location.state as { message?: string; accessDenied?: boolean } | null;
+  const stateMessage = locationState?.message;
+  const accessDenied = locationState?.accessDenied === true;
   const user = getStoredUser();
   const pending = user && !user.approved;
   const canAccess = user && user.approved;
@@ -101,15 +103,23 @@ export default function Courses() {
               ? "Browse all course categories below. Click Enroll on a course to log in and enroll."
               : canAccess
                 ? "Choose a course below to view materials and start studying."
-                : "Your account is pending approval. You will access courses once an admin approves your registration."}
+                : "Thank you for registering. Your account is under review by our admin team. You’ll get access to courses once approved—log out and log in again after approval to refresh."}
           </p>
         </div>
       </section>
 
       {stateMessage && (
-        <section className="py-4 px-4 sm:px-6 lg:px-8 bg-primary/10 border-b border-primary/20">
+        <section
+          className={
+            accessDenied
+              ? "py-4 px-4 sm:px-6 lg:px-8 bg-red-50 border-b border-red-200"
+              : "py-4 px-4 sm:px-6 lg:px-8 bg-primary/10 border-b border-primary/20"
+          }
+        >
           <div className="max-w-7xl mx-auto text-center">
-            <p className="text-primary font-medium">{stateMessage}</p>
+            <p className={accessDenied ? "text-red-800 font-medium" : "text-primary font-medium"}>
+              {accessDenied ? "Access denied. " : ""}{stateMessage}
+            </p>
           </div>
         </section>
       )}
@@ -121,9 +131,9 @@ export default function Courses() {
                 <Clock className="w-5 h-5" />
               </span>
               <div>
-                <p className="font-semibold text-amber-900">Account pending approval</p>
+                <p className="font-semibold text-amber-900">Registration under review</p>
                 <p className="text-sm text-amber-800">
-                  You're logged in as {user?.email}. An admin must approve your registration before you can access courses. After approval, log out and log in again to refresh your access.
+                  Thank you for registering with KSOHTC. Your account is currently under review by our administration team. You will be able to access your courses and learning materials once your registration has been approved. If you have already been approved, please log out and log in again to refresh your access.
                 </p>
               </div>
             </div>
@@ -197,31 +207,13 @@ export default function Courses() {
                       {lessonCount != null && lessonCount > 0 && ` · ${lessonCount} lesson${lessonCount !== 1 ? "s" : ""}`}
                     </p>
                     <div className="mt-auto pt-2 border-t border-gray-100 shrink-0">
-                      {canAccess ? (
-                        <Link
-                          to={`/courses/${course.id}`}
-                          className="inline-flex items-center gap-1.5 text-primary font-semibold text-sm hover:text-accent transition-colors"
-                        >
-                          View materials
-                          <ArrowRight className="w-4 h-4" />
-                        </Link>
-                      ) : user ? (
-                        <span
-                          className="inline-flex items-center gap-2 font-semibold text-sm text-gray-400 cursor-not-allowed"
-                          title="Your account must be approved by an admin before you can access courses"
-                        >
-                          Enroll (pending approval)
-                          <ArrowRight className="w-4 h-4" />
-                        </span>
-                      ) : (
-                        <Link
-                          to={{ pathname: "/login", state: { from: `/courses/${course.id}` } }}
-                          className="inline-flex items-center gap-1.5 text-primary font-semibold text-sm hover:text-accent transition-colors"
-                        >
-                          Enroll in this course
-                          <ArrowRight className="w-4 h-4" />
-                        </Link>
-                      )}
+                      <Link
+                        to={{ pathname: "/login", state: { from: `/courses/${course.id}` } }}
+                        className="inline-flex items-center gap-1.5 text-primary font-semibold text-sm hover:text-accent transition-colors"
+                      >
+                        View materials
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
                     </div>
                   </div>
                 </div>

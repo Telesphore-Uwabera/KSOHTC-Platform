@@ -30,7 +30,53 @@ backend/          # Express API
 shared/api.ts     # Shared types
 ```
 
-**Storage:** Firestore for users, testimonials, quizzes, and course content. Set `GOOGLE_APPLICATION_CREDENTIALS` or `FIREBASE_SERVICE_ACCOUNT` in `.env` (see `.env.example`).
+**Storage:** Firestore holds all dynamic data (see [Database (Firestore)](#database-firestore) below). Set `GOOGLE_APPLICATION_CREDENTIALS` or `FIREBASE_SERVICE_ACCOUNT` in `.env` (see `.env.example`).
+
+---
+
+## Pages and backend data
+
+All pages that need dynamic data call the backend API; the backend reads/writes Firestore.
+
+| Page | Route | Backend API / data |
+|------|--------|---------------------|
+| **Home** | `/` | `GET /api/testimonials` (testimonials) |
+| **About** | `/about` | Static content |
+| **Programs** | `/programs` | Static content |
+| **Industries** | `/industries` | Static content |
+| **Contact** | `/contact` | `POST /api/contact` (saves inquiries to Firestore) |
+| **Terms & Conditions** | `/terms` | Static content |
+| **Courses** | `/courses` | `GET /api/course-content/courses`, `GET /api/course-content/courses-from-public` |
+| **Course detail** | `/courses/:courseId` | Course content, modules, lessons, progress, enrollments, resolve-pdf |
+| **Login** | `/login` | `POST /api/login` (users) |
+| **Register** | `/register` | `POST /api/register` (users) |
+| **Dashboard** (learner) | `/dashboard`, `/dashboard/courses`, `/dashboard/progress`, `/dashboard/settings` | `GET /api/course-content/courses`, `GET /api/progress`, course stats |
+| **Take quiz** | `/courses/:courseId/quiz/take` | `GET /api/courses/:courseId/quiz`, course content |
+| **Module quiz** | `/courses/:courseId/modules/:moduleId/quiz/:assessmentId` | Course content, assessments, submit |
+| **Admin login** | `/admin/login` | `POST /api/login` (users) |
+| **Admin dashboard** | `/admin` | `GET /api/analytics/course-usage`, users, testimonials, courses, quizzes |
+| **Admin courses** | `/admin/courses` | `GET /api/courses`, `GET/PUT/DELETE /api/courses/:courseId/quiz` |
+| **Admin course content** | `/admin/course-content`, `/admin/course-content/:courseId`, etc. | `GET/POST/PUT/DELETE /api/course-content/*`, seed/clean |
+| **Admin learners** | `/admin/learners` | `GET /api/users/learners-summary`, users, enrollments, approve, CRUD |
+| **Admin testimonials** | `/admin/testimonials` | `GET/POST /api/testimonials` |
+| **Admin settings** | `/admin/settings` | Logout only (no API) |
+
+---
+
+## Database (Firestore)
+
+Collections used by the backend (all access via Admin SDK; no client direct access):
+
+| Collection | Purpose |
+|------------|---------|
+| **users** | Registrations, login, approval, sector; admin/learner roles |
+| **testimonials** | Home page “What Our Participants Say”; admin-managed |
+| **quizzes** | Per-course legacy quiz (admin editable) |
+| **courses** | Course metadata, modules, lessons, assessments (course content) |
+| **enrollments** | Learner enrollment in courses; status (active/completed) |
+| **submissions** | Quiz/assessment submissions |
+| **progress** | Per-user, per-course: completed lessons, passed assessments |
+| **inquiries** | Contact form submissions (name, email, message, createdAt) |
 
 ---
 
@@ -100,21 +146,22 @@ Ensure Storage rules allow read access for the paths you use (e.g. `courses/*`).
 
 ### Where students learn
 
-- **Courses** (`/courses`) – list published courses (login + approval required for materials).
-- **Course detail** (`/courses/:courseId`) – description, modules, lessons (PDF, YouTube, text), module quizzes, and course quiz link.
-- **Dashboard** (`/dashboard`) – for approved learners; “My learning” and links to courses. Nav: **Dashboard** → not enrolled goes to **Register**; after approval, dashboard shows courses.
+- **Courses** (`/courses`) – list published courses from Firestore; “View materials” sends users to login, then eligibility is checked on the course/dashboard.
+- **Course detail** (`/courses/:courseId`) – description, modules, lessons (PDF, YouTube, text), module quizzes, and course quiz link; uses course-content API, progress, enrollments.
+- **Dashboard** (`/dashboard`) – for approved learners; Overview, My courses, Progress, Settings (with logout). Data from `GET /api/course-content/courses` and `GET /api/progress`.
 
 ---
 
 ## Admin
 
-- **Dashboard** (`/admin`) – analytics, course usage, learner approvals.
-- **Learners** (`/admin/learners`) – approve registrations.
-- **Testimonials** (`/admin/testimonials`) – add testimonials.
-- **Courses & Quizzes** (`/admin/courses`) – set/edit course quiz.
-- **Course content** (`/admin/course-content`) – edit courses, modules, lessons (YouTube, PDF, text), assessments per module.
+- **Dashboard** (`/admin`) – analytics, course usage, learner approvals (all from backend APIs).
+- **Learners** (`/admin/learners`) – list learners, approve registrations, manage enrollments (users + enrollments APIs).
+- **Testimonials** (`/admin/testimonials`) – add testimonials (Firestore).
+- **Courses & Quizzes** (`/admin/courses`) – set/edit per-course quiz (quizzes collection).
+- **Course content** (`/admin/course-content`) – edit courses, modules, lessons (YouTube, PDF, text), assessments (Firestore course-content APIs); seed/clean PDFs.
+- **Settings** (`/admin/settings`) – logout (no API).
 
-Routes: `/admin`, `/admin/courses`, `/admin/course-content`, etc. Admin login at `/admin/login`.
+Routes: `/admin`, `/admin/courses`, `/admin/course-content`, `/admin/learners`, `/admin/testimonials`, `/admin/settings`. Admin login at `/admin/login` (no link in main nav; use direct URL).
 
 ---
 

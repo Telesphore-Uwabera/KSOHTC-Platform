@@ -40,7 +40,9 @@ export default function Login() {
       const user = (data as { user?: unknown }).user;
       if (user && typeof user === "object" && "id" in user) {
         setStoredUser(user as Parameters<typeof setStoredUser>[0]);
-        navigate(from, { replace: true });
+        // If they tried to open a course (e.g. Safety or any) from the courses page, send them to dashboard so they access materials through the dashboard
+        const redirectTo = from.startsWith("/courses/") ? "/dashboard" : from;
+        navigate(redirectTo, { replace: true });
       }
     } catch {
       setError("Unable to reach the server. Check your connection and try again.");
@@ -139,6 +141,12 @@ export default function Login() {
                   >
                     <BookOpen className="w-4 h-4" />
                     View courses
+                  </Link>
+                </p>
+                <p className="text-center text-gray-500 text-xs mt-1">
+                  Administrator?{" "}
+                  <Link to="/admin/login" className="font-medium text-primary hover:underline">
+                    Sign in at /admin/login
                   </Link>
                 </p>
               </div>

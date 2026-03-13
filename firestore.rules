@@ -3,7 +3,7 @@ rules_version = '2';
 // Firestore is accessed only by the backend (Firebase Admin SDK). Admin SDK bypasses these rules.
 // These rules deny all direct client access so only your API can read/write.
 // Collections: users, testimonials, quizzes, courses (with modules/lessons/assessments),
-// enrollments, submissions, progress.
+// enrollments, submissions, progress, inquiries (contact form).
 service cloud.firestore {
   match /databases/{database}/documents {
     match /users/{userId} {
@@ -34,6 +34,9 @@ service cloud.firestore {
       allow read, write: if false;
     }
     match /progress/{docId} {
+      allow read, write: if false;
+    }
+    match /inquiries/{docId} {
       allow read, write: if false;
     }
     // Deny any other collection not explicitly listed above

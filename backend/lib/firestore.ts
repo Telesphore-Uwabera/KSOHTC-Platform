@@ -75,6 +75,7 @@ export const COLLECTIONS = {
   enrollments: "enrollments",
   submissions: "submissions",
   progress: "progress",
+  inquiries: "inquiries",
 } as const;
 
 export function usersCollection() {
@@ -103,4 +104,8 @@ export function submissionsCollection() {
 
 export function progressCollection() {
   return getDb().collection(COLLECTIONS.progress);
+}
+
+export function inquiriesCollection() {
+  return getDb().collection(COLLECTIONS.inquiries);
 }

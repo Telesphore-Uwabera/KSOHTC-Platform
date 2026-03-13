@@ -99,7 +99,7 @@ export default function Footer() {
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 text-xs sm:text-sm text-gray-400">
               <Link to="/contact" className="hover:text-accent transition-colors duration-300">Privacy Policy</Link>
-              <Link to="/contact" className="hover:text-accent transition-colors duration-300">Terms of Service</Link>
+              <Link to="/terms" className="hover:text-accent transition-colors duration-300">Terms &amp; Conditions</Link>
               <a
                 href="https://uwaberatelesphore.netlify.app/"
                 target="_blank"
