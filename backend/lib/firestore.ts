@@ -30,7 +30,7 @@ export function getDb(): Firestore {
       try {
         const raw = readFileSync(normalizedPath, "utf8");
         const cred = JSON.parse(raw) as ServiceAccount;
-        initializeApp({ credential: cert(cred), projectId: cred.projectId });
+        initializeApp({ credential: cert(cred), projectId: cred.projectId, storageBucket: `${cred.projectId ?? cred.project_id}.appspot.com` });
       } catch (e) {
         console.warn("Firestore: failed to read GOOGLE_APPLICATION_CREDENTIALS, using default credentials");
         initializeApp();
@@ -40,7 +40,7 @@ export function getDb(): Firestore {
         const raw = credBase64.replace(/\s/g, "").trim();
         const decoded = Buffer.from(raw, "base64").toString("utf8");
         const cred = parseServiceAccountJson(decoded);
-        initializeApp({ credential: cert(cred), projectId: cred.project_id });
+        initializeApp({ credential: cert(cred), projectId: cred.project_id, storageBucket: `${cred.project_id}.appspot.com` });
       } catch (e) {
         console.error("Firestore: FIREBASE_SERVICE_ACCOUNT_BASE64 invalid.", e instanceof Error ? e.message : e);
         throw new Error("Firebase config invalid. Check FIREBASE_SERVICE_ACCOUNT_BASE64 is base64-encoded JSON.");
@@ -48,7 +48,7 @@ export function getDb(): Firestore {
     } else if (credJson) {
       try {
         const cred = parseServiceAccountJson(credJson);
-        initializeApp({ credential: cert(cred), projectId: cred.project_id });
+        initializeApp({ credential: cert(cred), projectId: cred.project_id, storageBucket: `${cred.project_id}.appspot.com` });
       } catch (e) {
         console.error("Firestore: FIREBASE_SERVICE_ACCOUNT invalid.", e instanceof Error ? e.message : e);
         throw new Error("Firebase config invalid. Use FIREBASE_SERVICE_ACCOUNT (single-line JSON) or FIREBASE_SERVICE_ACCOUNT_BASE64 to avoid paste issues on Render.");

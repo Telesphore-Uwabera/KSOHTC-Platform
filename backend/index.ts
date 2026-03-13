@@ -14,6 +14,7 @@ import { getCourseUsage } from "./routes/analytics";
 import {
   listCourses as listCourseContent,
   getCoursesFromPublic,
+  getLessonsFromPublic,
   getCourse,
   createCourse,
   updateCourse,
@@ -127,6 +128,7 @@ export function createServer(options?: { apiOnly?: boolean }) {
   // Course content (Firestore): courses, modules, lessons, assessments
   app.get("/api/course-content/courses", listCourseContent);
   app.get("/api/course-content/courses-from-public", getCoursesFromPublic);
+  app.get("/api/course-content/courses/:courseId/lessons-from-public", getLessonsFromPublic);
   app.get("/api/course-content/courses/:courseId", getCourse);
   app.post("/api/course-content/courses", createCourse);
   app.put("/api/course-content/courses/:courseId", updateCourse);

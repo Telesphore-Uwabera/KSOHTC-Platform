@@ -31,6 +31,22 @@ async function fetchModules(courseId: string): Promise<ModuleDoc[]> {
   return data.modules ?? [];
 }
 
+type LessonFromFolder = { title: string; pdfUrl: string };
+
+async function fetchCoursesFromPublic(): Promise<Array<{ id: string; title: string; description?: string; sector: string; duration: string }>> {
+  const res = await fetch(`${getCourseContentApi()}/courses-from-public`);
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.courses ?? [];
+}
+
+async function fetchLessonsFromPublic(courseId: string): Promise<LessonFromFolder[]> {
+  const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/lessons-from-public`);
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.lessons ?? [];
+}
+
 type ModuleItem = { type: "lesson"; data: LessonDoc } | { type: "assessment"; data: AssessmentDoc };
 
 async function fetchModuleItems(courseId: string, moduleId: string): Promise<ModuleItem[]> {
@@ -190,16 +206,30 @@ export default function CourseDetail() {
     enabled: !!courseId,
   });
 
+  const { data: coursesFromPublic = [] } = useQuery({
+    queryKey: ["course-content", "courses-from-public"],
+    queryFn: fetchCoursesFromPublic,
+    enabled: !!courseId && !course && !courseLoading,
+  });
+
+  const displayCourse = course ?? coursesFromPublic.find((c) => c.id === courseId) ?? null;
+
   const { data: modules = [], isLoading: modulesLoading } = useQuery({
     queryKey: ["course-content", "modules", courseId],
     queryFn: () => fetchModules(courseId!),
-    enabled: !!courseId && !!course,
+    enabled: !!courseId && !!displayCourse,
+  });
+
+  const { data: lessonsFromPublic = [] } = useQuery({
+    queryKey: ["course-content", "lessons-from-public", courseId],
+    queryFn: () => fetchLessonsFromPublic(courseId!),
+    enabled: !!courseId && !!displayCourse && !modulesLoading && modules.length === 0,
   });
 
   const { data: progress, refetch: refetchProgress } = useQuery({
     queryKey: ["progress", user?.id, courseId],
     queryFn: () => fetchProgress(user!.id, courseId!),
-    enabled: !!user?.id && !!courseId && canAccess,
+    enabled: !!user?.id && !!courseId && canAccess && !!displayCourse,
   });
 
   const { data: legacyQuiz } = useQuery({
@@ -229,7 +259,7 @@ export default function CourseDetail() {
       </div>
     );
   }
-  if (!course) return <Navigate to="/courses" replace />;
+  if (!displayCourse) return <Navigate to="/courses" replace />;
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
@@ -256,8 +286,8 @@ export default function CourseDetail() {
             <ArrowLeft className="w-4 h-4" />
             Back to courses
           </Link>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">{course.title}</h1>
-          <p className="text-white/90 mt-1">{course.sector} · {course.duration}</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold">{displayCourse.title}</h1>
+          <p className="text-white/90 mt-1">{displayCourse.sector} · {displayCourse.duration}</p>
         </div>
       </section>
 
@@ -286,11 +316,11 @@ export default function CourseDetail() {
             </div>
           ) : (
             <>
-              <p className="text-gray-600 mb-10">{course.description}</p>
+              <p className="text-gray-600 mb-10">{displayCourse.description ?? ""}</p>
 
               {modulesLoading ? (
                 <p className="text-gray-600">Loading modules…</p>
-              ) : (
+              ) : modules.length > 0 ? (
                 <div className="space-y-10">
                   {modules.map((mod) => (
                     <ModuleBlock
@@ -322,6 +352,36 @@ export default function CourseDetail() {
                     </div>
                   )}
                 </div>
+              ) : lessonsFromPublic.length > 0 ? (
+                <div className="space-y-6">
+                  <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+                    <FileText className="w-5 h-5" />
+                    Course materials (PDFs)
+                  </h2>
+                  <p className="text-gray-600 text-sm">
+                    Open any PDF below to view or download. Materials are from your course folder.
+                  </p>
+                  <ul className="space-y-3">
+                    {lessonsFromPublic.map((lesson, idx) => (
+                      <li key={idx} className="flex items-center justify-between gap-4 py-3 px-4 rounded-xl bg-white border border-gray-200 hover:border-primary/30">
+                        <span className="font-medium text-gray-900 truncate">{lesson.title}</span>
+                        <a
+                          href={lesson.pdfUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-primary hover:text-accent font-semibold text-sm shrink-0"
+                        >
+                          Open PDF
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <p className="text-gray-600 py-8">
+                  No materials yet. Run the seed from Admin → Course content to create modules and lessons from your PDFs, or add content manually.
+                </p>
               )}
             </>
           )}

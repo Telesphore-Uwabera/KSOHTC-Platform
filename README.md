@@ -75,11 +75,28 @@ Rules live in **`firestore.rules`** (deny client access; backend uses Admin SDK)
 
 Course list and content (modules, lessons, assessments) are in Firestore; served at `/api/course-content/*`. Public **Courses** and **Course detail** pages use these APIs.
 
+### Where courses and PDFs live
+
+- **Firestore** stores course **metadata** only: course list, modules, lessons, and each lesson’s **`pdfUrl`** (a URL string). Firestore does **not** store the actual PDF bytes.
+- **PDF files** are stored in one of two ways:
+  - **Local:** Under `public/courses/` (e.g. `public/courses/construction/...`). The seed uses these paths to build lesson entries; `pdfUrl` points at your app’s origin (e.g. `/courses/construction/file.pdf`). Fine for development or when the app serves the files.
+  - **Cloud (recommended for production):** Upload PDFs to **Firebase Storage**. The seed can upload each PDF to Storage and save the resulting public URL in Firestore (`pdfUrl`). Learners then open PDFs from Storage. Requires Firebase **Blaze** plan and Storage enabled; see below.
+
+You don’t have to “add courses in Firestore first”: run the seed and it creates courses (and optionally uploads PDFs to Storage). You can also add or edit courses in **Admin → Course content**.
+
 ### Upload courses (seed)
 
-1. Set `GOOGLE_APPLICATION_CREDENTIALS` in `.env`.
+1. Set `GOOGLE_APPLICATION_CREDENTIALS` (or `FIREBASE_SERVICE_ACCOUNT`) in `.env`.
 2. From project root: `pnpm run seed:courses`
 3. Creates courses: construction, industrial-safety, mining, safety-management (with modules/lessons from `public/courses`). New courses are `published: true`. If the seed fails, add courses in **Admin → Course content** and publish.
+
+**Cloud PDFs (Firebase Storage):** To upload PDFs to Firebase Storage and store their URLs in Firestore, enable Storage in the Firebase Console (Blaze plan), set `storageBucket` in your Firebase config (already set in `backend/lib/firestore.ts`), then run:
+
+```bash
+UPLOAD_PDFS_TO_STORAGE=true pnpm run seed:courses
+```
+
+Ensure Storage rules allow read access for the paths you use (e.g. `courses/*`).
 
 ### Where students learn
 

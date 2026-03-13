@@ -21,7 +21,7 @@ import {
   isValidCourseSlug,
 } from "../lib/course-firestore";
 import { submissionsCollection, progressCollection } from "../lib/firestore";
-import { getCoursesFromPublicFolder } from "../lib/seed-courses";
+import { getCoursesFromPublicFolder, getLessonsFromPublicFolder } from "../lib/seed-courses";
 import type { SubmissionDoc, ProgressDoc } from "@shared/api";
 
 /** GET /api/course-content/courses-from-public – list courses by reading public/courses folder (no Firestore) */
@@ -34,6 +34,20 @@ export async function getCoursesFromPublic(_req: Request, res: Response): Promis
     const msg = e instanceof Error ? e.message : String(e);
     console.error("getCoursesFromPublic:", msg);
     res.status(500).json({ error: "Failed to list courses from folder." });
+  }
+}
+
+/** GET /api/course-content/courses/:courseId/lessons-from-public – list lessons (PDFs) from public/courses folder */
+export async function getLessonsFromPublic(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId } = req.params;
+    const publicCoursesPath = path.resolve(process.cwd(), "public", "courses");
+    const lessons = getLessonsFromPublicFolder(publicCoursesPath, courseId);
+    res.json({ lessons });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("getLessonsFromPublic:", msg);
+    res.status(500).json({ error: "Failed to list lessons from folder." });
   }
 }
 

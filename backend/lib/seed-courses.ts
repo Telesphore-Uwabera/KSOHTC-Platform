@@ -1,11 +1,18 @@
 /**
  * Seed Firestore with course structure from public/courses (PDFs).
  * Used by the CLI script and by POST /api/admin/seed-courses.
+ * Optionally upload PDFs to Firebase Storage and store those URLs in Firestore.
  */
 import { readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { courseDoc, moduleDoc, lessonDoc } from "./course-firestore";
+import { uploadFileAndGetUrl } from "./storage";
 import type { CourseId } from "@shared/api";
+
+export interface SeedOptions {
+  /** If true, upload each PDF to Firebase Storage and use that URL in Firestore (cloud-stored PDFs). */
+  uploadToStorage?: boolean;
+}
 
 interface SeedLesson {
   title: string;
@@ -59,9 +66,13 @@ function addSafetyManagementModule(modules: SeedModule[]): void {
   });
 }
 
-export async function runSeedCourses(publicCoursesPath: string): Promise<{ created: string[]; skipped: string[] }> {
+export async function runSeedCourses(
+  publicCoursesPath: string,
+  options?: SeedOptions
+): Promise<{ created: string[]; skipped: string[] }> {
   const created: string[] = [];
   const skipped: string[] = [];
+  const uploadToStorage = options?.uploadToStorage === true;
 
   const constructionDir = join(publicCoursesPath, "construction");
   const industrialDir = join(publicCoursesPath, "industrial-safety");
@@ -158,12 +169,24 @@ export async function runSeedCourses(publicCoursesPath: string): Promise<{ creat
       for (let j = 0; j < mod.lessons.length; j++) {
         const lessonId = crypto.randomUUID();
         const lesson = mod.lessons[j];
+        let pdfUrl = lesson.pdfUrl || undefined;
+        if (uploadToStorage && lesson.pdfUrl) {
+          const filename = decodeURIComponent(lesson.pdfUrl.split("/").pop() ?? "");
+          const localPath = join(publicCoursesPath, slug, filename);
+          if (existsSync(localPath)) {
+            try {
+              pdfUrl = await uploadFileAndGetUrl(localPath, `courses/${slug}/${filename}`);
+            } catch (e) {
+              console.warn(`[seed] Upload failed for ${filename}:`, e instanceof Error ? e.message : e);
+            }
+          }
+        }
         await lessonDoc(slug, moduleId, lessonId).set({
           courseId: slug,
           moduleId,
           title: lesson.title,
           order: j,
-          pdfUrl: lesson.pdfUrl || undefined,
+          pdfUrl: pdfUrl || undefined,
           contentHtml: "",
           published: true,
           createdAt: now,
@@ -224,4 +247,27 @@ export function getCoursesFromPublicFolder(publicCoursesPath: string): CourseFro
     });
   }
   return courses.sort((a, b) => a.order - b.order);
+}
+
+export interface LessonFromFolder {
+  title: string;
+  pdfUrl: string;
+}
+
+/**
+ * List lessons (PDFs) for a course from public/courses/:courseId/. Use when Firestore has no modules yet.
+ */
+export function getLessonsFromPublicFolder(publicCoursesPath: string, courseId: string): LessonFromFolder[] {
+  const dir = join(publicCoursesPath, courseId);
+  if (!existsSync(dir)) return [];
+  let files: string[] = [];
+  try {
+    files = readdirSync(dir).filter((f: string) => f.endsWith(".pdf") || f.endsWith(".pptx"));
+  } catch {
+    return [];
+  }
+  return files.map((filename) => ({
+    title: lessonTitleFromFilename(filename),
+    pdfUrl: `/courses/${courseId}/${encodeURIComponent(filename)}`,
+  }));
 }
