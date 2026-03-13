@@ -72,55 +72,16 @@ export default function Courses() {
   const { data: allCourses = [], isLoading, error } = useQuery({
     queryKey: ["course-content", "courses"],
     queryFn: fetchCourses,
-    enabled: !!user,
+    enabled: true,
   });
 
-  const courses = filterCoursesBySector(allCourses, user?.sector);
+  // Courses page shows all 4 categories to everyone; sector filtering is only on the dashboard.
+  const courses = allCourses;
   const [visibleCourseCount, setVisibleCourseCount] = useState(INITIAL_COURSE_CARDS);
   const visibleCourses = courses.slice(0, visibleCourseCount);
   const hasMoreCourses = courses.length > INITIAL_COURSE_CARDS;
   const canShowMoreCourses = visibleCourseCount < courses.length;
   const canShowLessCourses = visibleCourseCount > INITIAL_COURSE_CARDS;
-
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-white overflow-x-hidden">
-        <Header />
-        <div className="h-28 sm:h-32" aria-hidden="true" />
-        <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[50vh] flex flex-col justify-center overflow-hidden">
-          <div className="absolute inset-0">
-            <img src="/ksohtc-3.webp" alt="" className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-move-endless" decoding="async" aria-hidden />
-            <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
-          </div>
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Our Courses</h1>
-            <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto mb-8">
-              Log in or register to view and enroll in courses. After admin approval you can access all materials.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              <Link
-                to="/login"
-                state={{ from: "/courses" }}
-                className="inline-flex items-center gap-2 bg-white text-primary font-bold py-3 px-6 rounded-lg hover:bg-gray-100 shadow-lg transition-all"
-              >
-                Log in
-                <ArrowRight className="w-5 h-5" />
-              </Link>
-              <Link
-                to="/register"
-                state={{ from: "/courses" }}
-                className="inline-flex items-center gap-2 border-2 border-white text-white font-bold py-3 px-6 rounded-lg hover:bg-white/10 transition-all"
-              >
-                Register
-              </Link>
-            </div>
-          </div>
-        </section>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
@@ -136,9 +97,11 @@ export default function Courses() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 hero-reveal-slow" style={{ animationDelay: "0.4s", animationFillMode: "both" }}>Our Courses</h1>
           <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto hero-reveal-slow" style={{ animationDelay: "0.9s", animationFillMode: "both" }}>
-            {canAccess
-              ? "Choose a course below to enroll and start studying."
-              : "Your account is pending approval. You will access courses once an admin approves your registration."}
+            {!user
+              ? "Browse all course categories below. Click Enroll on a course to log in and enroll."
+              : canAccess
+                ? "Choose a course below to view materials and start studying."
+                : "Your account is pending approval. You will access courses once an admin approves your registration."}
           </p>
         </div>
       </section>
@@ -181,21 +144,7 @@ export default function Courses() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 scroll-reveal reveal-right-slow delay-400">
             <h2 className="text-2xl sm:text-3xl font-bold text-primary">Available courses</h2>
             {!user && (
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  to="/register"
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-accent to-accent/80 text-black font-bold py-2.5 px-5 rounded-lg hover:shadow-lg transition-all duration-300"
-                >
-                  Register to enroll
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-                <Link
-                  to="/login"
-                  className="inline-flex items-center border-2 border-primary text-primary font-bold py-2.5 px-5 rounded-lg hover:bg-primary/5 transition-all duration-300"
-                >
-                  Log in
-                </Link>
-              </div>
+              <p className="text-sm text-gray-600">Click <strong>Enroll in this course</strong> on a card to go to the login page.</p>
             )}
           </div>
 
@@ -266,10 +215,10 @@ export default function Courses() {
                         </span>
                       ) : (
                         <Link
-                          to="/register"
-                          className="inline-flex items-center gap-2 text-primary font-semibold text-sm hover:text-accent transition-colors"
+                          to={{ pathname: "/login", state: { from: `/courses/${course.id}` } }}
+                          className="inline-flex items-center gap-1.5 text-primary font-semibold text-sm hover:text-accent transition-colors"
                         >
-                          Register to enroll
+                          Enroll in this course
                           <ArrowRight className="w-4 h-4" />
                         </Link>
                       )}

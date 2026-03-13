@@ -68,7 +68,7 @@ export default function Index() {
         <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-6 sm:pb-8 flex flex-col items-center">
           <div className="flex flex-row flex-nowrap gap-4 sm:gap-6">
             <Link
-              to="/login"
+              to={{ pathname: "/login", state: { from: "/dashboard" } }}
               className="group cursor-pointer bg-transparent border-2 border-white text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-bold text-sm sm:text-base transition-all duration-300 hover:bg-white hover:text-primary hover:scale-105 hover:shadow-xl hover:border-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent active:scale-[0.98] inline-flex items-center justify-center shrink-0"
             >
               ENROLL NOW!

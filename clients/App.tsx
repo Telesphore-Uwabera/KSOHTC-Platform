@@ -35,6 +35,8 @@ const TakeQuiz = lazy(() => import("./pages/TakeQuiz"));
 const TakeModuleQuiz = lazy(() => import("./pages/TakeModuleQuiz"));
 const StudentLayout = lazy(() => import("./pages/StudentLayout"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
+const DashboardCourses = lazy(() => import("./pages/DashboardCourses"));
+const DashboardProgress = lazy(() => import("./pages/DashboardProgress"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -113,6 +115,8 @@ const App = () => (
             <Route path="/courses/:courseId/modules/:moduleId/quiz/:assessmentId" element={<TakeModuleQuiz />} />
             <Route path="/dashboard" element={<StudentLayout />}>
               <Route index element={<Dashboard />} />
+              <Route path="courses" element={<DashboardCourses />} />
+              <Route path="progress" element={<DashboardProgress />} />
             </Route>
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />

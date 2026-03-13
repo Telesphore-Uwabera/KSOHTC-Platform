@@ -15,8 +15,11 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
 
   const existing = getStoredUser();
-  if (existing && (existing as { role?: string }).role === "admin") {
-    return <Navigate to="/admin" replace />;
+  if (existing) {
+    const role = (existing as { role?: string }).role;
+    if (role === "admin") return <Navigate to="/admin" replace />;
+    // Student/learner cannot use admin login — send to learner dashboard
+    return <Navigate to="/dashboard" replace state={{ message: "Use the learner login for your dashboard." }} />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,7 +41,7 @@ export default function AdminLogin() {
       if (user && typeof user === "object" && "id" in user) {
         const role = (user as { role?: string }).role;
         if (role !== "admin") {
-          setError("This portal is for administrators only. Use learner login instead.");
+          setError("Only administrators can sign in here. Use the main login page for learners.");
           return;
         }
         setStoredUser(user as Parameters<typeof setStoredUser>[0]);
