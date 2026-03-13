@@ -255,7 +255,15 @@ export async function getCourseTotalSteps(courseId: string): Promise<{ totalLess
 export async function getCourseStats(req: Request, res: Response): Promise<void> {
   try {
     const { courseId } = req.params;
-    const stats = await getCourseTotalSteps(courseId);
+    let stats = await getCourseTotalSteps(courseId);
+    // When Firestore has no modules/lessons (e.g. safety-management), use public folder count so dashboard shows real totals
+    if (stats.totalLessons === 0 && stats.totalAssessments === 0 && ALLOWED_COURSE_IDS.includes(courseId)) {
+      const publicCoursesPath = path.resolve(process.cwd(), "public", "courses");
+      const lessons = getLessonsFromPublicFolder(publicCoursesPath, courseId);
+      if (lessons.length > 0) {
+        stats = { totalLessons: lessons.length, totalAssessments: 0 };
+      }
+    }
     res.json(stats);
   } catch (e) {
     console.error("getCourseStats:", e);
