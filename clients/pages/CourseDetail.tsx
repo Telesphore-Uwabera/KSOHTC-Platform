@@ -426,7 +426,11 @@ export default function CourseDetail() {
   const { data: lessonsFromPublic = [] } = useQuery({
     queryKey: ["course-content", "lessons-from-public", courseId],
     queryFn: () => fetchLessonsFromPublic(courseId!),
-    enabled: !!courseId && !!displayCourse && !modulesLoading && modules.length === 0,
+    enabled:
+      !!courseId &&
+      !!displayCourse &&
+      !modulesLoading &&
+      (modules.length === 0 || courseId === "safety-management"),
   });
 
   const { data: progress, refetch: refetchProgress } = useQuery({
@@ -596,6 +600,88 @@ export default function CourseDetail() {
 
               {modulesLoading ? (
                 <p className="text-gray-600">Loading modules…</p>
+              ) : lessonsFromPublic.length > 0 && courseId === "safety-management" ? (
+                (() => {
+                  const visible = lessonsFromPublic.slice(0, visiblePublicLessonsCount);
+                  const hasMore = lessonsFromPublic.length > INITIAL_SECTION_CARDS;
+                  const canShowMore = visiblePublicLessonsCount < lessonsFromPublic.length;
+                  const canShowLess = visiblePublicLessonsCount > INITIAL_SECTION_CARDS;
+                  return (
+                    <div className="space-y-6">
+                      <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+                        <FileText className="w-5 h-5" />
+                        Course materials (PDFs)
+                      </h2>
+                      <p className="text-gray-600 text-sm">
+                        View PDFs below. Materials are from your course folder.
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-3">
+                        {visible.map((lesson, idx) => {
+                          const title = stripSectionPrefix(cleanLessonTitle(lesson.title));
+                          const section = sectionLabel(idx + 1);
+                          return (
+                            <div
+                              key={idx}
+                              className="group flex flex-col min-h-[100px] rounded-xl border border-gray-200 bg-white p-3 shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-left"
+                            >
+                              <span className="font-bold text-primary text-xs">{section}</span>
+                              <span className="font-medium text-gray-900 text-xs line-clamp-2 flex-1">{title}</span>
+                              <button
+                                type="button"
+                                onClick={() => openPdfViewer(lesson.pdfUrl, `${section} – ${title}`)}
+                                className="inline-flex items-center gap-1.5 text-primary font-semibold text-xs mt-1.5 group-hover:text-accent shrink-0 text-left"
+                              >
+                                View PDF
+                                <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {hasMore && (
+                        <div className="flex flex-wrap items-center gap-3">
+                          {canShowMore && (
+                            <button
+                              type="button"
+                              onClick={() => setVisiblePublicLessonsCount((c) => c + SECTION_CARDS_STEP)}
+                              className="inline-flex items-center gap-2 text-primary font-semibold text-sm hover:text-accent"
+                            >
+                              View more
+                              <ExternalLink className="w-4 h-4" />
+                            </button>
+                          )}
+                          {canShowLess && (
+                            <button
+                              type="button"
+                              onClick={() => setVisiblePublicLessonsCount(INITIAL_SECTION_CARDS)}
+                              className="text-gray-600 font-medium text-sm hover:text-gray-900"
+                            >
+                              View less
+                            </button>
+                          )}
+                        </div>
+                      )}
+                      {legacyQuiz && (
+                        <div className="mt-10 rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 shadow-sm">
+                          <h2 className="text-lg font-bold text-primary mb-3 flex items-center gap-2">
+                            <ClipboardList className="w-5 h-5" />
+                            Course quiz
+                          </h2>
+                          <p className="text-gray-600 text-sm mb-3">
+                            {legacyQuiz.description || "Test your knowledge after completing the materials."}
+                          </p>
+                          <Link
+                            to={`/courses/${courseId}/quiz/take`}
+                            className="inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-primary/90"
+                          >
+                            Take course quiz
+                            <ExternalLink className="w-4 h-4" />
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()
               ) : modules.length > 0 ? (
                 <>
                   {(() => {
@@ -737,7 +823,7 @@ export default function CourseDetail() {
                         Course materials (PDFs)
                       </h2>
                       <p className="text-gray-600 text-sm">
-                        View or download PDFs below. Materials are from your course folder.
+                        View PDFs below. Materials are from your course folder.
                       </p>
                       <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-3">
                         {visible.map((lesson, idx) => {
