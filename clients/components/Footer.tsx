@@ -8,8 +8,8 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900 text-gray-300 py-8 sm:py-12 lg:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in-up">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 sm:gap-10 lg:gap-12 items-start">
-          <div className="flex flex-col items-start text-left lg:col-span-1 lg:col-start-1">
+        <div className="max-w-4xl md:max-w-5xl lg:max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 sm:gap-10 lg:gap-12 items-start">
+          <div className="flex flex-col items-start text-left min-w-0">
             <Link to="/" className="block">
               <img
                 src="/logo.webp"
@@ -23,29 +23,7 @@ export default function Footer() {
             <p className="text-accent font-medium text-xs sm:text-sm">Safety Today, Prosperity Tomorrow!</p>
           </div>
 
-          <div className="lg:col-span-3 lg:col-start-2 lg:flex lg:justify-center">
-            <div className="text-left w-full max-w-xs">
-              <h4 className="text-base sm:text-lg font-bold text-white mb-4 sm:mb-6 uppercase tracking-wider">Quick Links</h4>
-              <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
-                {[
-                  { to: "/", label: "Home" },
-                  { to: "/about", label: "About Us" },
-                  { to: "/programs", label: "Programs" },
-                  { to: "/industries", label: "Industries" },
-                  { to: "/contact", label: "Contact" },
-                ].map(({ to, label }) => (
-                  <li key={to}>
-                    <Link to={to} className="hover:text-accent transition-colors duration-300 flex items-center gap-2">
-                      <span className="w-1 h-1 bg-accent rounded-full" />
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className="text-left lg:col-span-1 lg:col-start-5">
+          <div className="text-left min-w-0">
             <h4 className="text-base sm:text-lg font-bold text-white mb-4 sm:mb-6 uppercase tracking-wider">Contact</h4>
             <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
               <Link to="/contact#map" className="flex items-center gap-3 whitespace-nowrap hover:text-accent transition-colors duration-300">
@@ -91,6 +69,26 @@ export default function Footer() {
               <ExternalLink className="w-3 h-3" />
               Get directions
             </a>
+          </div>
+
+          <div className="text-left min-w-0">
+            <h4 className="text-base sm:text-lg font-bold text-white mb-4 sm:mb-6 uppercase tracking-wider">Quick Links</h4>
+            <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
+              {[
+                { to: "/", label: "Home" },
+                { to: "/about", label: "About Us" },
+                { to: "/programs", label: "Programs" },
+                { to: "/industries", label: "Industries" },
+                { to: "/contact", label: "Contact" },
+              ].map(({ to, label }) => (
+                <li key={to}>
+                  <Link to={to} className="hover:text-accent transition-colors duration-300 flex items-center gap-2">
+                    <span className="w-1 h-1 bg-accent rounded-full" />
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 

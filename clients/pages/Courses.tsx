@@ -15,11 +15,38 @@ const iconBySlug: Record<string, typeof HardHat> = {
   "safety-for-all": Shield,
 };
 
-async function fetchCourses(): Promise<CourseDoc[]> {
+async function fetchCoursesFromFirestore(): Promise<CourseDoc[]> {
   const res = await fetch(getApiBase() + "/api/course-content/courses");
   if (!res.ok) throw new Error("Failed to load courses");
   const data = await res.json();
   return (data.courses ?? []).filter((c: CourseDoc) => c.published !== false);
+}
+
+async function fetchCoursesFromPublic(): Promise<CourseDoc[]> {
+  const res = await fetch(getApiBase() + "/api/course-content/courses-from-public");
+  if (!res.ok) return [];
+  const data = await res.json();
+  return (data.courses ?? []).map((c: { id: string; title: string; description?: string; sector: string; duration: string; published?: boolean; order?: number; lessonCount?: number }) => ({
+    id: c.id,
+    slug: c.id as CourseDoc["slug"],
+    title: c.title,
+    description: c.description ?? "",
+    sector: c.sector,
+    duration: c.duration,
+    published: c.published !== false,
+    order: c.order ?? 99,
+    lessonCount: (c as { lessonCount?: number }).lessonCount,
+  }));
+}
+
+/** Fetch courses: use Firestore first; if empty, use public/courses folder. Returns sorted by order. */
+async function fetchCourses(): Promise<CourseDoc[]> {
+  const fromFirestore = await fetchCoursesFromFirestore();
+  if (fromFirestore.length > 0) {
+    return fromFirestore.sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+  }
+  const fromPublic = await fetchCoursesFromPublic();
+  return fromPublic.sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
 }
 
 export default function Courses() {
@@ -30,7 +57,48 @@ export default function Courses() {
   const { data: courses = [], isLoading, error } = useQuery({
     queryKey: ["course-content", "courses"],
     queryFn: fetchCourses,
+    enabled: !!user,
   });
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-white overflow-x-hidden">
+        <Header />
+        <div className="h-28 sm:h-32" aria-hidden="true" />
+        <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[50vh] flex flex-col justify-center overflow-hidden">
+          <div className="absolute inset-0">
+            <img src="/ksohtc-3.webp" alt="" className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-move-endless" decoding="async" aria-hidden />
+            <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
+          </div>
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4">Our Courses</h1>
+            <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto mb-8">
+              Log in or register to view and enroll in courses. After admin approval you can access all materials.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link
+                to="/login"
+                state={{ from: "/courses" }}
+                className="inline-flex items-center gap-2 bg-white text-primary font-bold py-3 px-6 rounded-lg hover:bg-gray-100 shadow-lg transition-all"
+              >
+                Log in
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+              <Link
+                to="/register"
+                state={{ from: "/courses" }}
+                className="inline-flex items-center gap-2 border-2 border-white text-white font-bold py-3 px-6 rounded-lg hover:bg-white/10 transition-all"
+              >
+                Register
+              </Link>
+            </div>
+          </div>
+        </section>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
@@ -39,7 +107,7 @@ export default function Courses() {
 
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/ksohtc-3.webp" alt="" className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-zoom-slow" decoding="async" aria-hidden />
+          <img src="/ksohtc-3.webp" alt="" className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-move-endless" decoding="async" aria-hidden />
           <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
         </div>
@@ -48,9 +116,7 @@ export default function Courses() {
           <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto hero-reveal-slow" style={{ animationDelay: "0.9s", animationFillMode: "both" }}>
             {canAccess
               ? "Choose a course below to enroll and start studying."
-              : pending
-                ? "Your account is pending approval. You will access courses once an admin approves your registration."
-                : "Register or log in to enroll. After admin approval, you can access courses."}
+              : "Your account is pending approval. You will access courses once an admin approves your registration."}
           </p>
         </div>
       </section>
@@ -114,9 +180,10 @@ export default function Courses() {
             <p className="text-gray-600 py-8">No courses available yet. Courses will appear here once they’re set up.</p>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {courses.map((course, idx) => {
-              const Icon = iconBySlug[course.slug] ?? HardHat;
+              const Icon = iconBySlug[course.slug ?? course.id] ?? HardHat;
+              const lessonCount = (course as { lessonCount?: number }).lessonCount;
               return (
                 <div
                   key={course.id}
@@ -130,7 +197,10 @@ export default function Courses() {
                     <h3 className="text-xl font-bold text-primary mb-2">{course.title}</h3>
                     <p className="text-sm text-accent font-medium mb-2">{course.sector}</p>
                     <p className="text-gray-600 text-sm mb-4">{course.description || "Occupational Safety and Health training."}</p>
-                    <p className="text-gray-500 text-xs">Duration: {course.duration}</p>
+                    <p className="text-gray-500 text-xs">
+                      Duration: {course.duration}
+                      {lessonCount != null && lessonCount > 0 && ` · ${lessonCount} lesson${lessonCount !== 1 ? "s" : ""}`}
+                    </p>
                     {canAccess ? (
                       <Link
                         to={`/courses/${course.id}`}

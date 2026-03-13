@@ -2,7 +2,7 @@
  * Seed Firestore with course structure from public/courses (PDFs).
  * Used by the CLI script and by POST /api/admin/seed-courses.
  */
-import { readdirSync } from "node:fs";
+import { readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { courseDoc, moduleDoc, lessonDoc } from "./course-firestore";
 import type { CourseId } from "@shared/api";
@@ -174,4 +174,54 @@ export async function runSeedCourses(publicCoursesPath: string): Promise<{ creat
   }
 
   return { created, skipped };
+}
+
+/** Course list shape for API (matches CourseDoc minus dates). */
+export interface CourseFromFolder {
+  id: string;
+  title: string;
+  description: string;
+  sector: string;
+  duration: string;
+  published: boolean;
+  order: number;
+  lessonCount?: number;
+}
+
+const COURSE_META: Array<{ slug: string; title: string; sector: string; duration: string; order: number }> = [
+  { slug: "construction", title: "OSH in Construction", sector: "Construction", duration: "2 weeks", order: 1 },
+  { slug: "industrial-safety", title: "OSH in Industrial Safety", sector: "Industrial", duration: "2 weeks", order: 2 },
+  { slug: "mining", title: "OSH in Mining", sector: "Mining", duration: "3 weeks", order: 3 },
+  { slug: "safety-management", title: "Safety Management (General)", sector: "General", duration: "1 week", order: 4 },
+  { slug: "safety-for-all", title: "Safety Course for All", sector: "General", duration: "1 week", order: 5 },
+];
+
+/**
+ * Read public/courses folder and return course list (no Firestore). Used so the Courses page can show courses even when DB is not seeded.
+ */
+export function getCoursesFromPublicFolder(publicCoursesPath: string): CourseFromFolder[] {
+  const courses: CourseFromFolder[] = [];
+  for (const meta of COURSE_META) {
+    const dir = join(publicCoursesPath, meta.slug);
+    let lessonCount = 0;
+    if (existsSync(dir)) {
+      try {
+        const files = readdirSync(dir).filter((f: string) => f.endsWith(".pdf") || f.endsWith(".pptx"));
+        lessonCount = files.length;
+      } catch {
+        lessonCount = 0;
+      }
+    }
+    courses.push({
+      id: meta.slug,
+      title: meta.title,
+      description: `${meta.title} – Occupational Safety and Health training.`,
+      sector: meta.sector,
+      duration: meta.duration,
+      published: true,
+      order: meta.order,
+      lessonCount,
+    });
+  }
+  return courses.sort((a, b) => a.order - b.order);
 }

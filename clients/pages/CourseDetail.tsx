@@ -241,7 +241,7 @@ export default function CourseDetail() {
           <img
             src="/ksohtc-3.webp"
             alt=""
-            className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-pan"
+            className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-move-endless"
             decoding="async"
             aria-hidden
           />

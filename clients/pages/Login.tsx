@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { LogIn, BookOpen, Loader2 } from "lucide-react";
@@ -8,6 +8,8 @@ import { getApiBase } from "@/lib/apiBase";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: string } | null)?.from ?? "/courses";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -38,7 +40,7 @@ export default function Login() {
       const user = (data as { user?: unknown }).user;
       if (user && typeof user === "object" && "id" in user) {
         setStoredUser(user as Parameters<typeof setStoredUser>[0]);
-        navigate("/courses");
+        navigate(from, { replace: true });
       }
     } catch {
       setError("Unable to reach the server. Check your connection and try again.");

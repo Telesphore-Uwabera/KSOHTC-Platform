@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import path from "node:path";
 import crypto from "node:crypto";
 import type {
   CourseDoc,
@@ -20,7 +21,21 @@ import {
   isValidCourseSlug,
 } from "../lib/course-firestore";
 import { submissionsCollection, progressCollection } from "../lib/firestore";
+import { getCoursesFromPublicFolder } from "../lib/seed-courses";
 import type { SubmissionDoc, ProgressDoc } from "@shared/api";
+
+/** GET /api/course-content/courses-from-public – list courses by reading public/courses folder (no Firestore) */
+export async function getCoursesFromPublic(_req: Request, res: Response): Promise<void> {
+  try {
+    const publicCoursesPath = path.resolve(process.cwd(), "public", "courses");
+    const courses = getCoursesFromPublicFolder(publicCoursesPath);
+    res.json({ courses });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("getCoursesFromPublic:", msg);
+    res.status(500).json({ error: "Failed to list courses from folder." });
+  }
+}
 
 /** GET /api/course-content/courses – list all courses from Firestore */
 export async function listCourses(_req: Request, res: Response): Promise<void> {

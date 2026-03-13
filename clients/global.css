@@ -236,29 +236,37 @@
   }
 }
 
-/* Section background images: different animation styles */
+/* Section background images: endless moving animations */
 @keyframes bgImageZoom {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.06); }
+  50% { transform: scale(1.08); }
 }
 @keyframes bgImagePan {
-  0%, 100% { transform: scale(1.03) translate(0, 0); }
-  33% { transform: scale(1.03) translate(-1.5%, -1%); }
-  66% { transform: scale(1.03) translate(1%, 1.5%); }
+  0%, 100% { transform: scale(1.05) translate(0, 0); }
+  33% { transform: scale(1.05) translate(-2.5%, -1.5%); }
+  66% { transform: scale(1.05) translate(2%, 2%); }
 }
 @keyframes bgImageDrift {
-  0%, 100% { transform: scale(1.04) translateX(0) translateY(0); }
-  25% { transform: scale(1.04) translateX(1.2%) translateY(-0.8%); }
-  50% { transform: scale(1.04) translateX(-1%) translateY(1%); }
-  75% { transform: scale(1.04) translateX(-0.5%) translateY(-0.5%); }
+  0%, 100% { transform: scale(1.06) translate(0, 0); }
+  25% { transform: scale(1.06) translate(2%, -1.5%); }
+  50% { transform: scale(1.06) translate(-2%, 1.5%); }
+  75% { transform: scale(1.06) translate(-1%, -1%); }
 }
 @keyframes bgImagePulse {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.96; transform: scale(1.05); }
+  50% { opacity: 0.97; transform: scale(1.07); }
 }
 @keyframes bgImageZoomSlow {
-  0%, 100% { transform: scale(1.02); }
-  50% { transform: scale(1.08); }
+  0%, 100% { transform: scale(1.03); }
+  50% { transform: scale(1.12); }
+}
+/* Endless slow move: continuous pan + zoom so background is always in motion */
+@keyframes bgImageMoveEndless {
+  0% { transform: scale(1.05) translate(0%, 0%); }
+  25% { transform: scale(1.08) translate(2%, 1%); }
+  50% { transform: scale(1.06) translate(-1.5%, 2%); }
+  75% { transform: scale(1.09) translate(-2%, -1%); }
+  100% { transform: scale(1.05) translate(0%, 0%); }
 }
 
 /* Back to top icon: gentle bounce */
@@ -966,41 +974,47 @@
     transform: translateZ(0);
   }
 
-  /* Section background images: different animation styles */
+  /* Section background images: always-on endless animations */
   .bg-image-animate {
     transform: translateZ(0);
     will-change: transform;
   }
   .bg-image-zoom {
-    animation: bgImageZoom 18s ease-in-out infinite;
+    animation: bgImageZoom 16s ease-in-out infinite;
   }
   .bg-image-pan {
-    animation: bgImagePan 22s ease-in-out infinite;
+    animation: bgImagePan 20s ease-in-out infinite;
   }
   .bg-image-drift {
-    animation: bgImageDrift 20s ease-in-out infinite;
+    animation: bgImageDrift 18s ease-in-out infinite;
   }
   .bg-image-pulse {
-    animation: bgImagePulse 12s ease-in-out infinite;
+    animation: bgImagePulse 10s ease-in-out infinite;
     will-change: transform, opacity;
   }
   .bg-image-zoom-slow {
-    animation: bgImageZoomSlow 25s ease-in-out infinite;
+    animation: bgImageZoomSlow 22s ease-in-out infinite;
+  }
+  .bg-image-move-endless {
+    animation: bgImageMoveEndless 24s ease-in-out infinite;
   }
   .hero-zoom.bg-image-zoom {
-    animation: heroZoom 1.6s var(--ease-out-expo) forwards, bgImageZoom 18s ease-in-out 1.6s infinite;
+    animation: heroZoom 1.6s var(--ease-out-expo) forwards, bgImageZoom 16s ease-in-out 1.6s infinite;
   }
   .hero-zoom.bg-image-pan {
-    animation: heroZoom 1.6s var(--ease-out-expo) forwards, bgImagePan 22s ease-in-out 1.6s infinite;
+    animation: heroZoom 1.6s var(--ease-out-expo) forwards, bgImagePan 20s ease-in-out 1.6s infinite;
   }
   .hero-zoom.bg-image-drift {
-    animation: heroZoom 1.6s var(--ease-out-expo) forwards, bgImageDrift 20s ease-in-out 1.6s infinite;
+    animation: heroZoom 1.6s var(--ease-out-expo) forwards, bgImageDrift 18s ease-in-out 1.6s infinite;
   }
   .hero-zoom.bg-image-pulse {
-    animation: heroZoom 1.6s var(--ease-out-expo) forwards, bgImagePulse 12s ease-in-out 1.6s infinite;
+    animation: heroZoom 1.6s var(--ease-out-expo) forwards, bgImagePulse 10s ease-in-out 1.6s infinite;
   }
   .hero-zoom.bg-image-zoom-slow {
-    animation: heroZoom 1.6s var(--ease-out-expo) forwards, bgImageZoomSlow 25s ease-in-out 1.6s infinite;
+    animation: heroZoom 1.6s var(--ease-out-expo) forwards, bgImageZoomSlow 22s ease-in-out 1.6s infinite;
+  }
+  .hero-zoom.bg-image-move-endless {
+    animation: heroZoom 1.6s var(--ease-out-expo) forwards, bgImageMoveEndless 24s ease-in-out 1.6s infinite;
   }
 
   .hero-reveal-slow {
