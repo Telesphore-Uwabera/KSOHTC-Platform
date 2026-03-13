@@ -158,7 +158,7 @@ export default function Courses() {
             <p className="text-gray-600 py-8">No courses available yet. Courses will appear here once they’re set up.</p>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 items-stretch">
+          <div className="grid w-full min-w-0 grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-4 items-stretch">
             {visibleCourses.map((course, idx) => {
               const Icon = iconBySlug[course.slug ?? course.id] ?? HardHat;
               const lessonCount = (course as { lessonCount?: number }).lessonCount;
@@ -169,7 +169,7 @@ export default function Courses() {
               return (
                 <div
                   key={course.id}
-                  className="flex flex-col h-full bg-white rounded-2xl shadow border border-gray-200 overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-200"
+                  className="flex flex-col h-full min-w-0 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg hover:border-primary/40 transition-all duration-200 course-card"
                   style={{ animationDelay: `${0.9 + idx * 0.15}s` }}
                   title={fullDesc}
                 >
