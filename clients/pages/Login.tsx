@@ -143,12 +143,6 @@ export default function Login() {
                     View courses
                   </Link>
                 </p>
-                <p className="text-center text-gray-500 text-xs mt-1">
-                  Administrator?{" "}
-                  <Link to="/admin/login" className="font-medium text-primary hover:underline">
-                    Sign in at /admin/login
-                  </Link>
-                </p>
               </div>
             </div>
           </div>
