@@ -17,6 +17,7 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const isAdminRoute = location.pathname.startsWith("/admin");
 
   useEffect(() => {
     let ticking = false;
@@ -70,14 +71,14 @@ export default function Header() {
               </Link>
                 ))}
                 <Link
-                  to="/dashboard"
+                  to={isAdminRoute ? "/admin" : "/dashboard"}
                   className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-semibold transition-all duration-300 text-xs sm:text-sm lg:text-base border-2 ${
-                    location.pathname === "/dashboard"
+                    (isAdminRoute ? location.pathname === "/admin" : location.pathname === "/dashboard")
                       ? "bg-primary text-white border-primary shadow-md"
                       : "border-primary text-primary bg-primary/10 hover:bg-primary hover:text-white hover:shadow-md"
                   }`}
                 >
-                  Dashboard
+                  {isAdminRoute ? "Admin" : "Dashboard"}
                 </Link>
               </nav>
             </div>
@@ -125,15 +126,15 @@ export default function Header() {
                 </Link>
               ))}
               <Link
-                to="/dashboard"
+                to={isAdminRoute ? "/admin" : "/dashboard"}
                 onClick={() => setIsOpen(false)}
                 className={`block px-4 py-3 rounded-xl font-semibold transition-all duration-300 border-2 ${
-                  location.pathname === "/dashboard"
+                  (isAdminRoute ? location.pathname === "/admin" : location.pathname === "/dashboard")
                     ? "bg-primary text-white border-primary"
                     : "border-primary text-primary bg-primary/10 hover:bg-primary hover:text-white"
                 }`}
               >
-                Dashboard
+                {isAdminRoute ? "Admin" : "Dashboard"}
               </Link>
             </div>
           </nav>

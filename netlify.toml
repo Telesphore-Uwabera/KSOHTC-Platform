@@ -10,7 +10,15 @@
   external_node_modules = ["express"]
   node_bundler = "esbuild"
 
-# Backend API is on Render. Set VITE_API_URL in Netlify env (e.g. https://ksohtc-api.onrender.com) so the frontend calls it.
+# Backend API is on Render. Set VITE_API_URL in Netlify env (e.g. https://ksohtc-platform.onrender.com) so the frontend calls it.
+
+# Proxy PDF and static course files to the backend (must come before SPA fallback)
+# Replace the backend URL below if your Render service uses a different host.
+[[redirects]]
+  from = "/courses/*"
+  to = "https://ksohtc-platform.onrender.com/courses/:splat"
+  status = 200
+  force = true
 
 # SPA fallback: all other routes serve index.html for client-side routing
 [[redirects]]
