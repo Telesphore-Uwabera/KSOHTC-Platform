@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
-import type { User, UserCreate, UserPublic } from "@shared/api";
-import { usersCollection } from "../lib/firestore";
+import type { User, UserCreate, UserPublic, LearnerSector } from "@shared/api";
+import { getDb, usersCollection, enrollmentsCollection, progressCollection, submissionsCollection } from "../lib/firestore";
 import type { EnrollmentWithPercent } from "./enrollments";
 import { getEnrollmentsForUser } from "./enrollments";
+
+const VALID_SECTORS: LearnerSector[] = ["construction", "industrial-safety", "mining"];
 
 function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
@@ -20,11 +22,12 @@ function generateId(): string {
 export async function postRegister(req: Request, res: Response): Promise<void> {
   try {
     const body = req.body as UserCreate;
-    const { email, password, name, organization } = body;
+    const { email, password, name, organization, sector } = body;
     if (!email || !password || !name) {
       res.status(400).json({ error: "Email, password, and name are required." });
       return;
     }
+    const sectorVal = sector && VALID_SECTORS.includes(sector) ? sector : undefined;
     const col = usersCollection();
     const existingSnap = await col.where("email", "==", email.trim().toLowerCase()).limit(1).get();
     if (!existingSnap.empty) {
@@ -37,6 +40,7 @@ export async function postRegister(req: Request, res: Response): Promise<void> {
       password,
       name: name.trim(),
       organization: organization?.trim(),
+      sector: sectorVal,
       approved: false,
       createdAt: new Date().toISOString(),
     };
@@ -150,5 +154,154 @@ export async function patchUserApprove(req: Request, res: Response): Promise<voi
   } catch (e) {
     console.error("Approve user error:", e);
     res.status(500).json({ error: "Failed to approve user." });
+  }
+}
+
+/** GET /api/users/:id – get one user (admin; for edit form). Excludes password in response. */
+export async function getUser(req: Request, res: Response): Promise<void> {
+  try {
+    const { id } = req.params;
+    if (id === "admin") {
+      res.status(404).json({ error: "User not found." });
+      return;
+    }
+    const doc = await usersCollection().doc(id).get();
+    if (!doc.exists) {
+      res.status(404).json({ error: "User not found." });
+      return;
+    }
+    res.json({ user: toPublic(doc.data() as User) });
+  } catch (e) {
+    console.error("Get user error:", e);
+    res.status(500).json({ error: "Failed to load user." });
+  }
+}
+
+/** POST /api/users – admin create learner. Body: name, email, password, organization?, sector?, approved? */
+export async function postUser(req: Request, res: Response): Promise<void> {
+  try {
+    const body = req.body as UserCreate & { approved?: boolean };
+    const { email, password, name, organization, sector, approved } = body;
+    if (!email || !password || !name) {
+      res.status(400).json({ error: "Email, password, and name are required." });
+      return;
+    }
+    const sectorVal = sector && VALID_SECTORS.includes(sector) ? sector : undefined;
+    const col = usersCollection();
+    const existingSnap = await col.where("email", "==", normalizeEmail(email)).limit(1).get();
+    if (!existingSnap.empty) {
+      res.status(409).json({ error: "An account with this email already exists." });
+      return;
+    }
+    const user: User = {
+      id: generateId(),
+      email: email.trim(),
+      password,
+      name: name.trim(),
+      organization: organization?.trim(),
+      sector: sectorVal,
+      approved: approved === true,
+      createdAt: new Date().toISOString(),
+    };
+    const forFirestore = Object.fromEntries(
+      Object.entries(user).filter(([, v]) => v !== undefined)
+    ) as Record<string, unknown>;
+    await col.doc(user.id).set(forFirestore);
+    res.status(201).json({ user: toPublic(user) });
+  } catch (e) {
+    console.error("Create user error:", e);
+    res.status(500).json({ error: "Failed to create learner." });
+  }
+}
+
+/** PUT /api/users/:id – admin update learner. Body: name?, email?, password?, organization?, sector?, approved? */
+export async function putUser(req: Request, res: Response): Promise<void> {
+  try {
+    const { id } = req.params;
+    if (id === "admin") {
+      res.status(400).json({ error: "Cannot update admin user." });
+      return;
+    }
+    const ref = usersCollection().doc(id);
+    const doc = await ref.get();
+    if (!doc.exists) {
+      res.status(404).json({ error: "User not found." });
+      return;
+    }
+    const body = req.body as {
+      name?: string;
+      email?: string;
+      password?: string;
+      organization?: string;
+      sector?: LearnerSector | "";
+      approved?: boolean;
+    };
+    const current = doc.data() as User;
+    const email = body.email !== undefined ? body.email.trim() : current.email;
+    if (body.email !== undefined) {
+      const col = usersCollection();
+      const other = await col.where("email", "==", normalizeEmail(email)).limit(2).get();
+      const duplicate = other.docs.find((d) => d.id !== id);
+      if (duplicate) {
+        res.status(409).json({ error: "Another user already has this email." });
+        return;
+      }
+    }
+    const sectorVal =
+      body.sector !== undefined
+        ? body.sector && VALID_SECTORS.includes(body.sector)
+          ? body.sector
+          : undefined
+        : current.sector;
+    const updates: Partial<User> = {
+      name: body.name !== undefined ? body.name.trim() : current.name,
+      email,
+      organization: body.organization !== undefined ? body.organization.trim() : current.organization,
+      sector: sectorVal,
+      approved: body.approved !== undefined ? body.approved : current.approved,
+    };
+    if (body.password !== undefined && body.password !== "") {
+      updates.password = body.password;
+    }
+    const forFirestore = Object.fromEntries(
+      Object.entries(updates).filter(([, v]) => v !== undefined)
+    ) as Record<string, unknown>;
+    await ref.update(forFirestore);
+    const updated = (await ref.get()).data() as User;
+    res.json({ user: toPublic(updated) });
+  } catch (e) {
+    console.error("Update user error:", e);
+    res.status(500).json({ error: "Failed to update learner." });
+  }
+}
+
+/** DELETE /api/users/:id – admin delete learner. Also removes enrollments, progress, submissions for that user. */
+export async function deleteUser(req: Request, res: Response): Promise<void> {
+  try {
+    const { id } = req.params;
+    if (id === "admin") {
+      res.status(400).json({ error: "Cannot delete admin user." });
+      return;
+    }
+    const ref = usersCollection().doc(id);
+    const doc = await ref.get();
+    if (!doc.exists) {
+      res.status(404).json({ error: "User not found." });
+      return;
+    }
+
+    const batch = getDb().batch();
+    const enrollments = await enrollmentsCollection().where("userId", "==", id).get();
+    enrollments.docs.forEach((d) => batch.delete(d.ref));
+    const progressSnap = await progressCollection().where("userId", "==", id).get();
+    progressSnap.docs.forEach((d) => batch.delete(d.ref));
+    const submissions = await submissionsCollection().where("userId", "==", id).get();
+    submissions.docs.forEach((d) => batch.delete(d.ref));
+    batch.delete(ref);
+    await batch.commit();
+    res.status(204).send();
+  } catch (e) {
+    console.error("Delete user error:", e);
+    res.status(500).json({ error: "Failed to delete learner." });
   }
 }

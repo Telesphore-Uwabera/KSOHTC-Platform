@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import path from "node:path";
+import fs from "node:fs";
 import crypto from "node:crypto";
 import type {
   CourseDoc,
@@ -48,6 +49,93 @@ export async function getLessonsFromPublic(req: Request, res: Response): Promise
     const msg = e instanceof Error ? e.message : String(e);
     console.error("getLessonsFromPublic:", msg);
     res.status(500).json({ error: "Failed to list lessons from folder." });
+  }
+}
+
+const ALLOWED_COURSE_IDS = ["construction", "industrial-safety", "mining", "safety-management", "safety-for-all"];
+
+/** POST /api/course-content/courses/:courseId/upload-pdf – admin upload PDF to course folder. Body: { filename: string, contentBase64: string } */
+export async function uploadCoursePdf(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId } = req.params;
+    if (!ALLOWED_COURSE_IDS.includes(courseId)) {
+      res.status(400).json({ error: "Invalid course. Use construction, industrial-safety, mining, safety-management, or safety-for-all." });
+      return;
+    }
+    const body = req.body as { filename?: string; contentBase64?: string };
+    const filename = typeof body.filename === "string" ? body.filename.trim() : "";
+    const contentBase64 = body.contentBase64;
+    if (!filename || !contentBase64) {
+      res.status(400).json({ error: "filename and contentBase64 are required." });
+      return;
+    }
+    const safeName = path.basename(filename).replace(/[^a-zA-Z0-9._\-\s+()]/g, "_");
+    if (!safeName.endsWith(".pdf")) {
+      res.status(400).json({ error: "Only PDF files are allowed. Use a .pdf filename." });
+      return;
+    }
+    const publicCoursesPath = path.resolve(process.cwd(), "public", "courses");
+    const courseDir = path.join(publicCoursesPath, courseId);
+    if (!fs.existsSync(courseDir)) {
+      fs.mkdirSync(courseDir, { recursive: true });
+    }
+    const filePath = path.join(courseDir, safeName);
+    const buf = Buffer.from(contentBase64, "base64");
+    if (buf.length > 50 * 1024 * 1024) {
+      res.status(400).json({ error: "File too large (max 50MB)." });
+      return;
+    }
+    fs.writeFileSync(filePath, buf);
+    const pdfUrl = `/courses/${courseId}/${encodeURIComponent(safeName)}`;
+    res.status(201).json({ ok: true, filename: safeName, pdfUrl });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("uploadCoursePdf:", msg);
+    res.status(500).json({ error: "Failed to upload PDF.", detail: msg });
+  }
+}
+
+const COVER_IMAGE_TYPES: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
+
+/** POST /api/course-content/courses/:courseId/cover-image – admin upload course thumbnail. Body: { contentBase64: string, contentType?: "image/jpeg"|"image/png"|"image/webp" }. Returns coverImageUrl and updates course. */
+export async function uploadCourseCover(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId } = req.params;
+    const body = req.body as { contentBase64?: string; contentType?: string };
+    const contentBase64 = body.contentBase64;
+    if (!contentBase64) {
+      res.status(400).json({ error: "contentBase64 is required." });
+      return;
+    }
+    const contentType = (body.contentType ?? "image/jpeg").toLowerCase();
+    const ext = COVER_IMAGE_TYPES[contentType] ?? "jpg";
+    const coversDir = path.resolve(process.cwd(), "public", "course-covers");
+    if (!fs.existsSync(coversDir)) {
+      fs.mkdirSync(coversDir, { recursive: true });
+    }
+    const filename = `${courseId}.${ext}`;
+    const filePath = path.join(coversDir, filename);
+    const buf = Buffer.from(contentBase64, "base64");
+    if (buf.length > 5 * 1024 * 1024) {
+      res.status(400).json({ error: "Image too large (max 5MB)." });
+      return;
+    }
+    fs.writeFileSync(filePath, buf);
+    const coverImageUrl = `/course-covers/${filename}`;
+
+    const ref = courseDoc(courseId);
+    const snap = await ref.get();
+    if (snap.exists) {
+      const now = new Date().toISOString();
+      const current = snap.data() as Omit<CourseDoc, "id">;
+      await ref.set({ ...current, coverImageUrl, updatedAt: now });
+    }
+
+    res.status(201).json({ ok: true, coverImageUrl });
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("uploadCourseCover:", msg);
+    res.status(500).json({ error: "Failed to upload cover image.", detail: msg });
   }
 }
 
@@ -161,6 +249,78 @@ export async function getCourseTotalSteps(courseId: string): Promise<{ totalLess
     totalAssessments += assessmentsSnap.size;
   }
   return { totalLessons, totalAssessments };
+}
+
+/** GET /api/course-content/courses/:courseId/stats – total lessons and assessments (for learner completion %) */
+export async function getCourseStats(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId } = req.params;
+    const stats = await getCourseTotalSteps(courseId);
+    res.json(stats);
+  } catch (e) {
+    console.error("getCourseStats:", e);
+    res.status(500).json({ error: "Failed to get course stats." });
+  }
+}
+
+/** Normalize for matching: strip leading "N. ", lowercase, collapse spaces and punctuation. */
+function normalizeForMatch(s: string): string {
+  return s
+    .replace(/^[\d.]+\s*[-–—]?\s*/i, "")
+    .replace(/[\s\-+._]+/g, " ")
+    .toLowerCase()
+    .trim();
+}
+
+/** Collapse repeated characters so "asssement" and "assessment" both match. */
+function collapseRepeated(s: string): string {
+  return s.replace(/(.)\1+/g, "$1");
+}
+
+/** GET /api/course-content/courses/:courseId/resolve-pdf?title=... – find PDF in folder that best matches lesson title (fixes bad stored paths). */
+export async function resolveCoursePdf(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId } = req.params;
+    const title = (req.query.title as string)?.trim();
+    if (!ALLOWED_COURSE_IDS.includes(courseId) || !title) {
+      res.status(400).json({ error: "courseId and title are required." });
+      return;
+    }
+    const publicCoursesPath = path.resolve(process.cwd(), "public", "courses");
+    const dir = path.join(publicCoursesPath, courseId);
+    if (!fs.existsSync(dir)) {
+      res.status(404).json({ error: "Course folder not found." });
+      return;
+    }
+    const files = fs.readdirSync(dir).filter((f) => f.toLowerCase().endsWith(".pdf"));
+    const searchWords = normalizeForMatch(title).split(/\s+/).filter(Boolean);
+    if (searchWords.length === 0) {
+      res.status(400).json({ error: "Title too short to match." });
+      return;
+    }
+    let best: { filename: string; score: number } | null = null;
+    const normFile = (f: string) => collapseRepeated(normalizeForMatch(path.basename(f, ".pdf")));
+    for (const filename of files) {
+      const normalized = normFile(filename);
+      let score = 0;
+      for (const w of searchWords) {
+        if (normalized.includes(w)) score++;
+        else if (normalized.includes(collapseRepeated(w))) score++;
+      }
+      if (score > 0 && (best === null || score > best.score)) {
+        best = { filename, score };
+      }
+    }
+    if (!best) {
+      res.status(404).json({ error: "No matching PDF found." });
+      return;
+    }
+    const pdfUrl = `/courses/${courseId}/${encodeURIComponent(best.filename)}`;
+    res.json({ pdfUrl });
+  } catch (e) {
+    console.error("resolveCoursePdf:", e);
+    res.status(500).json({ error: "Failed to resolve PDF." });
+  }
 }
 
 /** GET /api/course-content/courses/:courseId/modules – list modules */
@@ -452,11 +612,13 @@ export async function createAssessment(req: Request, res: Response): Promise<voi
       createdAt: now,
       updatedAt: now,
     };
-    await assessmentDoc(courseId, moduleId, id).set(data);
+    const ref = assessmentDoc(courseId, moduleId, id);
+    await ref.set({ id, ...data });
     res.status(201).json({ id, ...data });
   } catch (e) {
-    console.error("createAssessment:", e);
-    res.status(500).json({ error: "Failed to create assessment." });
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("createAssessment:", msg, e);
+    res.status(500).json({ error: "Failed to create assessment.", detail: msg });
   }
 }
 
@@ -589,5 +751,24 @@ export async function submitAssessment(req: Request, res: Response): Promise<voi
   } catch (e) {
     console.error("submitAssessment:", e);
     res.status(500).json({ error: "Failed to submit quiz." });
+  }
+}
+
+/** GET /api/submissions?courseId= – list quiz submissions for a course (admin; for viewing learner marks). */
+export async function getSubmissions(req: Request, res: Response): Promise<void> {
+  try {
+    const { courseId } = req.query as { courseId?: string };
+    if (!courseId) {
+      res.status(400).json({ error: "courseId query is required." });
+      return;
+    }
+    const snap = await submissionsCollection().where("courseId", "==", courseId).get();
+    const submissions = snap.docs
+      .map((d) => ({ id: d.id, ...d.data() } as SubmissionDoc))
+      .sort((a, b) => (b.submittedAt ?? "").localeCompare(a.submittedAt ?? ""));
+    res.json({ submissions });
+  } catch (e) {
+    console.error("getSubmissions:", e);
+    res.status(500).json({ error: "Failed to list submissions." });
   }
 }

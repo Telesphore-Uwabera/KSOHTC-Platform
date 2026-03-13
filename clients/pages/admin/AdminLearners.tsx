@@ -1,8 +1,15 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Users, CheckCircle, Loader2, BookOpen, ChevronDown, ChevronRight } from "lucide-react";
-import type { UserPublic, EnrollmentDoc, EnrollmentStatus, CourseDoc } from "@shared/api";
+import { Users, CheckCircle, Loader2, BookOpen, ChevronDown, ChevronRight, Plus, Pencil, Trash2 } from "lucide-react";
+import type { UserPublic, EnrollmentDoc, EnrollmentStatus, CourseDoc, LearnerSector } from "@shared/api";
 import { getApiBase } from "@/lib/apiBase";
+
+const SECTOR_OPTIONS: { value: LearnerSector | ""; label: string }[] = [
+  { value: "", label: "—" },
+  { value: "construction", label: "Construction" },
+  { value: "industrial-safety", label: "Industrial Safety" },
+  { value: "mining", label: "Mining" },
+];
 
 type EnrollmentWithPercent = EnrollmentDoc & { completionPercent: number };
 
@@ -36,6 +43,45 @@ async function updateEnrollmentStatus(enrollmentId: string, status: EnrollmentSt
   if (!res.ok) throw new Error("Failed to update enrollment");
 }
 
+async function createLearner(body: { name: string; email: string; password: string; organization?: string; sector?: LearnerSector; approved?: boolean }): Promise<UserPublic> {
+  const res = await fetch(getApiBase() + "/api/users", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error((data as { error?: string }).error ?? "Failed to create learner");
+  }
+  const data = await res.json();
+  return (data as { user: UserPublic }).user;
+}
+
+async function updateLearner(
+  id: string,
+  body: { name?: string; email?: string; password?: string; organization?: string; sector?: LearnerSector | ""; approved?: boolean }
+): Promise<UserPublic> {
+  const res = await fetch(getApiBase() + `/api/users/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error((data as { error?: string }).error ?? "Failed to update learner");
+  }
+  const data = await res.json();
+  return (data as { user: UserPublic }).user;
+}
+
+async function deleteLearner(id: string): Promise<void> {
+  const res = await fetch(getApiBase() + `/api/users/${id}`, { method: "DELETE" });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error((data as { error?: string }).error ?? "Failed to delete learner");
+  }
+}
+
 const statusLabel: Record<string, string> = {
   not_approved: "Not approved",
   active: "Active",
@@ -51,6 +97,16 @@ const statusClass: Record<string, string> = {
 export default function AdminLearners() {
   const queryClient = useQueryClient();
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [editUser, setEditUser] = useState<UserPublic | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [formName, setFormName] = useState("");
+  const [formEmail, setFormEmail] = useState("");
+  const [formPassword, setFormPassword] = useState("");
+  const [formOrg, setFormOrg] = useState("");
+  const [formSector, setFormSector] = useState<LearnerSector | "">("");
+  const [formApproved, setFormApproved] = useState(false);
+  const [formError, setFormError] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["learners-summary"],
@@ -73,6 +129,56 @@ export default function AdminLearners() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["learners-summary"] }),
   });
 
+  const createMutation = useMutation({
+    mutationFn: createLearner,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["learners-summary"] });
+      setCreateOpen(false);
+      resetForm();
+    },
+    onError: (e: Error) => setFormError(e.message),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, body }: { id: string; body: Parameters<typeof updateLearner>[1] }) => updateLearner(id, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["learners-summary"] });
+      setEditUser(null);
+      resetForm();
+    },
+    onError: (e: Error) => setFormError(e.message),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteLearner,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["learners-summary"] });
+      setDeleteId(null);
+    },
+    onError: (e: Error) => setFormError(e.message),
+  });
+
+  function resetForm() {
+    setFormName("");
+    setFormEmail("");
+    setFormPassword("");
+    setFormOrg("");
+    setFormSector("");
+    setFormApproved(false);
+    setFormError("");
+  }
+
+  function openEdit(u: UserPublic) {
+    setEditUser(u);
+    setFormName(u.name);
+    setFormEmail(u.email);
+    setFormPassword("");
+    setFormOrg(u.organization ?? "");
+    setFormSector(u.sector ?? "");
+    setFormApproved(u.approved ?? false);
+    setFormError("");
+  }
+
   const courseTitleById = Object.fromEntries(courses.map((c) => [c.id, c.title]));
 
   const users = data?.users ?? [];
@@ -85,9 +191,23 @@ export default function AdminLearners() {
           <Users className="w-6 h-6" />
           Learners management
         </h1>
-        <p className="text-gray-600 text-sm sm:text-base">
-          Approve users so they can access courses. View enrollments, status, and completion per course.
+        <p className="text-gray-600 text-sm sm:text-base mb-4">
+          Approve users so they can access courses. View enrollments, status, and completion per course. Create, edit, or delete learners below.
         </p>
+        <div className="flex flex-wrap gap-2 mb-6">
+          <button
+            type="button"
+            onClick={() => {
+              resetForm();
+              setFormApproved(false);
+              setCreateOpen(true);
+            }}
+            className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary/90"
+          >
+            <Plus className="w-4 h-4" />
+            Create learner
+          </button>
+        </div>
 
         {isLoading ? (
           <p className="text-gray-500 text-sm mt-6 flex items-center gap-2">
@@ -96,117 +216,274 @@ export default function AdminLearners() {
         ) : users.length === 0 ? (
           <p className="text-gray-500 text-sm mt-6">No registered users yet.</p>
         ) : (
-          <ul className="space-y-2 mt-6">
-            {users.map((u) => {
-              const enrollments = enrollmentsByUserId[u.id] ?? [];
-              const isExpanded = expandedId === u.id;
-              return (
-                <li
-                  key={u.id}
-                  className="border border-gray-200 rounded-xl overflow-hidden bg-gray-50/50"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-2 p-4">
-                    <button
-                      type="button"
-                      onClick={() => setExpandedId(isExpanded ? null : u.id)}
-                      className="flex items-center gap-2 text-left min-w-0 flex-1"
-                    >
-                      {enrollments.length > 0 ? (
-                        isExpanded ? (
-                          <ChevronDown className="w-4 h-4 text-gray-500 shrink-0" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4 text-gray-500 shrink-0" />
-                        )
-                      ) : (
-                        <span className="w-4 shrink-0" />
-                      )}
-                      <div className="min-w-0">
-                        <p className="font-medium text-gray-900">{u.name}</p>
-                        <p className="text-sm text-gray-600 truncate">
-                          {u.email}
-                          {u.organization ? ` · ${u.organization}` : ""}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          {u.approved ? (
-                            <span className="text-green-600">Approved</span>
-                          ) : (
-                            <span className="text-amber-600">Pending approval</span>
-                          )}
-                          {enrollments.length > 0 && (
-                            <span className="ml-2">
-                              · {enrollments.length} course{enrollments.length !== 1 ? "s" : ""}
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    </button>
-                    {!u.approved && (
-                      <button
-                        type="button"
-                        onClick={() => approveMutation.mutate(u.id)}
-                        disabled={approveMutation.isPending}
-                        className="inline-flex items-center gap-1.5 bg-primary text-white px-3 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 disabled:opacity-60 shrink-0"
-                      >
-                        {approveMutation.isPending ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <>
-                            <CheckCircle className="w-4 h-4" />
-                            Approve
-                          </>
-                        )}
-                      </button>
-                    )}
-                  </div>
-                  {isExpanded && enrollments.length > 0 && (
-                    <div className="border-t border-gray-200 bg-white px-4 py-3">
-                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">
-                        Enrollments
-                      </p>
-                      <ul className="space-y-2">
-                        {enrollments.map((en) => (
-                          <li
-                            key={en.id}
-                            className="flex flex-wrap items-center justify-between gap-2 py-2 px-3 rounded-lg bg-gray-50 border border-gray-100"
+          <div className="mt-6 overflow-x-auto rounded-xl border border-gray-200">
+            <table className="w-full min-w-[640px] text-left">
+              <thead>
+                <tr className="border-b border-gray-200 bg-gray-50/80">
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Name</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Email</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Organization</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Sector</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">Courses</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((u) => {
+                  const enrollments = enrollmentsByUserId[u.id] ?? [];
+                  const isExpanded = expandedId === u.id;
+                  return (
+                    <Fragment key={u.id}>
+                      <tr className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
+                        <td className="px-4 py-3">
+                          <button
+                            type="button"
+                            onClick={() => setExpandedId(isExpanded ? null : u.id)}
+                            className="flex items-center gap-1.5 text-left font-medium text-gray-900 hover:text-primary"
                           >
-                            <div className="flex items-center gap-2 min-w-0">
-                              <BookOpen className="w-4 h-4 text-primary shrink-0" />
-                              <span className="font-medium text-gray-900 truncate">
-                                {courseTitleById[en.courseId] ?? en.courseId}
-                              </span>
-                              <span
-                                className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${statusClass[en.status ?? "active"] ?? statusClass.active}`}
+                            {enrollments.length > 0 ? (
+                              isExpanded ? (
+                                <ChevronDown className="w-4 h-4 text-gray-500 shrink-0" />
+                              ) : (
+                                <ChevronRight className="w-4 h-4 text-gray-500 shrink-0" />
+                              )
+                            ) : (
+                              <span className="w-4 shrink-0" />
+                            )}
+                            {u.name}
+                          </button>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{u.email}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{u.organization ?? "—"}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {SECTOR_OPTIONS.find((o) => o.value === u.sector)?.label ?? "—"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {u.approved ? (
+                            <span className="text-green-600 font-medium">Approved</span>
+                          ) : (
+                            <span className="text-amber-600 font-medium">Pending</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {enrollments.length === 0
+                            ? "—"
+                            : `${enrollments.length} course${enrollments.length !== 1 ? "s" : ""}`}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            {!u.approved && (
+                              <button
+                                type="button"
+                                onClick={() => approveMutation.mutate(u.id)}
+                                disabled={approveMutation.isPending}
+                                className="inline-flex items-center gap-1.5 bg-primary text-white px-3 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 disabled:opacity-60"
                               >
-                                {statusLabel[en.status ?? "active"] ?? "Active"}
-                              </span>
-                              <span className="text-sm text-gray-600">
-                                {en.completionPercent}% complete
-                              </span>
-                            </div>
-                            <select
-                              value={en.status ?? "active"}
-                              onChange={(e) =>
-                                updateStatusMutation.mutate({
-                                  enrollmentId: en.id,
-                                  status: e.target.value as EnrollmentStatus,
-                                })
-                              }
-                              disabled={updateStatusMutation.isPending}
-                              className="text-sm rounded-lg border border-gray-200 px-2 py-1.5 bg-white"
+                                {approveMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <><CheckCircle className="w-4 h-4" /> Approve</>}
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => openEdit(u)}
+                              className="p-2 rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100"
+                              title="Edit learner"
                             >
-                              <option value="active">Active</option>
-                              <option value="completed">Completed</option>
-                              <option value="not_approved">Not approved</option>
-                            </select>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
+                              <Pencil className="w-4 h-4" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setDeleteId(u.id)}
+                              className="p-2 rounded-lg border border-red-200 text-red-600 hover:bg-red-50"
+                              title="Delete learner"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      {isExpanded && enrollments.length > 0 && (
+                        <tr className="bg-gray-50/80">
+                          <td colSpan={7} className="px-4 py-3">
+                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Enrollments</p>
+                            <div className="flex flex-col gap-2">
+                              {enrollments.map((en) => (
+                                <div
+                                  key={en.id}
+                                  className="flex flex-wrap items-center justify-between gap-2 py-2 px-3 rounded-lg bg-white border border-gray-100"
+                                >
+                                  <div className="flex items-center gap-2 min-w-0">
+                                    <BookOpen className="w-4 h-4 text-primary shrink-0" />
+                                    <span className="font-medium text-gray-900 truncate">
+                                      {courseTitleById[en.courseId] ?? en.courseId}
+                                    </span>
+                                    <span
+                                      className={`text-xs px-2 py-0.5 rounded-full shrink-0 ${statusClass[en.status ?? "active"] ?? statusClass.active}`}
+                                    >
+                                      {statusLabel[en.status ?? "active"] ?? "Active"}
+                                    </span>
+                                    <span className="text-sm text-gray-600">{en.completionPercent}% complete</span>
+                                  </div>
+                                  <select
+                                    value={en.status ?? "active"}
+                                    onChange={(e) =>
+                                      updateStatusMutation.mutate({
+                                        enrollmentId: en.id,
+                                        status: e.target.value as EnrollmentStatus,
+                                      })
+                                    }
+                                    disabled={updateStatusMutation.isPending}
+                                    className="text-sm rounded-lg border border-gray-200 px-2 py-1.5 bg-white"
+                                  >
+                                    <option value="active">Active</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="not_approved">Not approved</option>
+                                  </select>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Create learner modal */}
+        {createOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setCreateOpen(false)}>
+            <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+              <h2 className="text-xl font-bold text-primary">Create learner</h2>
+              {formError && <p className="text-sm text-red-600">{formError}</p>}
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-gray-700">Name *</label>
+                <input type="text" value={formName} onChange={(e) => setFormName(e.target.value)} required className="w-full px-3 py-2 rounded-lg border border-gray-200" />
+                <label className="block text-sm font-medium text-gray-700">Email *</label>
+                <input type="email" value={formEmail} onChange={(e) => setFormEmail(e.target.value)} required className="w-full px-3 py-2 rounded-lg border border-gray-200" />
+                <label className="block text-sm font-medium text-gray-700">Password *</label>
+                <input type="password" value={formPassword} onChange={(e) => setFormPassword(e.target.value)} required className="w-full px-3 py-2 rounded-lg border border-gray-200" />
+                <label className="block text-sm font-medium text-gray-700">Organization</label>
+                <input type="text" value={formOrg} onChange={(e) => setFormOrg(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-200" />
+                <label className="block text-sm font-medium text-gray-700">Sector</label>
+                <select value={formSector} onChange={(e) => setFormSector(e.target.value as LearnerSector | "")} className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white">
+                  {SECTOR_OPTIONS.map((o) => (
+                    <option key={o.value || "none"} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={formApproved} onChange={(e) => setFormApproved(e.target.checked)} />
+                  <span className="text-sm text-gray-700">Approved</span>
+                </label>
+              </div>
+              <div className="flex gap-2 pt-2">
+                <button type="button" onClick={() => setCreateOpen(false)} className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">Cancel</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!formName.trim() || !formEmail.trim() || !formPassword) {
+                      setFormError("Name, email, and password are required.");
+                      return;
+                    }
+                    createMutation.mutate({
+                      name: formName.trim(),
+                      email: formEmail.trim(),
+                      password: formPassword,
+                      organization: formOrg.trim() || undefined,
+                      sector: formSector || undefined,
+                      approved: formApproved,
+                    });
+                  }}
+                  disabled={createMutation.isPending}
+                  className="px-4 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 disabled:opacity-60"
+                >
+                  {createMutation.isPending ? "Creating…" : "Create"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit learner modal */}
+        {editUser && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setEditUser(null)}>
+            <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+              <h2 className="text-xl font-bold text-primary">Edit learner</h2>
+              {formError && <p className="text-sm text-red-600">{formError}</p>}
+              <div className="space-y-3">
+                <label className="block text-sm font-medium text-gray-700">Name *</label>
+                <input type="text" value={formName} onChange={(e) => setFormName(e.target.value)} required className="w-full px-3 py-2 rounded-lg border border-gray-200" />
+                <label className="block text-sm font-medium text-gray-700">Email *</label>
+                <input type="email" value={formEmail} onChange={(e) => setFormEmail(e.target.value)} required className="w-full px-3 py-2 rounded-lg border border-gray-200" />
+                <label className="block text-sm font-medium text-gray-700">New password (leave blank to keep)</label>
+                <input type="password" value={formPassword} onChange={(e) => setFormPassword(e.target.value)} placeholder="Optional" className="w-full px-3 py-2 rounded-lg border border-gray-200" />
+                <label className="block text-sm font-medium text-gray-700">Organization</label>
+                <input type="text" value={formOrg} onChange={(e) => setFormOrg(e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-200" />
+                <label className="block text-sm font-medium text-gray-700">Sector</label>
+                <select value={formSector} onChange={(e) => setFormSector(e.target.value as LearnerSector | "")} className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white">
+                  {SECTOR_OPTIONS.map((o) => (
+                    <option key={o.value || "none"} value={o.value}>{o.label}</option>
+                  ))}
+                </select>
+                <label className="flex items-center gap-2">
+                  <input type="checkbox" checked={formApproved} onChange={(e) => setFormApproved(e.target.checked)} />
+                  <span className="text-sm text-gray-700">Approved</span>
+                </label>
+              </div>
+              <div className="flex gap-2 pt-2">
+                <button type="button" onClick={() => setEditUser(null)} className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">Cancel</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!formName.trim() || !formEmail.trim()) {
+                      setFormError("Name and email are required.");
+                      return;
+                    }
+                    updateMutation.mutate({
+                      id: editUser.id,
+                      body: {
+                        name: formName.trim(),
+                        email: formEmail.trim(),
+                        password: formPassword || undefined,
+                        organization: formOrg.trim() || undefined,
+                        sector: formSector || undefined,
+                        approved: formApproved,
+                      },
+                    });
+                  }}
+                  disabled={updateMutation.isPending}
+                  className="px-4 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-primary/90 disabled:opacity-60"
+                >
+                  {updateMutation.isPending ? "Saving…" : "Save"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete confirm */}
+        {deleteId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setDeleteId(null)}>
+            <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 space-y-4" onClick={(e) => e.stopPropagation()}>
+              <h2 className="text-lg font-bold text-gray-900">Delete learner?</h2>
+              <p className="text-sm text-gray-600">This will remove the learner and their enrollments, progress, and quiz submissions. This cannot be undone.</p>
+              {formError && <p className="text-sm text-red-600">{formError}</p>}
+              <div className="flex gap-2 pt-2">
+                <button type="button" onClick={() => setDeleteId(null)} className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">Cancel</button>
+                <button
+                  type="button"
+                  onClick={() => deleteMutation.mutate(deleteId)}
+                  disabled={deleteMutation.isPending}
+                  className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold hover:bg-red-700 disabled:opacity-60"
+                >
+                  {deleteMutation.isPending ? "Deleting…" : "Delete"}
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>

@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Pencil,
   Trash2,
+  ImagePlus,
 } from "lucide-react";
 import type { CourseDoc, ModuleDoc, LessonDoc, AssessmentDoc } from "@shared/api";
 
@@ -46,6 +47,159 @@ async function fetchAssessments(courseId: string, moduleId: string): Promise<Ass
   if (!res.ok) return [];
   const data = await res.json();
   return (data as { assessments: AssessmentDoc[] }).assessments ?? [];
+}
+
+function UploadPdfBlock({
+  courseId,
+  getCourseContentApi,
+  onSuccess,
+}: {
+  courseId: string;
+  getCourseContentApi: () => string;
+  onSuccess: () => void;
+}) {
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  async function handleUpload() {
+    if (!file || !file.name.toLowerCase().endsWith(".pdf")) {
+      setError("Please select a PDF file.");
+      return;
+    }
+    setError("");
+    setSuccess("");
+    setUploading(true);
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => {
+          const result = r.result as string;
+          const b64 = result.split(",")[1];
+          if (b64) resolve(b64); else reject(new Error("Failed to read file"));
+        };
+        r.onerror = () => reject(new Error("Failed to read file"));
+        r.readAsDataURL(file);
+      });
+      const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/upload-pdf`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ filename: file.name, contentBase64: base64 }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error((data as { error?: string }).error ?? "Upload failed");
+      setSuccess(`Uploaded ${(data as { filename?: string }).filename ?? file.name}. It will appear in course materials.`);
+      setFile(null);
+      onSuccess();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-wrap items-end gap-2">
+      <input
+        type="file"
+        accept=".pdf"
+        onChange={(e) => { setFile(e.target.files?.[0] ?? null); setError(""); setSuccess(""); }}
+        className="text-sm text-gray-600 file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-primary file:text-white file:font-semibold file:cursor-pointer"
+      />
+      <button
+        type="button"
+        onClick={handleUpload}
+        disabled={!file || uploading}
+        className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-primary/90 disabled:opacity-50"
+      >
+        {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
+        {uploading ? "Uploading…" : "Upload PDF"}
+      </button>
+      {error && <p className="text-red-600 text-sm w-full">{error}</p>}
+      {success && <p className="text-green-700 text-sm w-full">{success}</p>}
+    </div>
+  );
+}
+
+function UploadCoverBlock({
+  courseId,
+  getCourseContentApi,
+  onSuccess,
+  currentCoverUrl,
+}: {
+  courseId: string;
+  getCourseContentApi: () => string;
+  onSuccess: () => void;
+  currentCoverUrl?: string;
+}) {
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  async function handleUpload() {
+    if (!file || !file.type.startsWith("image/")) {
+      setError("Please select an image (JPEG, PNG, or WebP).");
+      return;
+    }
+    const contentType = (["image/jpeg", "image/png", "image/webp"].includes(file.type) ? file.type : "image/jpeg") as "image/jpeg" | "image/png" | "image/webp";
+    setError("");
+    setSuccess("");
+    setUploading(true);
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => {
+          const result = r.result as string;
+          const b64 = result.split(",")[1];
+          if (b64) resolve(b64);
+          else reject(new Error("Failed to read file"));
+        };
+        r.onerror = () => reject(new Error("Failed to read file"));
+        r.readAsDataURL(file);
+      });
+      const res = await fetch(`${getCourseContentApi()}/courses/${courseId}/cover-image`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contentBase64: base64, contentType }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error((data as { error?: string }).error ?? "Upload failed");
+      setSuccess("Thumbnail updated. It will show on the course card.");
+      setFile(null);
+      onSuccess();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-wrap items-end gap-2">
+      {currentCoverUrl && (
+        <img src={currentCoverUrl} alt="Course cover" className="h-12 w-auto rounded-lg border border-gray-200 object-cover" />
+      )}
+      <input
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        onChange={(e) => { setFile(e.target.files?.[0] ?? null); setError(""); setSuccess(""); }}
+        className="text-sm text-gray-600 file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-primary file:text-white file:font-semibold file:cursor-pointer"
+      />
+      <button
+        type="button"
+        onClick={handleUpload}
+        disabled={!file || uploading}
+        className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-primary/90 disabled:opacity-50"
+      >
+        {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
+        {uploading ? "Uploading…" : "Upload thumbnail"}
+      </button>
+      {error && <p className="text-red-600 text-sm w-full">{error}</p>}
+      {success && <p className="text-green-700 text-sm w-full">{success}</p>}
+    </div>
+  );
 }
 
 export default function AdminCourseContentDetail() {
@@ -163,7 +317,26 @@ export default function AdminCourseContentDetail() {
           <BookOpen className="w-6 h-6" />
           {course.title}
         </h1>
-        <p className="text-gray-600 text-sm mb-6">{course.sector} · {course.duration}</p>
+        <p className="text-gray-600 text-sm mb-4">{course.sector} · {course.duration}</p>
+
+        <div className="mb-6 p-4 rounded-xl border border-primary/20 bg-primary/5">
+          <p className="text-sm font-medium text-gray-900 mb-2">Course thumbnail (card image)</p>
+          <p className="text-xs text-gray-600 mb-2">Shown on the Courses page as the card image. JPEG, PNG, or WebP; max 5MB.</p>
+          <UploadCoverBlock
+            courseId={courseId}
+            getCourseContentApi={getCourseContentApi}
+            onSuccess={() => {
+              queryClient.invalidateQueries({ queryKey: ["course-content", "course", courseId] });
+              queryClient.invalidateQueries({ queryKey: ["course-content", "courses"] });
+            }}
+            currentCoverUrl={course.coverImageUrl}
+          />
+        </div>
+        <div className="mb-6 p-4 rounded-xl border border-primary/20 bg-primary/5">
+          <p className="text-sm font-medium text-gray-900 mb-2">Upload PDF to this course</p>
+          <p className="text-xs text-gray-600 mb-2">The file will be saved to <code className="bg-white px-1 rounded">public/courses/{courseId}/</code> and appear in course materials.</p>
+          <UploadPdfBlock courseId={courseId} getCourseContentApi={getCourseContentApi} onSuccess={() => queryClient.invalidateQueries({ queryKey: ["course-content", "lessons-from-public", courseId] })} />
+        </div>
 
         {modulesLoading ? (
           <p className="text-gray-500 text-sm">Loading modules…</p>
@@ -515,7 +688,8 @@ function AddAssessmentForm({
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error((data as { error?: string }).error ?? "Failed to create assessment");
+        const detail = (data as { detail?: string }).detail;
+        throw new Error(detail ?? (data as { error?: string }).error ?? "Failed to create assessment");
       }
       onSuccess();
     } catch (err) {

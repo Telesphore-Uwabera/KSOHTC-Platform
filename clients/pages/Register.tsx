@@ -6,7 +6,13 @@ import { User, Building2, Lock, ShieldCheck, Loader2 } from "lucide-react";
 import { setStoredUser } from "../lib/auth";
 import { getApiBase } from "@/lib/apiBase";
 
-const INDUSTRIES = ["Construction", "Industrial", "Mining", "Other"];
+/** Value sent to API: determines which courses the learner will see (sector course + safety-management). */
+const SECTOR_OPTIONS: { value: "" | "construction" | "industrial-safety" | "mining"; label: string }[] = [
+  { value: "", label: "Select your sector (or Other to see all courses)" },
+  { value: "construction", label: "Construction" },
+  { value: "industrial-safety", label: "Industrial Safety" },
+  { value: "mining", label: "Mining" },
+];
 const COUNTRIES = ["Rwanda", "Uganda", "Kenya", "Tanzania", "Burundi", "Other"];
 
 export default function Register() {
@@ -14,6 +20,7 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [organization, setOrganization] = useState("");
+  const [sector, setSector] = useState<"" | "construction" | "industrial-safety" | "mining">("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
@@ -35,7 +42,13 @@ export default function Register() {
       const res = await fetch(getApiBase() + "/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, name, organization: organization || undefined }),
+        body: JSON.stringify({
+          email,
+          password,
+          name,
+          organization: organization || undefined,
+          sector: sector || undefined,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -174,18 +187,24 @@ export default function Register() {
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <label htmlFor="industry" className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label htmlFor="sector" className="block text-sm font-medium text-gray-700 mb-1.5">
                         Industry / Sector of interest
                       </label>
                       <select
-                        id="industry"
+                        id="sector"
+                        value={sector}
+                        onChange={(e) => setSector(e.target.value as "" | "construction" | "industrial-safety" | "mining")}
                         className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 text-gray-900 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all bg-white"
                       >
-                        <option value="">Select industry</option>
-                        {INDUSTRIES.map((i) => (
-                          <option key={i} value={i}>{i}</option>
+                        {SECTOR_OPTIONS.map((opt) => (
+                          <option key={opt.value || "other"} value={opt.value}>
+                            {opt.label}
+                          </option>
                         ))}
                       </select>
+                      <p className="text-xs text-gray-500 mt-1">
+                        You will see courses for your sector plus Safety Management. Leave as Other to see all.
+                      </p>
                     </div>
                   </div>
                 </div>

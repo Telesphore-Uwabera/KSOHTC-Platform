@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { BookOpen, ChevronRight, FolderOpen, Loader2, Zap } from "lucide-react";
+import { BookOpen, ChevronRight, FolderOpen, Loader2, Zap, FileX2 } from "lucide-react";
 import type { CourseDoc } from "@shared/api";
 import { getApiBase } from "@/lib/apiBase";
+
+const SEED_SECRET_STORAGE_KEY = "admin_seed_secret";
+
+function getStoredSeedSecret(): string {
+  if (typeof localStorage === "undefined") return "";
+  return localStorage.getItem(SEED_SECRET_STORAGE_KEY) ?? "";
+}
 
 async function fetchCourseContent(): Promise<CourseDoc[]> {
   const res = await fetch(getApiBase() + "/api/course-content/courses");
@@ -12,9 +19,24 @@ async function fetchCourseContent(): Promise<CourseDoc[]> {
   return (data as { courses: CourseDoc[] }).courses ?? [];
 }
 
+interface CourseFromPublic {
+  id: string;
+  title: string;
+  sector: string;
+  duration: string;
+  lessonCount?: number;
+}
+
+async function fetchCoursesFromPublic(): Promise<CourseFromPublic[]> {
+  const res = await fetch(getApiBase() + "/api/course-content/courses-from-public");
+  if (!res.ok) return [];
+  const data = await res.json();
+  return (data as { courses: CourseFromPublic[] }).courses ?? [];
+}
+
 export default function AdminCourseContent() {
   const queryClient = useQueryClient();
-  const [seedSecret, setSeedSecret] = useState("");
+  const [seedSecret, setSeedSecret] = useState(() => getStoredSeedSecret());
   const [seedError, setSeedError] = useState("");
   const [seedSuccess, setSeedSuccess] = useState("");
 
@@ -23,7 +45,57 @@ export default function AdminCourseContent() {
     queryFn: fetchCourseContent,
   });
 
+  const { data: coursesFromPublic = [] } = useQuery({
+    queryKey: ["course-content", "courses-from-public"],
+    queryFn: fetchCoursesFromPublic,
+  });
+
+  const firestoreIds = new Set(courses.map((c) => c.id));
+  const missingFromPublic = coursesFromPublic.filter((p) => !firestoreIds.has(p.id));
+
   const [seeding, setSeeding] = useState(false);
+  const [cleaningPdfs, setCleaningPdfs] = useState(false);
+  const [cleanPdfsResult, setCleanPdfsResult] = useState<{
+    deleted: number;
+    renamed: number;
+    details: string[];
+    numberRenamed?: number;
+    numberDetails?: string[];
+    dryRun: boolean;
+  } | null>(null);
+  const [cleanPdfsError, setCleanPdfsError] = useState("");
+
+  async function runCleanPdfs(dryRun: boolean) {
+    setCleanPdfsError("");
+    setCleanPdfsResult(null);
+    setCleaningPdfs(true);
+    try {
+      const res = await fetch(getApiBase() + "/api/admin/clean-course-pdfs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dryRun, seedSecret: seedSecret || undefined }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setCleanPdfsError((data as { error?: string }).error ?? "Clean failed.");
+        return;
+      }
+      setCleanPdfsResult({
+        deleted: (data as { deleted?: number }).deleted ?? 0,
+        renamed: (data as { renamed?: number }).renamed ?? 0,
+        details: (data as { details?: string[] }).details ?? [],
+        numberRenamed: (data as { numberRenamed?: number }).numberRenamed,
+        numberDetails: (data as { numberDetails?: string[] }).numberDetails,
+        dryRun: (data as { dryRun?: boolean }).dryRun ?? false,
+      });
+      queryClient.invalidateQueries({ queryKey: ["course-content", "courses-from-public"] });
+    } catch (e) {
+      setCleanPdfsError(e instanceof Error ? e.message : "Clean failed.");
+    } finally {
+      setCleaningPdfs(false);
+    }
+  }
+
   async function runSeed() {
     setSeedError("");
     setSeedSuccess("");
@@ -40,8 +112,16 @@ export default function AdminCourseContent() {
         return;
       }
       const created = (data as { created?: string[] }).created ?? [];
-      setSeedSuccess(created.length ? `Created ${created.length} course(s): ${created.join(", ")}. Refresh to see them below.` : "No new courses (all already exist).");
+      setSeedSuccess(created.length ? `Created ${created.length} course(s): ${created.join(", ")}. They appear below.` : "No new courses (all already exist).");
+      if (seedSecret.trim()) {
+        try {
+          localStorage.setItem(SEED_SECRET_STORAGE_KEY, seedSecret.trim());
+        } catch {
+          // ignore quota or private mode
+        }
+      }
       queryClient.invalidateQueries({ queryKey: ["course-content", "courses"] });
+      queryClient.invalidateQueries({ queryKey: ["course-content", "courses-from-public"] });
     } catch (e) {
       setSeedError(e instanceof Error ? e.message : "Seed failed.");
     } finally {
@@ -100,12 +180,111 @@ export default function AdminCourseContent() {
                   {seeding ? "Seeding…" : "Run seed"}
                 </button>
               </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Secret is saved in this browser after a successful run so you can just click Run next time.
+              </p>
               {seedError && <p className="text-sm text-red-600 mt-2">{seedError}</p>}
               {seedSuccess && <p className="text-sm text-green-700 mt-2">{seedSuccess}</p>}
             </div>
           </div>
         ) : (
-          <ul className="space-y-2">
+          <>
+            <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-5 mb-6">
+              <p className="font-medium text-gray-900 mb-1 flex items-center gap-2">
+                <FileX2 className="w-4 h-4 text-primary" />
+                Clean duplicate PDFs
+              </p>
+              <p className="text-sm text-gray-600 mb-3">
+                Removes duplicate &quot;Copy&quot; PDFs in <code className="bg-white px-1 rounded text-xs">public/courses</code> and renames to clean filenames.
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => runCleanPdfs(true)}
+                  disabled={cleaningPdfs}
+                  className="inline-flex items-center gap-2 border border-primary text-primary px-4 py-2 rounded-lg font-semibold hover:bg-primary/5 disabled:opacity-60"
+                >
+                  {cleaningPdfs ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileX2 className="w-4 h-4" />}
+                  Preview (dry run)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => runCleanPdfs(false)}
+                  disabled={cleaningPdfs}
+                  className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 disabled:opacity-60"
+                >
+                  {cleaningPdfs ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileX2 className="w-4 h-4" />}
+                  Clean duplicate PDFs
+                </button>
+              </div>
+              {cleanPdfsError && <p className="text-sm text-red-600 mt-2">{cleanPdfsError}</p>}
+              {cleanPdfsResult && (
+                <div className="mt-3 text-sm text-gray-700">
+                  <p className="font-medium">
+                    {cleanPdfsResult.dryRun ? "Preview: " : ""}
+                    Clean: Renamed {cleanPdfsResult.renamed}, Deleted {cleanPdfsResult.deleted}
+                    {(cleanPdfsResult.numberRenamed ?? 0) > 0 && (
+                      <> · Numbered: {cleanPdfsResult.numberRenamed} unnumbered PDFs (24, 25, …)</>
+                    )}
+                  </p>
+                  {cleanPdfsResult.details.length > 0 && (
+                    <ul className="mt-1 list-disc list-inside text-gray-600">
+                      {cleanPdfsResult.details.slice(0, 20).map((d, i) => (
+                        <li key={i}>{d}</li>
+                      ))}
+                      {cleanPdfsResult.details.length > 20 && (
+                        <li>… and {cleanPdfsResult.details.length - 20} more</li>
+                      )}
+                    </ul>
+                  )}
+                  {(cleanPdfsResult.numberDetails?.length ?? 0) > 0 && (
+                    <ul className="mt-1 list-disc list-inside text-gray-600">
+                      {cleanPdfsResult.numberDetails!.slice(0, 15).map((d, i) => (
+                        <li key={`n-${i}`}>{d}</li>
+                      ))}
+                      {cleanPdfsResult.numberDetails!.length > 15 && (
+                        <li>… and {cleanPdfsResult.numberDetails!.length - 15} more</li>
+                      )}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
+            {missingFromPublic.length > 0 && (
+              <div className="rounded-xl border border-primary/30 bg-primary/5 p-5 mb-6">
+                <p className="font-medium text-gray-900 mb-1">
+                  {missingFromPublic.length} more course{missingFromPublic.length !== 1 ? "s" : ""} available
+                </p>
+                <p className="text-sm text-gray-600 mb-3">
+                  From <code className="bg-white/80 px-1 rounded text-xs">public/courses</code>:{" "}
+                  {missingFromPublic.map((c) => c.title).join(", ")}. Add them to Firestore so they appear here and on the Courses page.
+                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    type="password"
+                    value={seedSecret}
+                    onChange={(e) => setSeedSecret(e.target.value)}
+                    placeholder="Seed secret (if required)"
+                    className="w-full max-w-xs px-3 py-2 rounded-lg border border-gray-200"
+                  />
+                  <button
+                    type="button"
+                    onClick={runSeed}
+                    disabled={seeding}
+                    className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 disabled:opacity-60"
+                  >
+                    {seeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+                    {seeding ? "Adding…" : "Add missing courses"}
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  Secret is saved in this browser after a successful run so you can just click Run next time.
+                </p>
+                {seedError && <p className="text-sm text-red-600 mt-2">{seedError}</p>}
+                {seedSuccess && <p className="text-sm text-green-700 mt-2">{seedSuccess}</p>}
+              </div>
+            )}
+            <ul className="space-y-2">
             {courses.map((c) => (
               <li key={c.id}>
                 <Link
@@ -126,6 +305,7 @@ export default function AdminCourseContent() {
               </li>
             ))}
           </ul>
+          </>
         )}
       </div>
     </div>

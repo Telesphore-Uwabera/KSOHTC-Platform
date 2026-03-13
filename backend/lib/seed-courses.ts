@@ -30,6 +30,7 @@ function lessonTitleFromFilename(filename: string): string {
     .replace(/\s*[-+]\s*/g, " ")
     .replace(/\s*\([^)]*\)\s*/g, "")
     .replace(/\s*-\s*Copy(\s*-\s*Copy)*\s*$/i, "")
+    .replace(/\s+Copy(\s*Copy)*\s*$/gi, "")
     .replace(/\s+/g, " ")
     .trim();
 }

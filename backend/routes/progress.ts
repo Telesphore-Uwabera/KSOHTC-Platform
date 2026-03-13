@@ -7,36 +7,45 @@ function progressId(userId: string, courseId: string): string {
   return [userId, courseId].join("_");
 }
 
-/** GET /api/progress?userId=&courseId= – get progress for a user in a course */
+/** GET /api/progress?userId=&courseId= – get progress for a user in a course (or all courses if courseId omitted) */
 export async function getProgress(req: Request, res: Response): Promise<void> {
   try {
     const { userId, courseId } = req.query as { userId?: string; courseId?: string };
-    if (!userId || !courseId) {
-      res.status(400).json({ error: "userId and courseId are required." });
+    if (!userId) {
+      res.status(400).json({ error: "userId is required." });
       return;
     }
-    const id = progressId(userId, courseId);
-    const doc = await progressCollection().doc(id).get();
-    if (!doc.exists) {
+    if (courseId) {
+      const id = progressId(userId, courseId);
+      const doc = await progressCollection().doc(id).get();
+      if (!doc.exists) {
+        res.json({
+          progress: {
+            id,
+            userId,
+            courseId,
+            completedLessonIds: [],
+            completedAssessmentIds: [],
+            updatedAt: new Date().toISOString(),
+          },
+        });
+        return;
+      }
+      const data = doc.data() as ProgressDoc;
       res.json({
         progress: {
-          id,
-          userId,
-          courseId,
-          completedLessonIds: [],
-          completedAssessmentIds: [],
-          updatedAt: new Date().toISOString(),
+          ...data,
+          completedAssessmentIds: data.completedAssessmentIds ?? [],
         },
       });
       return;
     }
-    const data = doc.data() as ProgressDoc;
-    res.json({
-      progress: {
-        ...data,
-        completedAssessmentIds: data.completedAssessmentIds ?? [],
-      },
+    const snapshot = await progressCollection().where("userId", "==", userId).get();
+    const progressList = snapshot.docs.map((d) => {
+      const data = d.data() as ProgressDoc;
+      return { ...data, completedAssessmentIds: data.completedAssessmentIds ?? [] };
     });
+    res.json({ progress: progressList });
   } catch (e) {
     console.error("getProgress:", e);
     res.status(500).json({ error: "Failed to get progress." });

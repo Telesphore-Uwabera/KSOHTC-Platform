@@ -8,14 +8,28 @@ import express, { type Request, type Response, type NextFunction } from "express
 import cors from "cors";
 import { handleDemo } from "./routes/demo";
 import { getTestimonials, postTestimonial } from "./routes/testimonials";
-import { postRegister, postLogin, getUsers, getLearnersSummary, patchUserApprove } from "./routes/users";
+import {
+  postRegister,
+  postLogin,
+  getUsers,
+  getUser,
+  getLearnersSummary,
+  patchUserApprove,
+  postUser,
+  putUser,
+  deleteUser,
+} from "./routes/users";
 import { getCourses, getCourseQuiz, putCourseQuiz, deleteCourseQuiz } from "./routes/courses";
 import { getCourseUsage } from "./routes/analytics";
 import {
   listCourses as listCourseContent,
   getCoursesFromPublic,
   getLessonsFromPublic,
+  uploadCoursePdf,
+  uploadCourseCover,
   getCourse,
+  getCourseStats,
+  resolveCoursePdf,
   createCourse,
   updateCourse,
   listModules,
@@ -33,10 +47,11 @@ import {
   deleteAssessment,
   submitAssessment,
   getModuleItems,
+  getSubmissions,
 } from "./routes/course-content";
 import { postEnrollment, getEnrollments, patchEnrollment } from "./routes/enrollments";
 import { getProgress, patchProgress } from "./routes/progress";
-import { postSeedCourses } from "./routes/seed";
+import { postSeedCourses, postCleanCoursePdfs } from "./routes/seed";
 import { getDb, usersCollection } from "./lib/firestore";
 
 /** Log each request and response to the terminal (method, path, status, duration) */
@@ -109,12 +124,16 @@ export function createServer(options?: { apiOnly?: boolean }) {
   app.get("/api/testimonials", getTestimonials);
   app.post("/api/testimonials", postTestimonial);
 
-  // Users: register, login, list (admin), approve (admin)
+  // Users: register, login, list (admin), approve (admin), CRUD (admin)
   app.post("/api/register", postRegister);
   app.post("/api/login", postLogin);
   app.get("/api/users", getUsers);
   app.get("/api/users/learners-summary", getLearnersSummary);
+  app.get("/api/users/:id", getUser);
   app.patch("/api/users/:id/approve", patchUserApprove);
+  app.post("/api/users", postUser);
+  app.put("/api/users/:id", putUser);
+  app.delete("/api/users/:id", deleteUser);
 
   // Courses (list) and per-course quiz (get, create/update, delete)
   app.get("/api/courses", getCourses);
@@ -129,7 +148,11 @@ export function createServer(options?: { apiOnly?: boolean }) {
   app.get("/api/course-content/courses", listCourseContent);
   app.get("/api/course-content/courses-from-public", getCoursesFromPublic);
   app.get("/api/course-content/courses/:courseId/lessons-from-public", getLessonsFromPublic);
+  app.post("/api/course-content/courses/:courseId/upload-pdf", uploadCoursePdf);
+  app.post("/api/course-content/courses/:courseId/cover-image", uploadCourseCover);
   app.get("/api/course-content/courses/:courseId", getCourse);
+  app.get("/api/course-content/courses/:courseId/stats", getCourseStats);
+  app.get("/api/course-content/courses/:courseId/resolve-pdf", resolveCoursePdf);
   app.post("/api/course-content/courses", createCourse);
   app.put("/api/course-content/courses/:courseId", updateCourse);
   app.get("/api/course-content/courses/:courseId/modules", listModules);
@@ -147,8 +170,10 @@ export function createServer(options?: { apiOnly?: boolean }) {
   app.put("/api/course-content/courses/:courseId/modules/:moduleId/assessments/:assessmentId", updateAssessment);
   app.delete("/api/course-content/courses/:courseId/modules/:moduleId/assessments/:assessmentId", deleteAssessment);
   app.post("/api/course-content/courses/:courseId/modules/:moduleId/assessments/:assessmentId/submit", submitAssessment);
+  app.get("/api/submissions", getSubmissions);
 
   app.post("/api/admin/seed-courses", postSeedCourses);
+  app.post("/api/admin/clean-course-pdfs", postCleanCoursePdfs);
   app.post("/api/enrollments", postEnrollment);
   app.get("/api/enrollments", getEnrollments);
   app.patch("/api/enrollments/:id", patchEnrollment);

@@ -25,6 +25,8 @@
     "format.fix": "prettier --write .",
     "typecheck": "tsc",
     "seed:courses": "tsx scripts/seed-courses-firestore.ts",
+    "clean:pdfs": "tsx scripts/clean-course-pdfs.ts",
+    "convert:mining-pptx": "node scripts/convert-mining-pptx.mjs",
     "firebase:deploy-rules": "firebase deploy --only firestore:rules",
     "encode:firebase": "node scripts/encode-firebase-env.js"
   },

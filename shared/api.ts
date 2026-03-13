@@ -25,6 +25,9 @@ export interface Testimonial {
 
 export type TestimonialCreate = Omit<Testimonial, "id" | "createdAt">;
 
+/** Sector chosen at registration: determines which main course (+ safety-management) the learner sees */
+export type LearnerSector = "construction" | "industrial-safety" | "mining";
+
 /** User (registrant); access to courses only after admin approval */
 export interface User {
   id: string;
@@ -32,12 +35,14 @@ export interface User {
   password: string; // stored in plain text for demo; use hash in production
   name: string;
   organization?: string;
+  /** Sector of interest: learner sees only this course + safety-management. Omit = see all. */
+  sector?: LearnerSector;
   approved: boolean;
   role?: "learner" | "admin";
   createdAt: string;
 }
 
-export type UserCreate = Pick<User, "email" | "password" | "name" | "organization">;
+export type UserCreate = Pick<User, "email" | "password" | "name" | "organization" | "sector">;
 export type UserPublic = Omit<User, "password">;
 
 /** Course identifier (must match client course ids). safety-for-all = common safety course after the three main courses */

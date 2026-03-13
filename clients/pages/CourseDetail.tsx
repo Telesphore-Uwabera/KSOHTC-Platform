@@ -1,7 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams, Navigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { ArrowLeft, FileText, ExternalLink, ClipboardList, Lock } from "lucide-react";
+import { ArrowLeft, FileText, ExternalLink, ClipboardList, Lock, X } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { getStoredUser } from "../lib/auth";
@@ -77,18 +77,215 @@ function youtubeEmbedUrl(url: string): string {
   return m ? `https://www.youtube.com/embed/${m[1]}` : url;
 }
 
+/** Strip " Copy", " Copy Copy", "CopyCopy" etc. from lesson titles for display. */
+function cleanLessonTitle(title: string): string {
+  return title.replace(/\s+Copy(\s*Copy)*\s*$/gi, "").replace(/\s+/g, " ").trim() || title;
+}
+
+/** Section label: "Section 1", "Section 2", ... (no NaN). */
+function sectionLabel(sectionNumber: number): string {
+  const n = Number(sectionNumber);
+  return `Section ${Number.isFinite(n) && n >= 1 ? n : 1}`;
+}
+
+/** Strip all "Section N" and leading numbers so we show only one section (in green) + topic name. */
+function stripSectionPrefix(title: string): string {
+  let s = title
+    .replace(/Section\s*\d+\s*/gi, "") // remove any "Section 2", "Section 3", etc.
+    .replace(/^\d+\.\s*/, "")           // "1. " or "2. "
+    .replace(/^\d+\s+/, "")             // "2 " or "8 " e.g. "2 Hazard Assessment" → "Hazard Assessment"
+    .replace(/\s+/g, " ")
+    .trim();
+  return s || "";
+}
+
+const INITIAL_SECTION_CARDS = 6;
+const SECTION_CARDS_STEP = 6;
+
+/** Full-screen modal to read PDF inline. Resolves PDF path by title when courseId is set (fixes bad stored paths). */
+function PdfViewerModal({
+  pdfUrl: initialPdfUrl,
+  title,
+  courseId,
+  onClose,
+}: {
+  pdfUrl: string;
+  title: string;
+  courseId?: string;
+  onClose: () => void;
+}) {
+  const base = getApiBase();
+  const [resolvedUrl, setResolvedUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(!!courseId);
+
+  useEffect(() => {
+    if (!courseId || !title?.trim()) {
+      setLoading(false);
+      return;
+    }
+    const q = new URLSearchParams({ title: title.trim() });
+    fetch(`${getApiBase()}/api/course-content/courses/${encodeURIComponent(courseId)}/resolve-pdf?${q}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: { pdfUrl?: string } | null) => {
+        if (data?.pdfUrl) setResolvedUrl(data.pdfUrl);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [courseId, title]);
+
+  const pdfUrl = resolvedUrl ?? initialPdfUrl;
+  const src = pdfUrl.startsWith("http") ? pdfUrl : `${base.replace(/\/$/, "")}${pdfUrl.startsWith("/") ? "" : "/"}${pdfUrl}`;
+
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col bg-black/90" role="dialog" aria-modal="true" aria-label="PDF viewer">
+      <div className="flex items-center justify-between gap-4 shrink-0 px-4 py-2 bg-gray-900 text-white">
+        <span className="font-medium truncate text-sm">{title}</span>
+        <div className="flex items-center gap-2">
+          <a
+            href={src}
+            download
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-white/80 hover:text-white underline"
+          >
+            Download
+          </a>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+            aria-label="Close"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+      <div className="flex-1 min-h-0 p-2">
+        {loading ? (
+          <div className="w-full h-full flex items-center justify-center text-white/80">Loading PDF…</div>
+        ) : (
+          <iframe
+            title={title}
+            src={src}
+            className="w-full h-full rounded-lg bg-white"
+            allow="fullscreen"
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+/** One card per PDF/lesson – used when expanding "Section 99" so each PDF is its own section. */
+function SingleLessonCard({
+  number,
+  courseId,
+  moduleId,
+  lesson,
+  unlocked,
+  completed,
+  onMarkComplete,
+  onViewPdf,
+}: {
+  number: number;
+  courseId: string;
+  moduleId: string;
+  lesson: LessonDoc;
+  unlocked: boolean;
+  completed: boolean;
+  onMarkComplete: () => void;
+  onViewPdf: (url: string, title: string) => void;
+}) {
+  const rawTitle = cleanLessonTitle(lesson.title);
+  const title = stripSectionPrefix(rawTitle);
+  const section = sectionLabel(number);
+  return (
+    <article className="flex flex-col min-h-[100px] rounded-xl border border-gray-200 bg-white p-3 shadow-sm hover:shadow-md hover:border-primary/20 transition-all overflow-hidden">
+      <h2 className="text-sm font-bold text-primary mb-0.5 flex items-center gap-1.5 shrink-0">
+        <FileText className="w-3.5 h-3.5 shrink-0" />
+        {section}
+      </h2>
+      {title ? <span className="text-xs text-gray-700 line-clamp-2 mb-1.5">{title}</span> : null}
+      {lesson.pdfUrl && (
+        <>
+          {unlocked ? (
+            <div className="flex flex-wrap items-center gap-2 mt-auto">
+              <button
+                type="button"
+                onClick={() => {
+                  if (!completed) onMarkComplete();
+                  onViewPdf(lesson.pdfUrl!, `${section} – ${title}`);
+                }}
+                className="inline-flex items-center gap-1.5 text-primary hover:text-accent font-medium text-xs underline underline-offset-1"
+              >
+                View PDF
+                <ExternalLink className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <p className="inline-flex items-center gap-2 text-gray-500 text-xs mt-auto">
+              <Lock className="w-3.5 h-3.5" />
+              Complete the break quiz above to unlock.
+            </p>
+          )}
+        </>
+      )}
+    </article>
+  );
+}
+
+/** Compact quiz card when Section 99 is expanded (one card per lesson). */
+function AssessmentCard({
+  number,
+  courseId,
+  moduleId,
+  assessment,
+  passed,
+}: {
+  number: number;
+  courseId: string;
+  moduleId: string;
+  assessment: AssessmentDoc;
+  passed: boolean;
+}) {
+  const section = sectionLabel(number);
+  return (
+    <article className="flex flex-col min-h-[80px] rounded-xl border border-primary/20 bg-primary/5 p-3 shadow-sm">
+      <div className="flex items-center gap-1.5 flex-wrap">
+        <ClipboardList className="w-4 h-4 text-primary shrink-0" />
+        <span className="font-medium text-gray-900 text-xs">{section}</span>
+        <span className="text-gray-600 text-xs truncate"> – {assessment.title}</span>
+        {passed && <span className="text-xs text-green-700 ml-1">(passed)</span>}
+        {!passed && (
+          <Link
+            to={`/courses/${courseId}/modules/${moduleId}/quiz/${assessment.id}`}
+            className="ml-auto inline-flex items-center gap-1.5 bg-primary text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-primary/90 text-xs"
+          >
+            Take quiz
+            <ExternalLink className="w-3.5 h-3.5" />
+          </Link>
+        )}
+      </div>
+    </article>
+  );
+}
+
 function ModuleBlock({
+  number,
   courseId,
   module: mod,
   progress,
   userId,
   onProgressUpdate,
+  onViewPdf,
 }: {
+  number: number;
   courseId: string;
   module: ModuleDoc;
   progress: ProgressDoc | null;
   userId: string;
   onProgressUpdate: () => void;
+  onViewPdf: (url: string, title: string) => void;
 }) {
   const { data: items = [] } = useQuery({
     queryKey: ["course-content", "items", courseId, mod.id],
@@ -110,21 +307,26 @@ function ModuleBlock({
     return true;
   }
 
+  const section = sectionLabel(number);
+  const title = stripSectionPrefix(mod.title);
+
   return (
-    <div className="mb-10">
-      <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
-        <FileText className="w-5 h-5" />
-        {mod.title}
+    <article className="flex flex-col min-h-[180px] rounded-xl border border-gray-200 bg-white p-3 shadow-sm hover:shadow-md hover:border-primary/20 transition-all overflow-hidden">
+      <h2 className="text-sm font-bold text-primary mb-0.5 flex items-center gap-1.5 shrink-0">
+        <FileText className="w-3.5 h-3.5 shrink-0" />
+        {section}
       </h2>
-      <ul className="space-y-4">
+      {title ? <span className="text-xs text-gray-700 mb-2">{title}</span> : null}
+      <ul className="space-y-1.5 flex-1 min-h-0 overflow-y-auto">
         {items.map((item, itemIndex) => {
           if (item.type === "lesson") {
             const lesson = item.data;
             const unlocked = isLessonUnlocked(itemIndex);
+            const lessonTitle = stripSectionPrefix(cleanLessonTitle(lesson.title));
 
             return (
-              <li key={`lesson-${lesson.id}`} className="flex flex-col gap-2">
-                <span className="font-medium text-gray-900">{lesson.title}</span>
+              <li key={`lesson-${lesson.id}`} className="flex flex-col gap-1">
+                <span className="font-medium text-gray-900 text-xs">{lessonTitle}</span>
                 {lesson.youtubeUrl && (
                   <div className="rounded-lg overflow-hidden bg-gray-100 aspect-video max-w-2xl">
                     <iframe
@@ -138,18 +340,17 @@ function ModuleBlock({
                 {lesson.pdfUrl && (
                   <>
                     {unlocked ? (
-                      <a
-                        href={lesson.pdfUrl.startsWith("http") ? lesson.pdfUrl : lesson.pdfUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        type="button"
                         onClick={() => {
                           if (!completedLessons.has(lesson.id)) markCompleteMutation.mutate(lesson.id);
+                          onViewPdf(lesson.pdfUrl!, lessonTitle);
                         }}
-                        className="inline-flex items-center gap-2 text-primary hover:text-accent font-medium underline underline-offset-2"
+                        className="inline-flex items-center gap-1.5 text-primary hover:text-accent font-medium text-xs underline underline-offset-1 text-left"
                       >
-                        Open PDF
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
+                        View PDF
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </button>
                     ) : (
                       <p className="inline-flex items-center gap-2 text-gray-500 text-sm">
                         <Lock className="w-4 h-4" />
@@ -170,15 +371,15 @@ function ModuleBlock({
           const assessment = item.data;
           const passed = completedAssessments.has(assessment.id);
           return (
-            <li key={`assessment-${assessment.id}`} className="pt-2">
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-primary/5 border border-primary/20">
-                <ClipboardList className="w-5 h-5 text-primary" />
-                <span className="font-medium text-gray-900">{assessment.title}</span>
+            <li key={`assessment-${assessment.id}`} className="pt-1">
+              <div className="flex items-center gap-1.5 p-2 rounded-lg bg-primary/5 border border-primary/20">
+                <ClipboardList className="w-4 h-4 text-primary shrink-0" />
+                <span className="font-medium text-gray-900 text-xs">{assessment.title}</span>
                 {passed && <span className="text-sm text-green-700">(passed)</span>}
                 {!passed && (
                   <Link
                     to={`/courses/${courseId}/modules/${mod.id}/quiz/${assessment.id}`}
-                    className="ml-auto inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 text-sm"
+                    className="ml-auto inline-flex items-center gap-1.5 bg-primary text-white px-3 py-1.5 rounded-lg font-semibold hover:bg-primary/90 text-xs"
                   >
                     Take break quiz
                     <ExternalLink className="w-4 h-4" />
@@ -189,7 +390,7 @@ function ModuleBlock({
           );
         })}
       </ul>
-    </div>
+    </article>
   );
 }
 
@@ -232,6 +433,22 @@ export default function CourseDetail() {
     enabled: !!user?.id && !!courseId && canAccess && !!displayCourse,
   });
 
+  const section99Module = modules.find((m) => m.title.includes("Section 99"));
+  const { data: section99Items = [] } = useQuery({
+    queryKey: ["course-content", "items", courseId, section99Module?.id],
+    queryFn: () => fetchModuleItems(courseId!, section99Module!.id),
+    enabled: !!courseId && !!section99Module?.id,
+  });
+  const completedLessons = new Set(progress?.completedLessonIds ?? []);
+  const completedAssessments = new Set(progress?.completedAssessmentIds ?? []);
+  function isLessonUnlockedInSection99(itemIndex: number): boolean {
+    for (let i = 0; i < itemIndex; i++) {
+      const prev = section99Items[i];
+      if (prev?.type === "assessment" && !completedAssessments.has(prev.data.id)) return false;
+    }
+    return true;
+  }
+
   const { data: legacyQuiz } = useQuery({
     queryKey: ["quiz", courseId],
     queryFn: () => fetchLegacyQuiz(courseId!),
@@ -241,6 +458,18 @@ export default function CourseDetail() {
   const enrollMutation = useMutation({
     mutationFn: () => ensureEnrolled(user!.id, courseId!),
   });
+  const markCompleteMutation = useMutation({
+    mutationFn: (lessonId: string) => markLessonComplete(user!.id, courseId!, lessonId),
+    onSuccess: () => refetchProgress(),
+  });
+
+  const [visibleSectionCount, setVisibleSectionCount] = useState(INITIAL_SECTION_CARDS);
+  const [visiblePublicLessonsCount, setVisiblePublicLessonsCount] = useState(INITIAL_SECTION_CARDS);
+  const [pdfViewer, setPdfViewer] = useState<{ url: string; title: string } | null>(null);
+
+  function openPdfViewer(url: string, title: string) {
+    setPdfViewer({ url, title });
+  }
 
   useEffect(() => {
     if (canAccess && user?.id && courseId) enrollMutation.mutate();
@@ -260,6 +489,10 @@ export default function CourseDetail() {
     );
   }
   if (!displayCourse) return <Navigate to="/courses" replace />;
+
+  if (canAccess && user?.sector && courseId !== "safety-management" && courseId !== user.sector) {
+    return <Navigate to="/courses" replace state={{ message: "Please join the course related to your registration. You only have access to your sector course and Safety Management." }} />;
+  }
 
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
@@ -292,7 +525,7 @@ export default function CourseDetail() {
       </section>
 
       <section className="py-12 sm:py-16 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {!canAccess ? (
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-amber-900">
               <p className="font-semibold">Access required</p>
@@ -321,21 +554,117 @@ export default function CourseDetail() {
               {modulesLoading ? (
                 <p className="text-gray-600">Loading modules…</p>
               ) : modules.length > 0 ? (
-                <div className="space-y-10">
-                  {modules.map((mod) => (
-                    <ModuleBlock
-                      key={mod.id}
-                      courseId={courseId!}
-                      module={mod}
-                      progress={progress ?? null}
-                      userId={user!.id}
-                      onProgressUpdate={() => refetchProgress()}
-                    />
-                  ))}
+                <>
+                  {(() => {
+                    const allSectionCards: React.ReactNode[] = [];
+                    let cardNumber = 0;
+                    for (const mod of modules) {
+                      if (mod.title === "Safety Management (General)") {
+                        cardNumber++;
+                        allSectionCards.push(
+                          <Link
+                            key={mod.id}
+                            to="/courses/safety-management"
+                            className="flex flex-col min-h-[120px] rounded-xl border border-gray-200 bg-white p-3 shadow-sm hover:shadow-md hover:border-primary/30 transition-all"
+                          >
+                            <h2 className="text-sm font-bold text-primary flex items-center gap-2 mb-0.5">
+                              <FileText className="w-4 h-4 shrink-0" />
+                              {sectionLabel(cardNumber)}
+                            </h2>
+                            <span className="text-xs text-gray-700 mb-2">{stripSectionPrefix(mod.title)}</span>
+                            <span className="text-primary font-semibold text-sm mt-auto inline-flex items-center gap-1">
+                              Go to Safety Management course
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </span>
+                          </Link>
+                        );
+                      } else if (mod.title.includes("Section 99") && section99Module?.id === mod.id) {
+                        section99Items.forEach((item, itemIndex) => {
+                          cardNumber++;
+                          if (item.type === "lesson") {
+                            const lesson = item.data;
+                            allSectionCards.push(
+                              <SingleLessonCard
+                                key={`lesson-${lesson.id}`}
+                                number={cardNumber}
+                                courseId={courseId!}
+                                moduleId={mod.id}
+                                lesson={lesson}
+                                unlocked={isLessonUnlockedInSection99(itemIndex)}
+                                completed={completedLessons.has(lesson.id)}
+                                onMarkComplete={() => markCompleteMutation.mutate(lesson.id)}
+                                onViewPdf={openPdfViewer}
+                              />
+                            );
+                          } else {
+                            allSectionCards.push(
+                              <AssessmentCard
+                                key={`assessment-${item.data.id}`}
+                                number={cardNumber}
+                                courseId={courseId!}
+                                moduleId={mod.id}
+                                assessment={item.data}
+                                passed={completedAssessments.has(item.data.id)}
+                              />
+                            );
+                          }
+                        });
+                      } else {
+                        cardNumber++;
+                        allSectionCards.push(
+                          <ModuleBlock
+                            key={mod.id}
+                            number={cardNumber}
+                            courseId={courseId!}
+                            module={mod}
+                            progress={progress ?? null}
+                            userId={user!.id}
+                            onProgressUpdate={() => refetchProgress()}
+                            onViewPdf={openPdfViewer}
+                          />
+                        );
+                      }
+                    }
+                    const visibleCards = allSectionCards.slice(0, visibleSectionCount);
+                    const hasMore = allSectionCards.length > INITIAL_SECTION_CARDS;
+                    const canShowMore = visibleSectionCount < allSectionCards.length;
+                    const canShowLess = visibleSectionCount > INITIAL_SECTION_CARDS;
+
+                    return (
+                      <>
+                        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4">
+                          {visibleCards}
+                        </div>
+                        {hasMore && (
+                          <div className="flex flex-wrap items-center gap-3 mt-6">
+                            {canShowMore && (
+                              <button
+                                type="button"
+                                onClick={() => setVisibleSectionCount((c) => c + SECTION_CARDS_STEP)}
+                                className="inline-flex items-center gap-2 text-primary font-semibold text-sm hover:text-accent transition-colors"
+                              >
+                                View more
+                                <ExternalLink className="w-4 h-4" />
+                              </button>
+                            )}
+                            {canShowLess && (
+                              <button
+                                type="button"
+                                onClick={() => setVisibleSectionCount(INITIAL_SECTION_CARDS)}
+                                className="inline-flex items-center gap-2 text-gray-600 font-medium text-sm hover:text-gray-900 transition-colors"
+                              >
+                                View less
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
 
                   {legacyQuiz && (
-                    <div>
-                      <h2 className="text-xl font-bold text-primary mb-4 flex items-center gap-2">
+                    <div className="mt-10 rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 shadow-sm">
+                      <h2 className="text-lg font-bold text-primary mb-3 flex items-center gap-2">
                         <ClipboardList className="w-5 h-5" />
                         Course quiz
                       </h2>
@@ -351,33 +680,71 @@ export default function CourseDetail() {
                       </Link>
                     </div>
                   )}
-                </div>
+                </>
               ) : lessonsFromPublic.length > 0 ? (
-                <div className="space-y-6">
-                  <h2 className="text-xl font-bold text-primary flex items-center gap-2">
-                    <FileText className="w-5 h-5" />
-                    Course materials (PDFs)
-                  </h2>
-                  <p className="text-gray-600 text-sm">
-                    Open any PDF below to view or download. Materials are from your course folder.
-                  </p>
-                  <ul className="space-y-3">
-                    {lessonsFromPublic.map((lesson, idx) => (
-                      <li key={idx} className="flex items-center justify-between gap-4 py-3 px-4 rounded-xl bg-white border border-gray-200 hover:border-primary/30">
-                        <span className="font-medium text-gray-900 truncate">{lesson.title}</span>
-                        <a
-                          href={lesson.pdfUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-primary hover:text-accent font-semibold text-sm shrink-0"
-                        >
-                          Open PDF
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                (() => {
+                  const visible = lessonsFromPublic.slice(0, visiblePublicLessonsCount);
+                  const hasMore = lessonsFromPublic.length > INITIAL_SECTION_CARDS;
+                  const canShowMore = visiblePublicLessonsCount < lessonsFromPublic.length;
+                  const canShowLess = visiblePublicLessonsCount > INITIAL_SECTION_CARDS;
+                  return (
+                    <div className="space-y-6">
+                      <h2 className="text-xl font-bold text-primary flex items-center gap-2">
+                        <FileText className="w-5 h-5" />
+                        Course materials (PDFs)
+                      </h2>
+                      <p className="text-gray-600 text-sm">
+                        View or download PDFs below. Materials are from your course folder.
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-3">
+                        {visible.map((lesson, idx) => {
+                          const title = stripSectionPrefix(cleanLessonTitle(lesson.title));
+                          const section = sectionLabel(idx + 1);
+                          return (
+                            <div
+                              key={idx}
+                              className="group flex flex-col min-h-[100px] rounded-xl border border-gray-200 bg-white p-3 shadow-sm hover:shadow-md hover:border-primary/30 transition-all text-left"
+                            >
+                              <span className="font-bold text-primary text-xs">{section}</span>
+                              <span className="font-medium text-gray-900 text-xs line-clamp-2 flex-1">{title}</span>
+                              <button
+                                type="button"
+                                onClick={() => openPdfViewer(lesson.pdfUrl, `${section} – ${title}`)}
+                                className="inline-flex items-center gap-1.5 text-primary font-semibold text-xs mt-1.5 group-hover:text-accent shrink-0 text-left"
+                              >
+                                View PDF
+                                <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                      {hasMore && (
+                        <div className="flex flex-wrap items-center gap-3">
+                          {canShowMore && (
+                            <button
+                              type="button"
+                              onClick={() => setVisiblePublicLessonsCount((c) => c + SECTION_CARDS_STEP)}
+                              className="inline-flex items-center gap-2 text-primary font-semibold text-sm hover:text-accent"
+                            >
+                              View more
+                              <ExternalLink className="w-4 h-4" />
+                            </button>
+                          )}
+                          {canShowLess && (
+                            <button
+                              type="button"
+                              onClick={() => setVisiblePublicLessonsCount(INITIAL_SECTION_CARDS)}
+                              className="text-gray-600 font-medium text-sm hover:text-gray-900"
+                            >
+                              View less
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()
               ) : (
                 <p className="text-gray-600 py-8">
                   No materials yet. Run the seed from Admin → Course content to create modules and lessons from your PDFs, or add content manually.
@@ -387,6 +754,15 @@ export default function CourseDetail() {
           )}
         </div>
       </section>
+
+      {pdfViewer && (
+        <PdfViewerModal
+          pdfUrl={pdfViewer.url}
+          title={pdfViewer.title}
+          courseId={courseId ?? undefined}
+          onClose={() => setPdfViewer(null)}
+        />
+      )}
 
       <Footer />
     </div>

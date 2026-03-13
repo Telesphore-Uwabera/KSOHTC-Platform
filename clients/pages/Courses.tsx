@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { HardHat, Building, Pickaxe, Shield, ArrowRight, Clock, LogOut } from "lucide-react";
+import { HardHat, Building, Pickaxe, Shield, ArrowRight, Clock, LogOut, BookOpen } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { getStoredUser, clearStoredUser } from "../lib/auth";
@@ -26,7 +27,7 @@ async function fetchCoursesFromPublic(): Promise<CourseDoc[]> {
   const res = await fetch(getApiBase() + "/api/course-content/courses-from-public");
   if (!res.ok) return [];
   const data = await res.json();
-  return (data.courses ?? []).map((c: { id: string; title: string; description?: string; sector: string; duration: string; published?: boolean; order?: number; lessonCount?: number }) => ({
+  return (data.courses ?? []).map((c: { id: string; title: string; description?: string; sector: string; duration: string; published?: boolean; order?: number; lessonCount?: number; coverImageUrl?: string }) => ({
     id: c.id,
     slug: c.id as CourseDoc["slug"],
     title: c.title,
@@ -36,29 +37,50 @@ async function fetchCoursesFromPublic(): Promise<CourseDoc[]> {
     published: c.published !== false,
     order: c.order ?? 99,
     lessonCount: (c as { lessonCount?: number }).lessonCount,
+    coverImageUrl: c.coverImageUrl,
   }));
 }
 
 /** Fetch courses: use Firestore first; if empty, use public/courses folder. Returns sorted by order. */
 async function fetchCourses(): Promise<CourseDoc[]> {
   const fromFirestore = await fetchCoursesFromFirestore();
-  if (fromFirestore.length > 0) {
-    return fromFirestore.sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
-  }
-  const fromPublic = await fetchCoursesFromPublic();
-  return fromPublic.sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+  const list = fromFirestore.length > 0 ? fromFirestore : await fetchCoursesFromPublic();
+  return list.sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+}
+
+/** For an approved learner with sector: only show their sector course + safety-management. */
+function filterCoursesBySector(courses: CourseDoc[], sector: string | undefined): CourseDoc[] {
+  if (!sector) return courses;
+  return courses.filter((c) => c.id === "safety-management" || c.id === sector);
+}
+
+const INITIAL_COURSE_CARDS = 6;
+const COURSE_CARDS_STEP = 6;
+
+/** Display title as "1. Name of course", "2. Name of course". */
+function numberedTitle(index: number, title: string): string {
+  return `${index + 1}. ${title}`;
 }
 
 export default function Courses() {
+  const location = useLocation();
+  const stateMessage = (location.state as { message?: string } | null)?.message;
   const user = getStoredUser();
   const pending = user && !user.approved;
   const canAccess = user && user.approved;
 
-  const { data: courses = [], isLoading, error } = useQuery({
+  const { data: allCourses = [], isLoading, error } = useQuery({
     queryKey: ["course-content", "courses"],
     queryFn: fetchCourses,
     enabled: !!user,
   });
+
+  const courses = filterCoursesBySector(allCourses, user?.sector);
+  const [visibleCourseCount, setVisibleCourseCount] = useState(INITIAL_COURSE_CARDS);
+  const visibleCourses = courses.slice(0, visibleCourseCount);
+  const hasMoreCourses = courses.length > INITIAL_COURSE_CARDS;
+  const canShowMoreCourses = visibleCourseCount < courses.length;
+  const canShowLessCourses = visibleCourseCount > INITIAL_COURSE_CARDS;
 
   if (!user) {
     return (
@@ -121,6 +143,13 @@ export default function Courses() {
         </div>
       </section>
 
+      {stateMessage && (
+        <section className="py-4 px-4 sm:px-6 lg:px-8 bg-primary/10 border-b border-primary/20">
+          <div className="max-w-7xl mx-auto text-center">
+            <p className="text-primary font-medium">{stateMessage}</p>
+          </div>
+        </section>
+      )}
       {pending && (
         <section className="py-8 px-4 sm:px-6 lg:px-8 bg-amber-50 border-b border-amber-200">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -180,57 +209,99 @@ export default function Courses() {
             <p className="text-gray-600 py-8">No courses available yet. Courses will appear here once they’re set up.</p>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {courses.map((course, idx) => {
+          <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 items-stretch">
+            {visibleCourses.map((course, idx) => {
               const Icon = iconBySlug[course.slug ?? course.id] ?? HardHat;
               const lessonCount = (course as { lessonCount?: number }).lessonCount;
+              const shortDesc = (course.description || "Occupational Safety and Health training.").slice(0, 80);
+              const fullDesc = course.description || "Occupational Safety and Health training.";
+              const coverUrl = course.coverImageUrl;
+              const displayTitle = numberedTitle(idx, course.title);
               return (
                 <div
                   key={course.id}
-                  className="bg-white rounded-[30px] shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl hover:border-primary/30 transition-all duration-300 scroll-reveal reveal-scale-slow"
+                  className="flex flex-col h-full bg-white rounded-2xl shadow border border-gray-200 overflow-hidden hover:shadow-lg hover:border-primary/30 transition-all duration-200"
                   style={{ animationDelay: `${0.9 + idx * 0.15}s` }}
+                  title={fullDesc}
                 >
-                  <div className="p-6 sm:p-8">
-                    <span className="inline-flex w-8 h-8 rounded-xl bg-primary/10 items-center justify-center text-primary mb-3">
+                  <div className="w-full h-32 shrink-0 bg-gray-100 flex items-center justify-center overflow-hidden">
+                    {coverUrl ? (
+                      <img src={coverUrl} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="inline-flex w-12 h-12 rounded-xl bg-primary/10 items-center justify-center text-primary">
+                        <BookOpen className="w-6 h-6" />
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-4 sm:p-5 flex flex-col flex-1 min-h-0">
+                    <span className="inline-flex w-9 h-9 rounded-lg bg-primary/10 items-center justify-center text-primary mb-2 shrink-0">
                       <Icon className="w-4 h-4" />
                     </span>
-                    <h3 className="text-xl font-bold text-primary mb-2">{course.title}</h3>
-                    <p className="text-sm text-accent font-medium mb-2">{course.sector}</p>
-                    <p className="text-gray-600 text-sm mb-4">{course.description || "Occupational Safety and Health training."}</p>
-                    <p className="text-gray-500 text-xs">
+                    <h3 className="text-base font-bold text-primary mb-1 line-clamp-2">{displayTitle}</h3>
+                    <p className="text-xs text-accent font-medium mb-1">{course.sector}</p>
+                    <p className="text-gray-600 text-xs line-clamp-2 flex-1 min-h-0" title={fullDesc}>
+                      {shortDesc}
+                      {(course.description || "").length > 80 ? "…" : ""}
+                    </p>
+                    <p className="text-gray-500 text-xs mb-3 shrink-0">
                       Duration: {course.duration}
                       {lessonCount != null && lessonCount > 0 && ` · ${lessonCount} lesson${lessonCount !== 1 ? "s" : ""}`}
                     </p>
-                    {canAccess ? (
-                      <Link
-                        to={`/courses/${course.id}`}
-                        className="mt-4 inline-flex items-center gap-2 text-primary font-semibold text-sm hover:text-accent transition-colors"
-                      >
-                        View materials
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
-                    ) : user ? (
-                      <span
-                        className="mt-4 inline-flex items-center gap-2 font-semibold text-sm text-gray-400 cursor-not-allowed"
-                        title="Your account must be approved by an admin before you can access courses"
-                      >
-                        Enroll (pending approval)
-                        <ArrowRight className="w-4 h-4" />
-                      </span>
-                    ) : (
-                      <Link
-                        to="/register"
-                        className="mt-4 inline-flex items-center gap-2 text-primary font-semibold text-sm hover:text-accent transition-colors"
-                      >
-                        Register to enroll
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
-                    )}
+                    <div className="mt-auto pt-2 border-t border-gray-100 shrink-0">
+                      {canAccess ? (
+                        <Link
+                          to={`/courses/${course.id}`}
+                          className="inline-flex items-center gap-1.5 text-primary font-semibold text-sm hover:text-accent transition-colors"
+                        >
+                          View materials
+                          <ArrowRight className="w-4 h-4" />
+                        </Link>
+                      ) : user ? (
+                        <span
+                          className="inline-flex items-center gap-2 font-semibold text-sm text-gray-400 cursor-not-allowed"
+                          title="Your account must be approved by an admin before you can access courses"
+                        >
+                          Enroll (pending approval)
+                          <ArrowRight className="w-4 h-4" />
+                        </span>
+                      ) : (
+                        <Link
+                          to="/register"
+                          className="inline-flex items-center gap-2 text-primary font-semibold text-sm hover:text-accent transition-colors"
+                        >
+                          Register to enroll
+                          <ArrowRight className="w-4 h-4" />
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
+          {hasMoreCourses && (
+            <div className="flex flex-wrap items-center gap-3 mt-8">
+              {canShowMoreCourses && (
+                <button
+                  type="button"
+                  onClick={() => setVisibleCourseCount((c) => c + COURSE_CARDS_STEP)}
+                  className="inline-flex items-center gap-2 text-primary font-semibold hover:text-accent transition-colors"
+                >
+                  View more
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
+              {canShowLessCourses && (
+                <button
+                  type="button"
+                  onClick={() => setVisibleCourseCount(INITIAL_COURSE_CARDS)}
+                  className="text-gray-600 font-medium hover:text-gray-900 transition-colors"
+                >
+                  View less
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
