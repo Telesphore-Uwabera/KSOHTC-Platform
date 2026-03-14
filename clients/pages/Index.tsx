@@ -54,7 +54,7 @@ export default function Index() {
               aria-hidden
             />
           ))}
-          <div className="absolute inset-0 bg-primary/60 z-[1]" aria-hidden="true" />
+          <div className="absolute inset-0 bg-black/50 z-[1]" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-br from-secondary/60 via-secondary/45 to-primary/50 z-[1]" />
         </div>
         <div className="absolute inset-0 opacity-10 pointer-events-none z-[2]">
