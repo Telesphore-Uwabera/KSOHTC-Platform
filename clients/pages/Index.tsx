@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, MapPin, Phone, Mail, Shield, BookOpen, HardHat, Building, Pickaxe, GraduationCap, Lightbulb, Rocket, Crown, Star, Award, Target, Sparkles, Building2, UserCheck, AlertTriangle, Users, Globe, Quote } from "lucide-react";
@@ -6,6 +7,10 @@ import Footer from "../components/Footer";
 import type { Testimonial } from "@shared/api";
 import { getApiBase } from "@/lib/apiBase";
 
+const HERO_IMAGES = ["/ksohtc-1.webp", "/ksohtc-2.webp", "/ksohtc-3.webp", "/ksohtc-7.webp"];
+const HERO_INTERVAL_MS = 5000;
+const HERO_FADE_DURATION_MS = 1200;
+
 async function fetchTestimonials(): Promise<Testimonial[]> {
   const res = await fetch(getApiBase() + "/api/testimonials");
   if (!res.ok) throw new Error("Failed to load testimonials");
@@ -13,6 +18,12 @@ async function fetchTestimonials(): Promise<Testimonial[]> {
 }
 
 export default function Index() {
+  const [heroIndex, setHeroIndex] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setHeroIndex((i) => (i + 1) % HERO_IMAGES.length), HERO_INTERVAL_MS);
+    return () => clearInterval(t);
+  }, []);
+
   const { data: testimonials = [], isLoading } = useQuery({
     queryKey: ["testimonials"],
     queryFn: fetchTestimonials,
@@ -30,24 +41,28 @@ export default function Index() {
 
       {/* Hero Section — taller; buttons separated below main content */}
       <section id="home" className="relative text-white py-16 sm:py-20 md:py-24 lg:py-32 overflow-hidden min-h-[85vh] sm:min-h-[88vh] flex flex-col justify-between">
-        {/* Background image (Unsplash - professionals/training) */}
+        {/* Sliding hero images — crossfade */}
         <div className="absolute inset-0">
-          <img
-            src="/ksohtc-1.webp"
-            alt=""
-            className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-move-endless"
-            decoding="async"
-            aria-hidden
-          />
-          <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
-          <div className="absolute inset-0 bg-gradient-to-br from-secondary/95 via-secondary/90 to-primary/90" />
+          {HERO_IMAGES.map((src, i) => (
+            <img
+              key={src}
+              src={src}
+              alt=""
+              className={`absolute inset-0 w-full h-full object-cover bg-image-animate bg-image-move-endless transition-opacity ease-out ${i === heroIndex ? "opacity-100 z-[0]" : "opacity-0 z-0 pointer-events-none"}`}
+              style={{ transitionDuration: `${HERO_FADE_DURATION_MS}ms` }}
+              decoding="async"
+              aria-hidden
+            />
+          ))}
+          <div className="absolute inset-0 bg-black/30 z-[1]" aria-hidden="true" />
+          <div className="absolute inset-0 bg-gradient-to-br from-secondary/60 via-secondary/45 to-primary/50 z-[1]" />
         </div>
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <div className="absolute inset-0 opacity-10 pointer-events-none z-[2]">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl animate-float" />
           <div className="absolute bottom-0 left-0 w-72 h-72 bg-primary rounded-full blur-3xl animate-float animate-delay-300" />
         </div>
 
-        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center flex-1 justify-center">
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center flex-1 justify-center">
           <div className="w-full max-w-7xl flex flex-col items-center space-y-4 sm:space-y-6">
             <div className="inline-flex items-center gap-2 bg-accent/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full hero-reveal-slow" style={{ animationDelay: "0.3s", animationFillMode: "both" }}>
               <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent" />
@@ -65,7 +80,7 @@ export default function Index() {
           </div>
         </div>
 
-        <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-6 sm:pb-8 flex flex-col items-center">
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-6 sm:pb-8 flex flex-col items-center">
           <div className="flex flex-row flex-nowrap gap-4 sm:gap-6">
             <Link
               to={{ pathname: "/login", state: { from: "/dashboard" } }}

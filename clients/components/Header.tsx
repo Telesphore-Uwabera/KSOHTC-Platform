@@ -35,24 +35,22 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const compact = scrolled;
   const headerClass =
-    "fixed top-0 left-0 right-0 z-50 animate-fade-in-down transition-all duration-300 ease-out " +
-    (scrolled
-      ? "bg-white/98 shadow-md backdrop-blur-sm"
-      : "bg-transparent");
+    "fixed top-0 left-0 right-0 z-50 animate-fade-in-down transition-all duration-300 ease-out bg-white shadow-md backdrop-blur-sm";
 
   return (
     <header className={headerClass}>
       <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
-        <div className={`flex items-center gap-1 sm:gap-2 transition-all duration-300 ${scrolled ? "h-20 sm:h-24 md:h-24" : "h-20 sm:h-24 md:h-28"}`}>
+        <div className={`flex items-center gap-1 sm:gap-2 transition-all duration-300 ${compact ? "h-16 sm:h-20 md:h-20" : "h-20 sm:h-24 md:h-28"}`}>
           <div className="hidden md:flex md:flex-1 md:items-center md:min-w-0" />
           <div className="hidden md:flex md:items-center md:justify-center md:flex-shrink-0">
-            <div className={`flex items-center gap-2 lg:gap-4 pl-3 pr-3 sm:pl-4 sm:pr-4 transition-all duration-300 ${scrolled ? "py-1.5 gap-2" : "py-2 sm:py-3"}`}>
+            <div className={`flex items-center gap-2 lg:gap-4 pl-3 pr-3 sm:pl-4 sm:pr-4 transition-all duration-300 ${compact ? "py-1 gap-2" : "py-2 sm:py-3"}`}>
               <Link to="/" className="flex-shrink-0 flex items-center group cursor-pointer transition-all duration-300 hover:scale-105">
                 <img
                   src="/logo.webp"
                   alt="KSOHTC Logo"
-                  className={`object-contain max-w-full h-auto transition-all duration-300 group-hover:rotate-3 ${scrolled ? "w-[4.5rem] h-[4.5rem] sm:w-20 sm:h-20 lg:w-24 lg:h-24" : "w-24 h-24 sm:w-28 sm:h-28 lg:w-36 lg:h-36 xl:w-40 xl:h-40"}`}
+                  className={`object-contain max-w-full h-auto transition-all duration-300 group-hover:rotate-3 ${compact ? "w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16" : "w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32"}`}
                 />
               </Link>
               <nav className="flex gap-1 sm:gap-2 lg:gap-3">
@@ -60,9 +58,7 @@ export default function Header() {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`px-2 sm:px-3 py-1.5 sm:py-2 font-medium transition-all duration-300 relative group text-xs sm:text-sm lg:text-base ${
-                  location.pathname === link.path ? "text-primary" : "text-gray-700 hover:text-primary"
-                }`}
+                className={`px-2 sm:px-3 py-1.5 sm:py-2 font-medium transition-all duration-300 relative group text-xs sm:text-sm lg:text-base ${location.pathname === link.path ? "text-primary" : "text-gray-700 hover:text-primary"}`}
               >
                 {link.label}
                 <span className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-300 ${
@@ -89,7 +85,7 @@ export default function Header() {
             <img
               src="/logo.webp"
               alt="KSOHTC Logo"
-              className={`object-contain max-w-full h-auto transition-all duration-300 group-hover:rotate-3 ${scrolled ? "w-20 h-20 sm:w-24 sm:h-24" : "w-24 h-24 sm:w-32 sm:h-32"}`}
+              className={`object-contain max-w-full h-auto transition-all duration-300 group-hover:rotate-3 ${compact ? "w-14 h-14 sm:w-16 sm:h-16" : "w-20 h-20 sm:w-24 sm:h-24"}`}
             />
           </Link>
 
