@@ -81,8 +81,20 @@ export function createServer(options?: { apiOnly?: boolean }) {
   app.use(express.urlencoded({ extended: true }));
   app.use(requestLogger);
 
-  // Static assets used by learners (PDFs, course covers). These are referenced by `pdfUrl` like `/courses/<courseId>/<file>.pdf`.
-  // When frontend is hosted separately (e.g. Netlify) and backend on Render, the PDF viewer uses `VITE_API_URL` as base.
+  // Static assets: only paths like /courses/:sector/:file (e.g. /courses/construction/1.pdf) are served here.
+  // GET /courses and GET /courses/ are SPA routes on the frontend; if hit on backend, return 404 with guidance.
+  app.get("/courses", (_req, res) => {
+    res.status(404).json({
+      error: "Not found",
+      message: "The /courses page is served by the frontend. Use the app URL (e.g. Netlify) to open the Courses page.",
+    });
+  });
+  app.get("/courses/", (_req, res) => {
+    res.status(404).json({
+      error: "Not found",
+      message: "The /courses page is served by the frontend. Use the app URL (e.g. Netlify) to open the Courses page.",
+    });
+  });
   app.use("/courses", express.static(path.resolve(process.cwd(), "public", "courses")));
   app.use("/course-covers", express.static(path.resolve(process.cwd(), "public", "course-covers")));
 

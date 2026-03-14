@@ -1,0 +1,3 @@
+# SPA fallback: all routes serve index.html so client-side routing works (direct URLs, refresh).
+# Proxy for /courses/:sector/:file is in netlify.toml so it stays before this rule.
+/*    /index.html   200
