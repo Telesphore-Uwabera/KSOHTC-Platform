@@ -5,10 +5,10 @@ import { quizzesCollection } from "../lib/firestore";
 
 /** Four courses: three sector-specific + one general safety (mining → mining + safety, construction → construction + safety, etc.). */
 const COURSES: CoursePublic[] = [
-  { id: "construction", title: "OSH in Construction", sector: "Construction", duration: "2 weeks" },
-  { id: "industrial-safety", title: "OSH in Industrial Safety", sector: "Industrial", duration: "2 weeks" },
-  { id: "mining", title: "OSH in Mining", sector: "Mining", duration: "3 weeks" },
-  { id: "safety-management", title: "Safety Management (General)", sector: "General", duration: "1 week" },
+  { id: "construction", title: "OSH in Construction", sector: "Construction", duration: "3 months" },
+  { id: "industrial-safety", title: "OSH in Industrial Safety", sector: "Industrial", duration: "3 months" },
+  { id: "mining", title: "OSH in Mining", sector: "Mining", duration: "3 months" },
+  { id: "safety-management", title: "Safety Management (General)", sector: "General", duration: "3 months" },
 ];
 
 function isValidCourseId(id: string): id is CourseId {

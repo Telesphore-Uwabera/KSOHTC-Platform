@@ -118,7 +118,7 @@ export const COURSES: CourseDef[] = [
     title: "OSH in Construction",
     sector: "Construction",
     desc: "Site safety, fall prevention, cranes, scaffolding, PPE, and construction-specific risk management. Includes the core Safety Management module.",
-    duration: "2 weeks",
+    duration: "3 months",
     sectorModuleFiles: CONSTRUCTION_FILES,
   },
   {
@@ -126,7 +126,7 @@ export const COURSES: CourseDef[] = [
     title: "OSH in Industrial Safety",
     sector: "Industrial",
     desc: "Machinery safety, hazard assessment, PPE, working at height, electrical and confined spaces, and emergency response. Includes the core Safety Management module.",
-    duration: "2 weeks",
+    duration: "3 months",
     sectorModuleFiles: INDUSTRIAL_SAFETY_FILES,
   },
   {
@@ -134,7 +134,7 @@ export const COURSES: CourseDef[] = [
     title: "OSH in Mining",
     sector: "Mining",
     desc: "Mining safety handbook, first aid for miners, ILO standards, and sector-specific hazards. Includes the core Safety Management module.",
-    duration: "3 weeks",
+    duration: "3 months",
     sectorModuleFiles: MINING_FILES,
   },
 ];

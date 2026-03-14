@@ -3,9 +3,9 @@ import type { CoursePublic, CourseUsageItem } from "@shared/api";
 import { quizzesCollection, enrollmentsCollection } from "../lib/firestore";
 
 const COURSES: CoursePublic[] = [
-  { id: "construction", title: "OSH in Construction", sector: "Construction", duration: "2 weeks" },
-  { id: "industrial-safety", title: "OSH in Industrial Safety", sector: "Industrial", duration: "2 weeks" },
-  { id: "mining", title: "OSH in Mining", sector: "Mining", duration: "3 weeks" },
+  { id: "construction", title: "OSH in Construction", sector: "Construction", duration: "3 months" },
+  { id: "industrial-safety", title: "OSH in Industrial Safety", sector: "Industrial", duration: "3 months" },
+  { id: "mining", title: "OSH in Mining", sector: "Mining", duration: "3 months" },
   { id: "safety-management", title: "Safety Management (General)", sector: "General", duration: "1 week" },
   { id: "safety-for-all", title: "Safety Course for All", sector: "General", duration: "1 week" },
 ];

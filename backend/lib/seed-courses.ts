@@ -121,11 +121,11 @@ export async function runSeedCourses(
   ];
 
   const toSeed: Array<{ slug: CourseId; title: string; sector: string; duration: string; modules: SeedModule[] }> = [
-    { slug: "construction", title: "OSH in Construction", sector: "Construction", duration: "2 weeks", modules: constructionModules },
-    { slug: "industrial-safety", title: "OSH in Industrial Safety", sector: "Industrial", duration: "2 weeks", modules: industrialModules },
-    { slug: "mining", title: "OSH in Mining", sector: "Mining", duration: "3 weeks", modules: miningModules },
-    { slug: "safety-management", title: "Safety Management (General)", sector: "General", duration: "1 week", modules: safetyOnlyModules },
-    { slug: "safety-for-all", title: "Safety Course for All", sector: "General", duration: "1 week", modules: safetyForAllModules },
+    { slug: "construction", title: "OSH in Construction", sector: "Construction", duration: "3 months", modules: constructionModules },
+    { slug: "industrial-safety", title: "OSH in Industrial Safety", sector: "Industrial", duration: "3 months", modules: industrialModules },
+    { slug: "mining", title: "OSH in Mining", sector: "Mining", duration: "3 months", modules: miningModules },
+    { slug: "safety-management", title: "Safety Management (General)", sector: "General", duration: "3 months", modules: safetyOnlyModules },
+    { slug: "safety-for-all", title: "Safety Course for All", sector: "General", duration: "3 months", modules: safetyForAllModules },
   ];
 
   const orderBySlug: Record<string, number> = {
@@ -213,11 +213,11 @@ export interface CourseFromFolder {
 }
 
 const COURSE_META: Array<{ slug: string; title: string; sector: string; duration: string; order: number }> = [
-  { slug: "construction", title: "OSH in Construction", sector: "Construction", duration: "2 weeks", order: 1 },
-  { slug: "industrial-safety", title: "OSH in Industrial Safety", sector: "Industrial", duration: "2 weeks", order: 2 },
-  { slug: "mining", title: "OSH in Mining", sector: "Mining", duration: "3 weeks", order: 3 },
-  { slug: "safety-management", title: "Safety Management (General)", sector: "General", duration: "1 week", order: 4 },
-  { slug: "safety-for-all", title: "Safety Course for All", sector: "General", duration: "1 week", order: 5 },
+  { slug: "construction", title: "OSH in Construction", sector: "Construction", duration: "3 months", order: 1 },
+  { slug: "industrial-safety", title: "OSH in Industrial Safety", sector: "Industrial", duration: "3 months", order: 2 },
+  { slug: "mining", title: "OSH in Mining", sector: "Mining", duration: "3 months", order: 3 },
+  { slug: "safety-management", title: "Safety Management (General)", sector: "General", duration: "3 months", order: 4 },
+  { slug: "safety-for-all", title: "Safety Course for All", sector: "General", duration: "3 months", order: 5 },
 ];
 
 /**

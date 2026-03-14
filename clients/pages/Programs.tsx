@@ -6,7 +6,7 @@ const programs = [
   { icon: BookOpen, title: "Format", desc: "3 months Intensive or Weekend (2 months). Theory + practice.", color: "from-primary/10 to-accent/10", border: "border-primary" },
   { icon: GraduationCap, title: "Competency-Based", desc: "Risk assessment, case studies. Ready on completion.", color: "from-secondary/10 to-accent/10", border: "border-secondary" },
   { icon: Lightbulb, title: "Careers", desc: "Officer, Supervisor, Inspector, HSE. Experience: Manager.", color: "from-accent/10 to-primary/10", border: "border-accent" },
-  { icon: Rocket, title: "Services", desc: "Refresher, CPD, Consultancy, PPE. Lower risk.", color: "from-secondary/10 to-primary/10", border: "border-secondary" },
+  { icon: Rocket, title: "Services", desc: "Refresher, Consultancy. Lower risk.", color: "from-secondary/10 to-primary/10", border: "border-secondary" },
 ];
 
 const faqs = [

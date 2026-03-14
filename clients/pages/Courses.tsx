@@ -154,7 +154,7 @@ export default function Courses() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-10 scroll-reveal reveal-right-slow delay-400">
             <h2 className="text-2xl sm:text-3xl font-bold text-primary">Available courses</h2>
             {!user && (
-              <p className="text-sm text-gray-600">Click <strong>Enroll in this course</strong> on a card to go to the login page.</p>
+              <p className="text-sm text-gray-600">Click <strong>View materials</strong> on a card to go to the login page.</p>
             )}
           </div>
 
