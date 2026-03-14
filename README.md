@@ -102,6 +102,17 @@ pnpm test
 - **Root:** `.env` at project root (see `.env.example`).
 - **Backend:** Also reads `backend/.env` if present. Use for Firebase credentials, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `FRONTEND_URL` (CORS), etc.
 
+### Admin email notifications (optional)
+
+When someone **registers** or submits the **Contact** form, data is still saved to Firestore. Optionally, the admin can receive an email:
+
+- Set SMTP in `backend/.env`: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` (and optionally `SMTP_FROM`, `SMTP_SECURE`). Example: Gmail with an [App Password](https://support.google.com/accounts/answer/185833).
+- Notifications are sent to `ADMIN_EMAIL`. If SMTP is not set, registration and contact still work (Firestore only); no email is sent.
+
+### Netlify form detection (optional)
+
+The backend can POST a copy of registration and contact submissions to your Netlify site so they appear in **Netlify Forms**. Hidden forms in `index.html` (`name="registration"` and `name="contact"`) with `data-netlify="true"` are required; the backend uses `FRONTEND_URL` (or `NETLIFY_FORM_SUBMIT_URL`) to POST. Firestore remains the source of truth.
+
 ---
 
 ## Firebase

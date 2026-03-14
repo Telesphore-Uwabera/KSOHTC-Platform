@@ -40,6 +40,8 @@ const DashboardCourses = lazy(() => import("./pages/DashboardCourses"));
 const DashboardProgress = lazy(() => import("./pages/DashboardProgress"));
 const DashboardSettings = lazy(() => import("./pages/DashboardSettings"));
 const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Cookies = lazy(() => import("./pages/Cookies"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -114,6 +116,8 @@ const App = () => (
             <Route path="/industries" element={<Industries />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/cookies" element={<Cookies />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:courseId" element={<CourseDetail />} />
             <Route path="/courses/:courseId/modules/:moduleId/quiz/:assessmentId" element={<TakeModuleQuiz />} />

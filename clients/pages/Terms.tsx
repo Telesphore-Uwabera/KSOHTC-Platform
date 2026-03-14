@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
@@ -14,9 +15,12 @@ export default function Terms() {
               Terms and Conditions
             </h1>
             <p className="text-gray-600 text-sm sm:text-base">
-              These Terms and Conditions govern your use of the Kigali Safety OSH Training Center
+              These Terms and Conditions govern your use of the Kigali Safety & OSH Training Centre
               (KSOHTC) website and online learning platform. By registering, logging in, or using
               our services, you agree to these terms.
+            </p>
+            <p className="text-gray-500 text-xs sm:text-sm mt-2">
+              Last updated: March 2025
             </p>
           </div>
         </section>
@@ -97,10 +101,10 @@ export default function Terms() {
               </h2>
               <p>
                 If you have any questions about these Terms and Conditions, please reach out via
-                the contact information on our{" "}
-                <a href="/contact" className="text-primary font-semibold hover:underline">
+                our{" "}
+                <Link to="/contact" className="text-primary font-semibold hover:underline">
                   Contact page
-                </a>
+                </Link>
                 .
               </p>
             </section>

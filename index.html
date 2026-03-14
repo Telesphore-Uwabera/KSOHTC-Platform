@@ -71,6 +71,23 @@
   <body>
     <div id="root"></div>
 
+    <!-- Netlify form detection: backend POSTs here so submissions appear in Netlify Forms (optional). Firestore unchanged. -->
+    <form name="registration" data-netlify="true" netlify-honeypot="bot" hidden aria-hidden="true">
+      <input type="hidden" name="form-name" value="registration" />
+      <input name="name" type="text" />
+      <input name="email" type="email" />
+      <input name="phone" type="text" />
+      <input name="organization" type="text" />
+      <input name="sector" type="text" />
+    </form>
+    <form name="contact" data-netlify="true" netlify-honeypot="bot" hidden aria-hidden="true">
+      <input type="hidden" name="form-name" value="contact" />
+      <input name="name" type="text" />
+      <input name="email" type="email" />
+      <input name="phone" type="text" />
+      <textarea name="message"></textarea>
+    </form>
+
     <script type="module" src="/clients/App.tsx"></script>
   </body>
 </html>

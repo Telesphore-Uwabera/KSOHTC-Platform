@@ -23,6 +23,7 @@ const faqs = [
 export default function Contact() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -32,8 +33,8 @@ export default function Contact() {
     e.preventDefault();
     setError("");
     setSuccess(false);
-    if (!name.trim() || !email.trim() || !message.trim()) {
-      setError("Please fill in name, email, and message.");
+    if (!name.trim() || !email.trim() || !phone.trim() || !message.trim()) {
+      setError("Please fill in name, email, phone, and message.");
       return;
     }
     setLoading(true);
@@ -41,7 +42,7 @@ export default function Contact() {
       const res = await fetch(getApiBase() + "/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), email: email.trim(), message: message.trim() }),
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), phone: phone.trim(), message: message.trim() }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -51,6 +52,7 @@ export default function Contact() {
       setSuccess(true);
       setName("");
       setEmail("");
+      setPhone("");
       setMessage("");
     } catch {
       setError("Unable to reach the server. Check your connection and try again.");
@@ -139,6 +141,14 @@ export default function Contact() {
                   className="contact-input w-full px-4 py-3 sm:px-6 sm:py-4 rounded-[30px] border-2 border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                 />
               </div>
+              <input
+                type="tel"
+                placeholder="Phone number"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+                className="contact-input w-full px-4 py-3 sm:px-6 sm:py-4 rounded-[30px] border-2 border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+              />
               <textarea
                 placeholder="Your Message"
                 rows={4}

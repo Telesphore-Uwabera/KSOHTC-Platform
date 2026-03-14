@@ -17,6 +17,9 @@ importers:
       firebase-admin:
         specifier: ^13.0.1
         version: 13.7.0
+      nodemailer:
+        specifier: ^8.0.2
+        version: 8.0.2
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -4000,6 +4003,10 @@ packages:
 
   node-releases@2.0.19:
     resolution: {integrity: sha512-xxOWJsBKtzAq7DY0J+DTzuz58K8e7sJbdgwkbMWQe8UYB6ekmsQ45q0M/tJDsGaZmbC+l7n57UV8Hl5tHxO9uw==}
+
+  nodemailer@8.0.2:
+    resolution: {integrity: sha512-zbj002pZAIkWQFxyAaqoxvn+zoIwRnS40hgjqTXudKOOJkiFFgBeNqjgD3/YCR12sZnrghWYBY+yP1ZucdDRpw==}
+    engines: {node: '>=6.0.0'}
 
   nopt@9.0.0:
     resolution: {integrity: sha512-Zhq3a+yFKrYwSBluL4H9XP3m3y5uvQkB/09CwDruCiRmR/UJYnn9W4R48ry0uGC70aeTPKLynBtscP9efFFcPw==}
@@ -9220,6 +9227,8 @@ snapshots:
     optional: true
 
   node-releases@2.0.19: {}
+
+  nodemailer@8.0.2: {}
 
   nopt@9.0.0:
     dependencies:

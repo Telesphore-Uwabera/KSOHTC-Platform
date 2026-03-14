@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import type { User, UserCreate, UserPublic, LearnerSector } from "@shared/api";
 import { getDb, usersCollection, enrollmentsCollection, progressCollection, submissionsCollection } from "../lib/firestore";
+import { notifyNewRegistration, notifyLearnerApproved } from "../lib/notify";
 import type { EnrollmentWithPercent } from "./enrollments";
 import { getEnrollmentsForUser } from "./enrollments";
 
@@ -22,9 +23,14 @@ function generateId(): string {
 export async function postRegister(req: Request, res: Response): Promise<void> {
   try {
     const body = req.body as UserCreate;
-    const { email, password, name, organization, sector } = body;
+    const { email, password, name, phone, organization, sector } = body;
     if (!email || !password || !name) {
       res.status(400).json({ error: "Email, password, and name are required." });
+      return;
+    }
+    const phoneVal = typeof phone === "string" ? phone.trim() : "";
+    if (!phoneVal) {
+      res.status(400).json({ error: "Phone number is required." });
       return;
     }
     const sectorVal = sector && VALID_SECTORS.includes(sector) ? sector : undefined;
@@ -39,6 +45,7 @@ export async function postRegister(req: Request, res: Response): Promise<void> {
       email: email.trim(),
       password,
       name: name.trim(),
+      phone: phoneVal,
       organization: organization?.trim(),
       sector: sectorVal,
       approved: false,
@@ -48,6 +55,15 @@ export async function postRegister(req: Request, res: Response): Promise<void> {
       Object.entries(user).filter(([, v]) => v !== undefined)
     ) as Record<string, unknown>;
     await col.doc(user.id).set(forFirestore);
+    // Notify admin only after successful Firestore write (best option: no email for failed or duplicate registrations)
+    notifyNewRegistration({
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      organization: user.organization,
+      sector: user.sector,
+      createdAt: user.createdAt,
+    }).catch((err) => console.error("[REGISTER] Notify failed:", err));
     res.status(201).json({ user: toPublic(user) });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
@@ -150,6 +166,9 @@ export async function patchUserApprove(req: Request, res: Response): Promise<voi
     }
     await ref.update({ approved: true });
     const user = doc.data() as User;
+    notifyLearnerApproved({ name: user.name, email: user.email }).catch((err) =>
+      console.error("[APPROVE] Notify learner failed:", err)
+    );
     res.json({ user: toPublic({ ...user, approved: true }) });
   } catch (e) {
     console.error("Approve user error:", e);
@@ -268,6 +287,12 @@ export async function putUser(req: Request, res: Response): Promise<void> {
     ) as Record<string, unknown>;
     await ref.update(forFirestore);
     const updated = (await ref.get()).data() as User;
+    const wasJustApproved = body.approved === true && !current.approved;
+    if (wasJustApproved) {
+      notifyLearnerApproved({ name: updated.name, email: updated.email }).catch((err) =>
+        console.error("[APPROVE] Notify learner failed:", err)
+      );
+    }
     res.json({ user: toPublic(updated) });
   } catch (e) {
     console.error("Update user error:", e);

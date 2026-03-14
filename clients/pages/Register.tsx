@@ -19,6 +19,7 @@ export default function Register() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [organization, setOrganization] = useState("");
   const [sector, setSector] = useState<"" | "construction" | "industrial-safety" | "mining">("");
   const [password, setPassword] = useState("");
@@ -37,6 +38,10 @@ export default function Register() {
       setError("Password must be at least 8 characters.");
       return;
     }
+    if (!phone.trim()) {
+      setError("Phone number is required.");
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch(getApiBase() + "/api/register", {
@@ -46,6 +51,7 @@ export default function Register() {
           email,
           password,
           name,
+          phone: phone.trim(),
           organization: organization || undefined,
           sector: sector || undefined,
         }),
@@ -130,12 +136,15 @@ export default function Register() {
                     </div>
                     <div>
                       <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1.5">
-                        Phone number
+                        Phone number <span className="text-red-500">*</span>
                       </label>
                       <input
                         id="phone"
                         type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
                         placeholder="+250 7XX XXX XXX"
+                        required
                         className="w-full px-4 py-3 rounded-lg border-2 border-gray-200 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                       />
                     </div>
@@ -256,7 +265,9 @@ export default function Register() {
                   />
                   <label htmlFor="terms" className="text-sm text-gray-600">
                     I agree to the{" "}
-                    <Link to="/contact" className="font-semibold text-primary hover:underline">terms of service</Link>
+                    <Link to="/terms" className="font-semibold text-primary hover:underline">Terms &amp; Conditions</Link>
+                    {" "}and{" "}
+                    <Link to="/privacy" className="font-semibold text-primary hover:underline">Privacy Policy</Link>
                     {" "}and understand that my account must be approved by an admin before I can access courses.
                   </label>
                 </div>

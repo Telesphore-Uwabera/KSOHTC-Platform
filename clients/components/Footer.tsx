@@ -98,8 +98,9 @@ export default function Footer() {
               © {new Date().getFullYear()} Kigali Safety OSH Training Center. All rights reserved.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 md:gap-6 text-xs sm:text-sm text-gray-400">
-              <Link to="/contact" className="hover:text-accent transition-colors duration-300">Privacy Policy</Link>
+              <Link to="/privacy" className="hover:text-accent transition-colors duration-300">Privacy Policy</Link>
               <Link to="/terms" className="hover:text-accent transition-colors duration-300">Terms &amp; Conditions</Link>
+              <Link to="/cookies" className="hover:text-accent transition-colors duration-300">Cookie Policy</Link>
               <a
                 href="https://uwaberatelesphore.netlify.app/"
                 target="_blank"

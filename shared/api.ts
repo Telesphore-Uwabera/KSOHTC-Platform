@@ -34,6 +34,7 @@ export interface User {
   email: string;
   password: string; // stored in plain text for demo; use hash in production
   name: string;
+  phone?: string;
   organization?: string;
   /** Sector of interest: learner sees only this course + safety-management. Omit = see all. */
   sector?: LearnerSector;
@@ -42,7 +43,7 @@ export interface User {
   createdAt: string;
 }
 
-export type UserCreate = Pick<User, "email" | "password" | "name" | "organization" | "sector">;
+export type UserCreate = Pick<User, "email" | "password" | "name" | "phone" | "organization" | "sector">;
 export type UserPublic = Omit<User, "password">;
 
 /** Course identifier (must match client course ids). safety-for-all = common safety course after the three main courses */
