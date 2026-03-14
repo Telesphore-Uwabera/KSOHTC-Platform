@@ -1084,10 +1084,10 @@
     transform: translateZ(0);
   }
 
-  /* Three hero lines: typing, bouncing, folding + increased height + staggered delays */
+  /* Three hero lines: typing (7s, no delay), bouncing, folding + staggered delays */
   .hero-text-line-1 {
     opacity: 0;
-    animation: fadeInUp 0.8s 0.5s var(--ease-out-expo) forwards;
+    animation: fadeInUp 0.4s 0s var(--ease-out-expo) forwards;
     transform: translateZ(0);
   }
   .hero-typing-inner {
@@ -1096,7 +1096,7 @@
     max-width: 0;
     overflow: hidden;
     vertical-align: bottom;
-    animation: heroTypingReveal 5s steps(32) 7s forwards, heroTypingLoop 10s steps(32) 12s infinite;
+    animation: heroTypingReveal 7s steps(32) 0s forwards, heroTypingLoop 10s steps(32) 7s infinite;
   }
 
   .hero-text-line-2 {
