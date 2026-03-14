@@ -179,7 +179,7 @@ function UploadCoverBlock({
   return (
     <div className="flex flex-wrap items-end gap-2">
       {currentCoverUrl && (
-        <img src={currentCoverUrl} alt="Course cover" className="h-12 w-auto rounded-lg border border-gray-200 object-cover" />
+        <img src={currentCoverUrl} alt="Course cover" className="h-12 w-auto rounded-lg border border-gray-200 object-cover" loading="lazy" decoding="async" />
       )}
       <input
         type="file"

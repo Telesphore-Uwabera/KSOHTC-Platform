@@ -164,6 +164,7 @@ function PdfViewerModal({
             src={src}
             className="w-full h-full rounded-lg bg-white border-4 border-green-500"
             allow="fullscreen"
+            loading="lazy"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-white/80 px-6 text-center">
@@ -331,6 +332,7 @@ function ModuleBlock({
                       src={youtubeEmbedUrl(lesson.youtubeUrl)}
                       className="w-full h-full"
                       allowFullScreen
+                      loading="lazy"
                     />
                   </div>
                 )}
@@ -551,6 +553,7 @@ export default function CourseDetail() {
             src="/ksohtc-3.webp"
             alt=""
             className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-move-endless"
+            loading="lazy"
             decoding="async"
             aria-hidden
           />

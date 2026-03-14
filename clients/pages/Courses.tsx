@@ -97,7 +97,7 @@ export default function Courses() {
 
       <section className="relative text-white py-16 sm:py-20 md:py-28 min-h-[40vh] flex flex-col justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="/ksohtc-3.webp" alt="" className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-move-endless" decoding="async" aria-hidden />
+          <img src="/ksohtc-3.webp" alt="" className="w-full h-full object-cover hero-zoom bg-image-animate bg-image-move-endless" loading="lazy" decoding="async" aria-hidden />
           <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
           <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-secondary/90" />
         </div>
@@ -190,7 +190,7 @@ export default function Courses() {
                 >
                   <div className="w-full h-32 shrink-0 bg-gray-100 flex items-center justify-center overflow-hidden">
                     {coverUrl ? (
-                      <img src={coverUrl} alt="" className="w-full h-full object-cover" />
+                      <img src={coverUrl} alt="" className="w-full h-full object-cover" loading="lazy" decoding="async" />
                     ) : (
                       <span className="inline-flex w-12 h-12 rounded-xl bg-primary/10 items-center justify-center text-primary">
                         <BookOpen className="w-6 h-6" />

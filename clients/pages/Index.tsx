@@ -100,6 +100,7 @@ export default function Index() {
               alt=""
               className={`absolute inset-0 w-full h-full object-cover bg-image-animate bg-image-move-endless transition-opacity ease-out ${i === heroIndex ? "opacity-100 z-[0]" : "opacity-0 z-0 pointer-events-none"}`}
               style={{ transitionDuration: `${HERO_FADE_DURATION_MS}ms` }}
+              loading={i === 0 ? "eager" : "lazy"}
               decoding="async"
               aria-hidden
             />
