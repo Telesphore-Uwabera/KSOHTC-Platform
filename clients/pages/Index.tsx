@@ -63,38 +63,38 @@ export default function Index() {
         </div>
 
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center flex-1 justify-center">
-          <div className="w-full max-w-7xl flex flex-col items-center space-y-4 sm:space-y-6">
-            <div className="inline-flex items-center gap-2 bg-accent/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full hero-reveal-slow" style={{ animationDelay: "0.3s", animationFillMode: "both" }}>
+          <div className="w-full max-w-7xl flex flex-col items-center space-y-4 sm:space-y-5">
+            <div className="inline-flex items-center gap-2 bg-accent/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full hero-reveal-slow text-animate-fade-in-out" style={{ animationDelay: "0.3s", animationFillMode: "both" }}>
               <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-accent" />
-              <span className="text-accent font-semibold text-xs sm:text-sm text-animate-fade-in-out">Professional OSH Training Institution</span>
+              <span className="text-accent font-semibold text-xs sm:text-sm">Professional OSH Training Institution</span>
             </div>
-            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight hero-reveal-slow sm:whitespace-nowrap" style={{ animationDelay: "0.7s", animationFillMode: "both" }}>
-              Kigali Safety OSH Training Center
+            <h1 className="text-xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight hero-text-line-1 sm:whitespace-nowrap mt-2 sm:mt-4">
+              <span className="hero-typing-inner">Kigali Safety OSH Training Center</span>
             </h1>
-            <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-accent font-bold hero-reveal-slow" style={{ animationDelay: "1.1s", animationFillMode: "both" }}>
+            <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-accent font-bold hero-text-line-2 pt-4 sm:pt-6 lg:pt-8">
               Safety today, Prosperity tomorrow.
             </p>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-200 w-full max-w-full leading-relaxed hero-reveal-slow" style={{ animationDelay: "1.5s", animationFillMode: "both" }}>
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-200 w-full max-w-full leading-relaxed hero-text-line-3 pt-4 sm:pt-6 lg:pt-8">
               Become safety Manager in <span className="font-bold text-accent drop-shadow-sm">3 months</span>
             </p>
           </div>
         </div>
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-6 sm:pb-8 flex flex-col items-center">
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-10 flex flex-col items-center">
           <div className="flex flex-row flex-nowrap gap-4 sm:gap-6">
             <Link
               to={{ pathname: "/login", state: { from: "/dashboard" } }}
-              className="group cursor-pointer bg-transparent border-2 border-white text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-bold text-sm sm:text-base transition-all duration-300 hover:bg-white hover:text-primary hover:scale-105 hover:shadow-xl hover:border-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent active:scale-[0.98] inline-flex items-center justify-center shrink-0"
+              className="group cursor-pointer bg-transparent border-2 border-white text-white px-6 py-4 sm:px-8 sm:py-5 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 hover:bg-white hover:text-primary hover:scale-105 hover:shadow-xl hover:border-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent active:scale-[0.98] inline-flex items-center justify-center shrink-0 min-h-[3.25rem] sm:min-h-[3.75rem]"
             >
               ENROLL NOW!
-              <Target className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5 group-hover:translate-x-1 transition-transform" />
+              <Target className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </Link>
             <a
               href="#who"
-              className="group cursor-pointer bg-transparent border-2 border-white text-white px-4 py-2 sm:px-5 sm:py-2.5 rounded-lg font-bold text-sm sm:text-base transition-all duration-300 hover:bg-white hover:text-primary hover:scale-105 hover:shadow-xl hover:border-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent active:scale-[0.98] inline-flex items-center justify-center shrink-0"
+              className="group cursor-pointer bg-transparent border-2 border-white text-white px-6 py-4 sm:px-8 sm:py-5 rounded-xl font-bold text-base sm:text-lg transition-all duration-300 hover:bg-white hover:text-primary hover:scale-105 hover:shadow-xl hover:border-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-transparent active:scale-[0.98] inline-flex items-center justify-center shrink-0 min-h-[3.25rem] sm:min-h-[3.75rem]"
             >
               Learn More
-              <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-1.5 group-hover:translate-y-0.5 transition-transform" />
+              <Shield className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-y-0.5 transition-transform" />
             </a>
           </div>
         </div>

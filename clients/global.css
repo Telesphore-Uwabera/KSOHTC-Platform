@@ -683,6 +683,57 @@
   }
 }
 
+/* Hero section: continuous motion for text (increased height + typing / bounce / fold) */
+@keyframes heroTextFloat {
+  0%, 100% { transform: translateY(0) translateZ(0); }
+  50% { transform: translateY(-14px) translateZ(0); }
+}
+
+@keyframes heroTextGlow {
+  0%, 100% { opacity: 1; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
+  50% { opacity: 0.96; text-shadow: 0 0 30px rgba(255,255,255,0.2); }
+}
+
+@keyframes heroTextScale {
+  0%, 100% { transform: scale(1) translateZ(0); }
+  50% { transform: scale(1.02) translateZ(0); }
+}
+
+/* Bouncing: higher bounce with elastic feel */
+@keyframes heroTextBounce {
+  0%, 100% { transform: translateY(0) translateZ(0); }
+  25% { transform: translateY(-20px) translateZ(0); }
+  50% { transform: translateY(0) translateZ(0); }
+  75% { transform: translateY(-12px) translateZ(0); }
+}
+
+/* Folding: subtle 3D fold (rotateX) */
+@keyframes heroTextFold {
+  0%, 100% { transform: perspective(400px) rotateX(0deg) translateZ(0); }
+  50% { transform: perspective(400px) rotateX(-12deg) translateZ(0); }
+}
+
+/* Typing: reveal text by expanding width, then hold (loop resets) */
+@keyframes heroTypingReveal {
+  0% { max-width: 0; overflow: hidden; opacity: 1; }
+  2% { overflow: hidden; }
+  78% { max-width: 42ch; overflow: hidden; }
+  100% { max-width: 42ch; overflow: visible; }
+}
+
+@keyframes heroTypingLoop {
+  0% { max-width: 42ch; overflow: visible; }
+  5% { max-width: 0; overflow: hidden; }
+  8% { overflow: hidden; }
+  80% { max-width: 42ch; overflow: hidden; }
+  100% { max-width: 42ch; overflow: visible; }
+}
+
+@keyframes heroTypingCursor {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
 @layer components {
   /* Image overlay: semi-transparent layer on content images */
   .img-overlay {
@@ -1021,6 +1072,44 @@
     opacity: 0;
     animation: fadeInUp 1.1s var(--ease-out-expo) forwards;
     transform: translateZ(0);
+  }
+
+  .hero-text-continuous {
+    animation: fadeInUp 1.1s var(--ease-out-expo) forwards, heroTextFloat 4s ease-in-out 1.3s infinite;
+    transform: translateZ(0);
+  }
+
+  .hero-text-glow {
+    animation: fadeInUp 1.1s var(--ease-out-expo) forwards, heroTextGlow 3s ease-in-out 1.3s infinite;
+    transform: translateZ(0);
+  }
+
+  /* Three hero lines: typing, bouncing, folding + increased height + staggered delays */
+  .hero-text-line-1 {
+    opacity: 0;
+    animation: fadeInUp 0.8s 0.5s var(--ease-out-expo) forwards;
+    transform: translateZ(0);
+  }
+  .hero-typing-inner {
+    display: inline-block;
+    white-space: nowrap;
+    max-width: 0;
+    overflow: hidden;
+    vertical-align: bottom;
+    animation: heroTypingReveal 5s steps(32) 7s forwards, heroTypingLoop 10s steps(32) 12s infinite;
+  }
+
+  .hero-text-line-2 {
+    opacity: 0;
+    animation: fadeInUp 1.1s 1s var(--ease-out-expo) forwards, heroTextBounce 4s ease-in-out 2.2s infinite;
+    transform: translateZ(0);
+  }
+  .hero-text-line-3 {
+    opacity: 0;
+    animation: fadeInUp 1.1s 1.4s var(--ease-out-expo) forwards, heroTextFold 3.2s ease-in-out 2.6s infinite;
+    transform: translateZ(0);
+    transform-origin: center 0.3em;
+    perspective: 400px;
   }
 
   /* Section flow: use on section wrappers for smooth entry */
