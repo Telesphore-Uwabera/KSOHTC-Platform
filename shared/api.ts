@@ -32,7 +32,7 @@ export type LearnerSector = "construction" | "industrial-safety" | "mining";
 export interface User {
   id: string;
   email: string;
-  password: string; // stored in plain text for demo; use hash in production
+  password: string; // stored as bcrypt hash; plain-text fallback for legacy users
   name: string;
   phone?: string;
   organization?: string;

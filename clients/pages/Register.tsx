@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -17,6 +17,10 @@ const COUNTRIES = ["Rwanda", "Uganda", "Kenya", "Tanzania", "Burundi", "Other"];
 
 export default function Register() {
   const navigate = useNavigate();
+  useEffect(() => {
+    document.title = "Register | KSOHTC";
+    return () => { document.title = "Kigali Safety OSH Training Center - KSOHTC"; };
+  }, []);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");

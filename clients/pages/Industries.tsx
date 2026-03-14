@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { HardHat, Building, Pickaxe } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -14,6 +15,10 @@ const faqs = [
 ];
 
 export default function Industries() {
+  useEffect(() => {
+    document.title = "Industries | KSOHTC";
+    return () => { document.title = "Kigali Safety OSH Training Center - KSOHTC"; };
+  }, []);
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />

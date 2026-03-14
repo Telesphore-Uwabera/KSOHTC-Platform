@@ -40,12 +40,14 @@ All pages that need dynamic data call the backend API; the backend reads/writes 
 
 | Page | Route | Backend API / data |
 |------|--------|---------------------|
-| **Home** | `/` | `GET /api/testimonials` (testimonials) |
+| **Home** | `/` | `GET /api/testimonials`; contact form `POST /api/contact` (name, email, phone, message) |
 | **About** | `/about` | Static content |
 | **Programs** | `/programs` | Static content |
 | **Industries** | `/industries` | Static content |
-| **Contact** | `/contact` | `POST /api/contact` (saves inquiries to Firestore) |
+| **Contact** | `/contact` | `POST /api/contact` (saves inquiries to Firestore; name, email, phone, message required) |
 | **Terms & Conditions** | `/terms` | Static content |
+| **Privacy Policy** | `/privacy` | Static content |
+| **Cookie Policy** | `/cookies` | Static content |
 | **Courses** | `/courses` | `GET /api/course-content/courses`, `GET /api/course-content/courses-from-public` |
 | **Course detail** | `/courses/:courseId` | Course content, modules, lessons, progress, enrollments, resolve-pdf |
 | **Login** | `/login` | `POST /api/login` (users) |
@@ -69,14 +71,14 @@ Collections used by the backend (all access via Admin SDK; no client direct acce
 
 | Collection | Purpose |
 |------------|---------|
-| **users** | Registrations, login, approval, sector; admin/learner roles |
+| **users** | Registrations, login, approval, sector; name, email, phone (required), organization; passwords stored as bcrypt hashes (plain-text fallback for legacy users) |
 | **testimonials** | Home page “What Our Participants Say”; admin-managed |
 | **quizzes** | Per-course legacy quiz (admin editable) |
 | **courses** | Course metadata, modules, lessons, assessments (course content) |
 | **enrollments** | Learner enrollment in courses; status (active/completed) |
 | **submissions** | Quiz/assessment submissions |
 | **progress** | Per-user, per-course: completed lessons, passed assessments |
-| **inquiries** | Contact form submissions (name, email, message, createdAt) |
+| **inquiries** | Contact form submissions (name, email, phone, message, createdAt) |
 
 ---
 
@@ -104,10 +106,10 @@ pnpm test
 
 ### Admin email notifications (optional)
 
-When someone **registers** or submits the **Contact** form, data is still saved to Firestore. Optionally, the admin can receive an email:
+When someone **registers** or submits the **Contact** form (including from the **Home** page contact section), data is saved to Firestore. Optionally:
 
-- Set SMTP in `backend/.env`: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` (and optionally `SMTP_FROM`, `SMTP_SECURE`). Example: Gmail with an [App Password](https://support.google.com/accounts/answer/185833).
-- Notifications are sent to `ADMIN_EMAIL`. If SMTP is not set, registration and contact still work (Firestore only); no email is sent.
+- **Admin** receives an email with registrant/contact details (name, email, phone, etc.). Set SMTP in `backend/.env`: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` (and optionally `SMTP_FROM`, `SMTP_SECURE`). Example: Gmail with an [App Password](https://support.google.com/accounts/answer/185833). Notifications go to `ADMIN_EMAIL`. If SMTP is not set, no email is sent (Firestore still saves).
+- **Learner** receives an email when their account is **approved** (same SMTP config). Approval happens via Admin → Learners (approve) or when admin sets approved to true on edit.
 
 ### Netlify form detection (optional)
 
@@ -219,3 +221,11 @@ Backend and frontend are separate: backend on Render, frontend on Netlify; front
 
 - **New API route:** Add handler in `backend/routes/`, register in `backend/index.ts` under `/api/...`. Optionally add types in `shared/api.ts`.
 - **New page:** Create `clients/pages/MyPage.tsx`, add `<Route path="/my-page" element={<MyPage />} />` in `clients/App.tsx` (above the `*` route).
+
+---
+
+## Security and UX notes
+
+- **Passwords:** User passwords are hashed with **bcrypt** before storage. Existing users with plain-text passwords (if any) still log in via a fallback; new registrations and admin-created users use hashes only.
+- **Document titles:** Key pages set `document.title` (e.g. "Contact | KSOHTC") for better tabs and SEO; the default title is restored on navigation.
+- **404:** The not-found page uses the same Header and Footer as the rest of the site and a "Return to Home" link.

@@ -1,9 +1,25 @@
 import { Request, Response } from "express";
+import bcrypt from "bcryptjs";
 import type { User, UserCreate, UserPublic, LearnerSector } from "@shared/api";
 import { getDb, usersCollection, enrollmentsCollection, progressCollection, submissionsCollection } from "../lib/firestore";
 import { notifyNewRegistration, notifyLearnerApproved } from "../lib/notify";
 import type { EnrollmentWithPercent } from "./enrollments";
 import { getEnrollmentsForUser } from "./enrollments";
+
+const BCRYPT_ROUNDS = 10;
+
+async function hashPassword(plain: string): Promise<string> {
+  return bcrypt.hash(plain, BCRYPT_ROUNDS);
+}
+
+function isHashed(stored: string): boolean {
+  return typeof stored === "string" && stored.startsWith("$2");
+}
+
+async function verifyPassword(plain: string, stored: string): Promise<boolean> {
+  if (isHashed(stored)) return bcrypt.compare(plain, stored);
+  return plain === stored;
+}
 
 const VALID_SECTORS: LearnerSector[] = ["construction", "industrial-safety", "mining"];
 
@@ -40,10 +56,11 @@ export async function postRegister(req: Request, res: Response): Promise<void> {
       res.status(409).json({ error: "An account with this email already exists." });
       return;
     }
+    const passwordHash = await hashPassword(password);
     const user: User = {
       id: generateId(),
       email: email.trim(),
-      password,
+      password: passwordHash,
       name: name.trim(),
       phone: phoneVal,
       organization: organization?.trim(),
@@ -108,7 +125,8 @@ export async function postLogin(req: Request, res: Response): Promise<void> {
       return;
     }
     const user = doc.data() as User;
-    if (user.password !== password) {
+    const passwordValid = await verifyPassword(password, user.password);
+    if (!passwordValid) {
       res.status(401).json({ error: "Invalid email or password." });
       return;
     }
@@ -212,10 +230,11 @@ export async function postUser(req: Request, res: Response): Promise<void> {
       res.status(409).json({ error: "An account with this email already exists." });
       return;
     }
+    const passwordHash = await hashPassword(password);
     const user: User = {
       id: generateId(),
       email: email.trim(),
-      password,
+      password: passwordHash,
       name: name.trim(),
       organization: organization?.trim(),
       sector: sectorVal,
@@ -280,7 +299,7 @@ export async function putUser(req: Request, res: Response): Promise<void> {
       approved: body.approved !== undefined ? body.approved : current.approved,
     };
     if (body.password !== undefined && body.password !== "") {
-      updates.password = body.password;
+      updates.password = await hashPassword(body.password);
     }
     const forFirestore = Object.fromEntries(
       Object.entries(updates).filter(([, v]) => v !== undefined)

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle2, MapPin, Phone, Mail, Shield, BookOpen, HardHat, Building, Pickaxe, GraduationCap, Lightbulb, Rocket, Crown, Star, Award, Target, Sparkles, Building2, UserCheck, AlertTriangle, Users, Globe, Quote } from "lucide-react";
+import { CheckCircle2, MapPin, Phone, Mail, Shield, BookOpen, HardHat, Building, Pickaxe, GraduationCap, Lightbulb, Rocket, Crown, Star, Award, Target, Sparkles, Building2, UserCheck, AlertTriangle, Users, Globe, Quote, Loader2, CheckCircle } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import type { Testimonial } from "@shared/api";
@@ -19,10 +19,60 @@ async function fetchTestimonials(): Promise<Testimonial[]> {
 
 export default function Index() {
   const [heroIndex, setHeroIndex] = useState(0);
+  const [contactName, setContactName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [contactMessage, setContactMessage] = useState("");
+  const [contactLoading, setContactLoading] = useState(false);
+  const [contactError, setContactError] = useState("");
+  const [contactSuccess, setContactSuccess] = useState(false);
+
+  useEffect(() => {
+    document.title = "KSOHTC | Occupational Safety & Health Training Rwanda";
+    return () => { document.title = "Kigali Safety OSH Training Center - KSOHTC"; };
+  }, []);
+
   useEffect(() => {
     const t = setInterval(() => setHeroIndex((i) => (i + 1) % HERO_IMAGES.length), HERO_INTERVAL_MS);
     return () => clearInterval(t);
   }, []);
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setContactError("");
+    setContactSuccess(false);
+    if (!contactName.trim() || !contactEmail.trim() || !contactPhone.trim() || !contactMessage.trim()) {
+      setContactError("Please fill in name, email, phone, and message.");
+      return;
+    }
+    setContactLoading(true);
+    try {
+      const res = await fetch(getApiBase() + "/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: contactName.trim(),
+          email: contactEmail.trim(),
+          phone: contactPhone.trim(),
+          message: contactMessage.trim(),
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setContactError((data as { error?: string }).error ?? "Failed to send message. Please try again.");
+        return;
+      }
+      setContactSuccess(true);
+      setContactName("");
+      setContactEmail("");
+      setContactPhone("");
+      setContactMessage("");
+    } catch {
+      setContactError("Unable to reach the server. Check your connection and try again.");
+    } finally {
+      setContactLoading(false);
+    }
+  };
 
   const { data: testimonials = [], isLoading } = useQuery({
     queryKey: ["testimonials"],
@@ -556,26 +606,52 @@ export default function Index() {
               {/* Right half: form */}
               <div className="flex flex-col justify-center p-6 sm:p-8 md:p-10">
                 <p className="text-primary font-semibold text-sm sm:text-base mb-4">Send us a message</p>
-                <form className="space-y-4">
+                <form className="space-y-4" onSubmit={handleContactSubmit}>
                   <input
                     type="text"
                     placeholder="Your Name"
                     aria-label="Your Name"
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
+                    required
                     className="contact-input w-full px-5 py-3.5 sm:px-6 sm:py-4 rounded-[30px] bg-gray-50 border-2 border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
                   />
                   <input
                     type="email"
                     placeholder="Your Email"
                     aria-label="Your Email"
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
+                    required
+                    className="contact-input w-full px-5 py-3.5 sm:px-6 sm:py-4 rounded-[30px] bg-gray-50 border-2 border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Phone number"
+                    aria-label="Phone number"
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                    required
                     className="contact-input w-full px-5 py-3.5 sm:px-6 sm:py-4 rounded-[30px] bg-gray-50 border-2 border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20"
                   />
                   <textarea
                     placeholder="Your Message"
                     rows={4}
                     aria-label="Your Message"
+                    value={contactMessage}
+                    onChange={(e) => setContactMessage(e.target.value)}
+                    required
                     className="contact-input w-full px-5 py-3.5 sm:px-6 sm:py-4 rounded-[30px] bg-gray-50 border-2 border-gray-200 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/20 resize-none"
                   />
-                  <button type="button" className="contact-btn-primary w-full bg-gradient-to-r from-accent to-accent/90 text-black font-bold py-3.5 sm:py-4 rounded-[30px] hover:scale-[1.01] active:scale-[0.99]">
+                  {contactError && <p className="text-red-600 text-sm">{contactError}</p>}
+                  {contactSuccess && (
+                    <p className="text-green-700 text-sm flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4" />
+                      Message sent. We will get back to you soon.
+                    </p>
+                  )}
+                  <button type="submit" disabled={contactLoading} className="contact-btn-primary w-full bg-gradient-to-r from-accent to-accent/90 text-black font-bold py-3.5 sm:py-4 rounded-[30px] hover:scale-[1.01] active:scale-[0.99] disabled:opacity-70 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2">
+                    {contactLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
                     Send Message
                   </button>
                 </form>

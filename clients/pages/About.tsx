@@ -1,8 +1,13 @@
+import { useEffect } from "react";
 import { CheckCircle2, Shield, HardHat, Building, Pickaxe, Crown, Star, Award, Sparkles, Building2, UserCheck, AlertTriangle, Users, Globe, Target } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 export default function About() {
+  useEffect(() => {
+    document.title = "About Us | KSOHTC";
+    return () => { document.title = "Kigali Safety OSH Training Center - KSOHTC"; };
+  }, []);
   return (
     <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />

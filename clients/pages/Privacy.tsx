@@ -1,8 +1,15 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
+const DEFAULT_TITLE = "Kigali Safety OSH Training Center - KSOHTC";
+
 export default function Privacy() {
+  useEffect(() => {
+    document.title = "Privacy Policy | KSOHTC";
+    return () => { document.title = DEFAULT_TITLE; };
+  }, []);
   return (
     <div className="min-h-screen bg-white overflow-x-hidden flex flex-col">
       <Header />

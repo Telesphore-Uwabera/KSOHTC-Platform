@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { HardHat, Building, Pickaxe, Shield, ArrowRight, Clock, LogOut, BookOpen } from "lucide-react";
@@ -70,6 +70,11 @@ export default function Courses() {
   const user = getStoredUser();
   const pending = user && !user.approved;
   const canAccess = user && user.approved;
+
+  useEffect(() => {
+    document.title = "Courses | KSOHTC";
+    return () => { document.title = "Kigali Safety OSH Training Center - KSOHTC"; };
+  }, []);
 
   const { data: allCourses = [], isLoading, error } = useQuery({
     queryKey: ["course-content", "courses"],
