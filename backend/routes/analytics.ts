@@ -6,8 +6,8 @@ const COURSES: CoursePublic[] = [
   { id: "construction", title: "OSH in Construction", sector: "Construction", duration: "3 months" },
   { id: "industrial-safety", title: "OSH in Industrial Safety", sector: "Industrial", duration: "3 months" },
   { id: "mining", title: "OSH in Mining", sector: "Mining", duration: "3 months" },
-  { id: "safety-management", title: "Safety Management (General)", sector: "General", duration: "1 week" },
-  { id: "safety-for-all", title: "Safety Course for All", sector: "General", duration: "1 week" },
+  { id: "safety-management", title: "Safety Management (General)", sector: "General", duration: "3 months" },
+  { id: "safety-for-all", title: "Safety Course for All", sector: "General", duration: "3 months" },
 ];
 
 /** GET /api/analytics/course-usage – course usage for dashboard (main dashboard only) */

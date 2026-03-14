@@ -25,11 +25,15 @@ import { submissionsCollection, progressCollection } from "../lib/firestore";
 import { getCoursesFromPublicFolder, getLessonsFromPublicFolder } from "../lib/seed-courses";
 import type { SubmissionDoc, ProgressDoc } from "@shared/api";
 
+/** All courses display duration as 3 months. */
+const DISPLAY_DURATION = "3 months";
+
 /** GET /api/course-content/courses-from-public – list courses by reading public/courses folder (no Firestore) */
 export async function getCoursesFromPublic(_req: Request, res: Response): Promise<void> {
   try {
     const publicCoursesPath = path.resolve(process.cwd(), "public", "courses");
-    const courses = getCoursesFromPublicFolder(publicCoursesPath);
+    const raw = getCoursesFromPublicFolder(publicCoursesPath);
+    const courses = raw.map((c) => ({ ...c, duration: DISPLAY_DURATION }));
     res.json({ courses });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
@@ -143,7 +147,10 @@ export async function uploadCourseCover(req: Request, res: Response): Promise<vo
 export async function listCourses(_req: Request, res: Response): Promise<void> {
   try {
     const snap = await coursesRef().orderBy("order", "asc").get();
-    const courses: CourseDoc[] = snap.docs.map((d) => ({ id: d.id, ...d.data() } as CourseDoc));
+    const courses: CourseDoc[] = snap.docs.map((d) => {
+      const doc = { id: d.id, ...d.data() } as CourseDoc;
+      return { ...doc, duration: DISPLAY_DURATION };
+    });
     res.json({ courses });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
