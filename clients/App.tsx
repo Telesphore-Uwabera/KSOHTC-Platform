@@ -53,12 +53,12 @@ const queryClient = new QueryClient({
   },
 });
 
-/** Smooth scroll to a y position or element over 3s with ease-in-out (flowing feel). */
+/** Smooth scroll to a y position or element over ~1s with ease-in-out (flowing feel). */
 function smoothScrollTo(target: number | HTMLElement) {
   const start = window.scrollY;
   const end = typeof target === "number" ? target : target.getBoundingClientRect().top + start;
   const distance = end - start;
-  const duration = 3000;
+  const duration = 1000;
   let startTime: number | null = null;
 
   function easeInOutCubic(t: number) {

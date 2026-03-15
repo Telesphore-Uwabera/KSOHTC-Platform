@@ -184,29 +184,29 @@ export default function Index() {
             ))}
           </div>
 
-          {/* Icon cards (Construction, Industrial, Mining) */}
+          {/* Icon cards (Construction, Industrial, Mining) — clickable to course pages */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
-            <div className="bg-white/10 backdrop-blur-sm rounded-[30px] min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-white/15 transition-all duration-300 group cursor-pointer border-2 border-white/20 hover:border-white/40 scroll-reveal reveal-rotate-in delay-2200">
+            <Link to="/courses/construction" className="block bg-white/10 backdrop-blur-sm rounded-[30px] min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-white/15 transition-all duration-300 group cursor-pointer border-2 border-white/20 hover:border-white/40 scroll-reveal reveal-rotate-in delay-2200">
               <div className="text-center p-4">
                 <HardHat className="w-12 h-12 sm:w-14 sm:h-14 text-accent mb-3 group-hover:scale-110 transition-transform duration-300 mx-auto" />
                 <p className="font-bold text-white text-base sm:text-lg">OSH in Construction</p>
                 <p className="text-sm text-white/80">Construction & infrastructure</p>
               </div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-[30px] min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-white/15 transition-all duration-300 group cursor-pointer border-2 border-white/20 hover:border-white/40 scroll-reveal reveal-rotate-in delay-2500">
+            </Link>
+            <Link to="/courses/industrial-safety" className="block bg-white/10 backdrop-blur-sm rounded-[30px] min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-white/15 transition-all duration-300 group cursor-pointer border-2 border-white/20 hover:border-white/40 scroll-reveal reveal-rotate-in delay-2500">
               <div className="text-center p-4">
                 <Building className="w-12 h-12 sm:w-14 sm:h-14 text-accent mb-3 group-hover:scale-110 transition-transform duration-300 mx-auto" />
                 <p className="font-bold text-white text-base sm:text-lg">OSH in Industrial</p>
                 <p className="text-sm text-white/80">Manufacturing & industrial</p>
               </div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-[30px] min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-white/15 transition-all duration-300 group cursor-pointer border-2 border-white/20 hover:border-white/40 scroll-reveal reveal-rotate-in delay-2800">
+            </Link>
+            <Link to="/courses/mining" className="block bg-white/10 backdrop-blur-sm rounded-[30px] min-h-[12rem] flex items-center justify-center shadow-lg hover:shadow-xl hover:bg-white/15 transition-all duration-300 group cursor-pointer border-2 border-white/20 hover:border-white/40 scroll-reveal reveal-rotate-in delay-2800">
               <div className="text-center p-4">
                 <Pickaxe className="w-12 h-12 sm:w-14 sm:h-14 text-accent mb-3 group-hover:scale-110 transition-transform duration-300 mx-auto" />
                 <p className="font-bold text-white text-base sm:text-lg">OSH in Mining</p>
                 <p className="text-sm text-white/80">Mining & extraction</p>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -259,22 +259,26 @@ export default function Index() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
             {[
-              { icon: HardHat, name: "OSH in Construction", desc: "Height, scaffolding, PPE. Officer, Supervisor, Inspector." },
-              { icon: Building, name: "OSH in Industrial", desc: "LOTO, chemical, fire. Officer, HSE Assistant." },
-              { icon: Pickaxe, name: "OSH in Mining", desc: "Blasting, ventilation. Mining Officer, Supervisor." },
-            ].map((industry, idx) => (
-              <div
-                key={idx}
-                className={`bg-gray-50 rounded-[30px] text-center border-2 border-primary/10 hover:border-primary/30 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.99] group cursor-pointer scroll-reveal ${idx === 0 ? "reveal-flip" : idx === 1 ? "reveal-bounce" : "reveal-spring"}`}
-                style={{ animationDelay: `${1.3 + idx * 0.35}s` }}
-              >
-                <div className="p-8">
-                  <industry.icon className="w-16 h-16 text-primary mb-4 inline-block group-hover:scale-125 transition-transform duration-300" />
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2 sm:mb-3 group-hover:text-accent transition-colors">{industry.name}</h3>
-                  <p className="text-gray-600 text-sm sm:text-base group-hover:text-gray-800 transition-colors leading-snug">{industry.desc}</p>
-                </div>
-              </div>
-            ))}
+              { icon: HardHat, name: "OSH in Construction", desc: "Height, scaffolding, PPE. Officer, Supervisor, Inspector.", courseId: "construction" as const },
+              { icon: Building, name: "OSH in Industrial", desc: "LOTO, chemical, fire. Officer, HSE Assistant.", courseId: "industrial-safety" as const },
+              { icon: Pickaxe, name: "OSH in Mining", desc: "Blasting, ventilation. Mining Officer, Supervisor.", courseId: "mining" as const },
+            ].map((industry, idx) => {
+              const Icon = industry.icon;
+              return (
+                <Link
+                  key={industry.courseId}
+                  to={`/courses/${industry.courseId}`}
+                  className={`block bg-gray-50 rounded-[30px] text-center border-2 border-primary/10 hover:border-primary/30 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 active:scale-[0.99] group cursor-pointer scroll-reveal ${idx === 0 ? "reveal-flip" : idx === 1 ? "reveal-bounce" : "reveal-spring"}`}
+                  style={{ animationDelay: `${1.3 + idx * 0.35}s` }}
+                >
+                  <div className="p-8">
+                    <Icon className="w-16 h-16 text-primary mb-4 inline-block group-hover:scale-125 transition-transform duration-300" />
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-primary mb-2 sm:mb-3 group-hover:text-accent transition-colors">{industry.name}</h3>
+                    <p className="text-gray-600 text-sm sm:text-base group-hover:text-gray-800 transition-colors leading-snug">{industry.desc}</p>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
