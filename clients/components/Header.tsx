@@ -1,23 +1,31 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Home, Info, BookOpen, Building2, GraduationCap, Mail, HardHat, Building, Pickaxe, ChevronDown, LayoutDashboard, Shield } from "lucide-react";
+
+const courseDropdownItems = [
+  { label: "Construction", path: "/courses/construction", icon: HardHat },
+  { label: "Industrial Safety", path: "/courses/industrial-safety", icon: Building },
+  { label: "Mining", path: "/courses/mining", icon: Pickaxe },
+] as const;
 
 const navLinks = [
-  { label: "Home", path: "/" },
-  { label: "About", path: "/about" },
-  { label: "Programs", path: "/programs" },
-  { label: "Industries", path: "/industries" },
-  { label: "Courses", path: "/courses" },
-  { label: "Contact", path: "/contact" },
+  { label: "Home", path: "/", icon: Home },
+  { label: "About", path: "/about", icon: Info },
+  { label: "Programs", path: "/programs", icon: BookOpen },
+  { label: "Industries", path: "/industries", icon: Building2 },
+  { label: "Courses", path: "/courses", icon: GraduationCap, isDropdown: true },
+  { label: "Contact", path: "/contact", icon: Mail },
 ];
 
 const SCROLL_THRESHOLD = 40;
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
+  const [coursesDropdownOpen, setCoursesDropdownOpen] = useState(false);
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const isAdminRoute = location.pathname.startsWith("/admin");
+  const isCoursesActive = location.pathname === "/courses" || courseDropdownItems.some((c) => location.pathname === c.path);
 
   useEffect(() => {
     let ticking = false;
@@ -55,27 +63,78 @@ export default function Header() {
                   decoding="async"
                 />
               </Link>
-              <nav className="flex gap-1 sm:gap-2 lg:gap-3">
-                {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className={`px-2 sm:px-3 py-1.5 sm:py-2 font-medium transition-all duration-300 relative group text-xs sm:text-sm lg:text-base ${location.pathname === link.path ? "text-primary" : "text-gray-700 hover:text-primary"}`}
-              >
-                {link.label}
-                <span className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-300 ${
-                  location.pathname === link.path ? "w-full" : "w-0 group-hover:w-full"
-                }`} />
-              </Link>
-                ))}
-                <Link
-                  to={isAdminRoute ? "/admin" : "/dashboard"}
-                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-semibold transition-all duration-300 text-xs sm:text-sm lg:text-base border-2 ${
+              <nav className="flex gap-1 sm:gap-2 lg:gap-3 items-center">
+                {navLinks.map((link) => {
+                  const Icon = link.icon;
+                  if (link.isDropdown) {
+                    return (
+                      <div
+                        key={link.path}
+                        className="relative group"
+                        onMouseEnter={() => setCoursesDropdownOpen(true)}
+                        onMouseLeave={() => setCoursesDropdownOpen(false)}
+                      >
+                        <span className="relative inline-block">
+                          <Link
+                            to={link.path}
+                            className={`inline-flex items-center gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 font-medium transition-all duration-300 text-xs sm:text-sm lg:text-base ${isCoursesActive ? "text-primary" : "text-gray-700 hover:text-primary"}`}
+                          >
+                            <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                            {link.label}
+                            <ChevronDown className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 transition-transform duration-200 ${coursesDropdownOpen ? "rotate-180" : ""}`} />
+                          </Link>
+                          <span className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-300 ${isCoursesActive ? "w-full" : "w-0 group-hover:w-full"}`} />
+                        </span>
+                        {coursesDropdownOpen && (
+                          <div className="absolute top-full left-0 pt-1 min-w-[200px] z-50 animate-in fade-in-0 slide-in-from-top-1 duration-200">
+                            <div className="bg-white rounded-xl shadow-lg border border-gray-200 py-1.5 overflow-hidden">
+                              {courseDropdownItems.map((item) => {
+                                const ItemIcon = item.icon;
+                                return (
+                                  <Link
+                                    key={item.path}
+                                    to={item.path}
+                                    className={`flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium transition-colors ${location.pathname === item.path ? "bg-primary/10 text-primary" : "text-gray-700 hover:bg-primary/10 hover:text-primary"}`}
+                                  >
+                                    <ItemIcon className="w-4 h-4 shrink-0" />
+                                    {item.label}
+                                  </Link>
+                                );
+                              })}
+                              <Link
+                                to="/courses"
+                                className="flex items-center gap-2.5 px-4 py-2.5 text-sm font-medium text-gray-600 hover:bg-primary/10 hover:text-primary border-t border-gray-100"
+                              >
+                                <GraduationCap className="w-4 h-4 shrink-0" />
+                                All courses
+                              </Link>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+                  return (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      className={`inline-flex items-center gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 font-medium transition-all duration-300 relative group text-xs sm:text-sm lg:text-base ${location.pathname === link.path ? "text-primary" : "text-gray-700 hover:text-primary"}`}
+                    >
+                      <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />
+                      {link.label}
+                      <span className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-primary to-accent rounded-full transition-all duration-300 ${location.pathname === link.path ? "w-full" : "w-0 group-hover:w-full"}`} />
+                    </Link>
+                  );
+                })}
+<Link
+                to={isAdminRoute ? "/admin" : "/dashboard"}
+                className={`inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-semibold transition-all duration-300 text-xs sm:text-sm lg:text-base border-2 ${
                     (isAdminRoute ? location.pathname === "/admin" : location.pathname === "/dashboard")
                       ? "bg-primary text-white border-primary shadow-md"
                       : "border-primary text-primary bg-primary/10 hover:bg-primary hover:text-white hover:shadow-md"
                   }`}
                 >
+                  {isAdminRoute ? <Shield className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" /> : <LayoutDashboard className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" />}
                   {isAdminRoute ? "Admin" : "Dashboard"}
                 </Link>
               </nav>
@@ -113,27 +172,66 @@ export default function Header() {
         {isOpen && (
           <nav className="md:hidden bg-gradient-to-b from-white to-gray-50 border-t border-gray-200 animate-slide-down">
             <div className="px-2 pt-2 pb-3 space-y-1">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setIsOpen(false)}
-                  className={`block px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
-                    location.pathname === link.path ? "bg-primary/10 text-primary" : "text-gray-700 hover:bg-primary/10 hover:text-primary"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                if (link.isDropdown) {
+                  return (
+                    <div key={link.path} className="space-y-0.5">
+                      <Link
+                        to={link.path}
+                        onClick={() => setIsOpen(false)}
+                        className={`flex items-center gap-2.5 px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
+                          location.pathname === link.path ? "bg-primary/10 text-primary" : "text-gray-700 hover:bg-primary/10 hover:text-primary"
+                        }`}
+                      >
+                        <Icon className="w-4 h-4 shrink-0" />
+                        {link.label}
+                      </Link>
+                      <div className="pl-6 pr-2 space-y-0.5">
+                        {courseDropdownItems.map((item) => {
+                          const ItemIcon = item.icon;
+                          return (
+                            <Link
+                              key={item.path}
+                              to={item.path}
+                              onClick={() => setIsOpen(false)}
+                              className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                                location.pathname === item.path ? "bg-primary/10 text-primary" : "text-gray-600 hover:bg-primary/10 hover:text-primary"
+                              }`}
+                            >
+                              <ItemIcon className="w-3.5 h-3.5 shrink-0" />
+                              {item.label}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                }
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center gap-2.5 px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
+                      location.pathname === link.path ? "bg-primary/10 text-primary" : "text-gray-700 hover:bg-primary/10 hover:text-primary"
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    {link.label}
+                  </Link>
+                );
+              })}
               <Link
                 to={isAdminRoute ? "/admin" : "/dashboard"}
                 onClick={() => setIsOpen(false)}
-                className={`block px-4 py-3 rounded-xl font-semibold transition-all duration-300 border-2 ${
+                className={`flex items-center gap-2.5 px-4 py-3 rounded-xl font-semibold transition-all duration-300 border-2 ${
                   (isAdminRoute ? location.pathname === "/admin" : location.pathname === "/dashboard")
                     ? "bg-primary text-white border-primary"
                     : "border-primary text-primary bg-primary/10 hover:bg-primary hover:text-white"
                 }`}
               >
+                {isAdminRoute ? <Shield className="w-4 h-4 shrink-0" /> : <LayoutDashboard className="w-4 h-4 shrink-0" />}
                 {isAdminRoute ? "Admin" : "Dashboard"}
               </Link>
             </div>

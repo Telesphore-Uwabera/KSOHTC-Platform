@@ -53,11 +53,42 @@ const queryClient = new QueryClient({
   },
 });
 
+/** Smooth scroll to a y position or element over 3s with ease-in-out (flowing feel). */
+function smoothScrollTo(target: number | HTMLElement) {
+  const start = window.scrollY;
+  const end = typeof target === "number" ? target : target.getBoundingClientRect().top + start;
+  const distance = end - start;
+  const duration = 3000;
+  let startTime: number | null = null;
+
+  function easeInOutCubic(t: number) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function step(now: number) {
+    if (startTime == null) startTime = now;
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = easeInOutCubic(progress);
+    window.scrollTo(0, start + distance * eased);
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
 function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    if (hash) {
+      const id = hash.slice(1);
+      const el = id ? document.getElementById(id) : null;
+      if (el) {
+        const t = setTimeout(() => smoothScrollTo(el), 50);
+        return () => clearTimeout(t);
+      }
+    }
+    smoothScrollTo(0);
+  }, [pathname, hash]);
   return null;
 }
 

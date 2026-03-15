@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, Phone, Mail, Code2, ExternalLink } from "lucide-react";
+import { MapPin, Phone, Mail, Code2, ExternalLink, Home, Info, BookOpen, Building2, MessageCircle } from "lucide-react";
 
 const FOOTER_MAP_EMBED = "https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d4729.875635675041!2d30.103122774967193!3d-1.9845040979975614!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMcKwNTknMDQuMiJTIDMwwrAwNicyMC41IkU!5e1!3m2!1sen!2srw!4v1772737124478!5m2!1sen!2srw";
 const MAP_DIRECTIONS_URL = "https://www.google.com/maps/dir//-1.984504,30.103123";
@@ -75,15 +75,15 @@ export default function Footer() {
             <h4 className="text-base sm:text-lg font-bold text-white mb-4 sm:mb-6 uppercase tracking-wider">Quick Links</h4>
             <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
               {[
-                { to: "/", label: "Home" },
-                { to: "/about", label: "About Us" },
-                { to: "/programs", label: "Programs" },
-                { to: "/industries", label: "Industries" },
-                { to: "/contact", label: "Contact" },
-              ].map(({ to, label }) => (
+                { to: "/", label: "Home", icon: Home },
+                { to: "/about", label: "About Us", icon: Info },
+                { to: "/programs", label: "Programs", icon: BookOpen },
+                { to: "/industries", label: "Industries", icon: Building2 },
+                { to: "/contact", label: "Contact", icon: MessageCircle },
+              ].map(({ to, label, icon: Icon }) => (
                 <li key={to}>
                   <Link to={to} className="hover:text-accent transition-colors duration-300 flex items-center gap-2">
-                    <span className="w-1 h-1 bg-accent rounded-full" />
+                    <Icon className="w-4 h-4 text-accent flex-shrink-0" />
                     {label}
                   </Link>
                 </li>
